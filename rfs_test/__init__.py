@@ -1,14 +1,6 @@
-﻿###################################################################################################
-# Licensed under the Apache license: http://www.apache.org/licenses/LICENSE-2.0
-# Verified/operational Python revisions (Windows OS) :
-#       2.7.10
-#       3.4.3
-#
-# Initial code released : 01/2016 
-#   Steve Krig      ~ Intel 
-#   Fatima Saleem   ~ Intel
-#  2015 Intel Corporation
-####################################################################################################
+﻿# Copyright Notice:
+# Copyright 2016 Distributed Management Task Force, Inc. All rights reserved.
+# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
 
 import logger
 from rfs_test import TEST_protocol_details
