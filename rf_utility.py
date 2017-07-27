@@ -1,12 +1,20 @@
-﻿# Copyright Notice:
-# Copyright 2016 Distributed Management Task Force, Inc. All rights reserved.
-# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
-
+﻿###################################################################################################
 # File: rf_utility.py 
 #   This module contains basic HTTP connection and request functions (Based on Redfish requirement),
 #   Redfish service relevant HTTP status codes, request header and response payload helper functions to running assertions 
 #   on SUT
-
+#
+# Licensed under the Apache license: http://www.apache.org/licenses/LICENSE-2.0
+# Verified/operational Python revisions (Windows OS) :
+#       2.7.10
+#       3.4.3
+#
+# Initial code released : 01/2016
+#   Steve Krig      - Intel 
+#   Fatima Saleem   - Intel
+#   Priyanka Kumari ~ Texas Tech University
+#   Copyright (c) 2015 Intel Corporation
+###################################################################################################
 import sys
 from schema import SchemaModel
 from collections import OrderedDict

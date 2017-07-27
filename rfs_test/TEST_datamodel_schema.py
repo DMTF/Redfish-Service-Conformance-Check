@@ -1,16 +1,26 @@
-# Copyright Notice:
-# Copyright 2016 Distributed Management Task Force, Inc. All rights reserved.
-# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
-
+#####################################################################################################
 # File: rfs_check.py
 # Description: Redfish service conformance check tool. This module contains implemented assertions for 
 #   SUT.These assertions are based on operational checks on Redfish Service to verify that it conforms 
 #   to the normative statements from the Redfish specification. 
 #   See assertions in redfish-assertions.xlxs for assertions summary
+#
+# Licensed under the Apache license: http://www.apache.org/licenses/LICENSE-2.0
+# Verified/operational Python revisions (Windows OS) :
+#       2.7.10
+#       3.4.3
+#
+# Initial code released : 01/2016
+#   Steve Krig      ~ Intel 
+#   Fatima Saleem   ~ Intel
+#   Priyanka Kumari ~ Texas Tech University
+#  2015 Intel Corporation
+#####################################################################################################
 
 import sys
 import re
 import rf_utility
+import xml.etree.ElementTree as ET
 
 # map python 2 vs 3 imports
 if (sys.version_info < (3, 0)):
@@ -28,7 +38,8 @@ else:
     from io import StringIO
     from http.client import HTTPSConnection, HTTPConnection, HTTPResponse
     from urllib.request import urlopen
-
+    import urllib
+    from xml.dom import minidom
 
 import ssl
 import re
@@ -82,7 +93,7 @@ def Assertion_7_0_1(self, log):
 ## end Assertion_7_0_1
 
 ###################################################################################################
-# Name: Assertion_7_1_1(self, log)  Type Identifiers in JSON                                
+# Name: Assertion_7_2_1(self, log)  Type Identifiers in JSON                                
 # Assertion text: 
 #  Types used within a JSON payload shall be defined in, or referenced, by the metadata document. 
 #  metadata document is the document retreived from $metadata 
@@ -93,8 +104,8 @@ def Assertion_7_0_1(self, log):
 #             referenced in the $metadata and try to find it within the References element of each
 #             schema file.
 ###################################################################################################
-def Assertion_7_1_1(self, log):
-    log.AssertionID = '7.1.1'
+def Assertion_7_2_1(self, log):
+    log.AssertionID = '7.2.1'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
     authorization = 'on'
@@ -127,40 +138,69 @@ def Assertion_7_1_1(self, log):
                             assertion_status = log.FAIL
                             log.assertion_log('line', "Type used within json payload for resource: %s, '@odata.type': %s is not defined in or referenced by the service's $metadata document: %s as expected" % (relative_uris[relative_uri], json_payload['@odata.type'], self.Redfish_URIs['Service_Metadata_Doc']))  
                     else:
-                        assertion_status = log.WARN
-                        log.assertion_log('line', 'Service $metadata document %s not found' % (self.Redfish_URIs['Service_Metadata_Doc']))
+                        assertion_status = log.WARN   
+                        log.assertion_log('line', 'Service $metadata document %s not found for namespace %s' % ((self.Redfish_URIs['Service_Metadata_Doc']),namespace))
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 #
-## end Assertion 7.1.1
+## end Assertion 7.2.1
+
+def camel(s):
+    return (s != s.lower() and s != s.upper())
 
 ###################################################################################################
-# Name: Assertion_7_2_1(self, log)                                                
+# Name: Assertion_7_3_0(self, log)                                                
 # Assertion text: 
 #   Resource Name, Property Names and constants such as Enumerations shall be Pascal-cased
 #   The first letter of each work shall be upper case with spaces between words shall be removed                
 ###################################################################################################
-def WIP_Assertion_7_2_1(self, log):
+def Assertion_7_3_0(self, log):
  
-    log.AssertionID = '7.2.1'
+    log.AssertionID = '7.3.0'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
-
+    rq_headers = self.request_headers()
+    authorization = 'on'
+    csdl_schema_model = self.csdl_schema_model
+    relative_uris = self.relative_uris # contains all the urls found in every navigation property of all schemas
+    
+    for relative_uri in relative_uris:
+        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
+        # manage assertion status
+        assertion_status = log.status_fixup(assertion_status,assertion_status_)
+        if assertion_status_ != log.PASS: 
+            continue
+        elif not json_payload:
+            assertion_status_ = log.WARN
+            # manage assertion status
+            assertion_status = log.status_fixup(assertion_status,assertion_status_)
+            log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
+        else:
+            if '@odata.type' in json_payload:
+                namespace, typename = rf_utility.parse_odata_type(json_payload['@odata.type'])
+                if namespace and typename:
+                    if self.metadata_document_structure:
+                        status = camel(namespace)
+                        status_1 = camel(typename)
+                        if ( status == True and status_1 == True):
+                            assertion_status = log.PASS
+                        else :
+                            assertion_status = log.FAIL
     log.assertion_log(assertion_status, None)
-
     return (assertion_status)
 #
-## end Assertion 7_2_1
+## end Assertion 7_3_0
 
 ###################################################################################################
-# Name: Assertion_7_4_3(self, log)  Schema Documents                                                
+# Name: Assertion_7_5_2(self, log)  Schema Documents                                                
 # Assertion text: 
 #   The outer element of the OData Schema representation document shall be the Edmx element, and shall 
 #   have a 'Version' attribute with a value of "4.0".    
 ###################################################################################################
-def Assertion_7_4_3(self, log):
-    log.AssertionID = '7.4.3'
+def Assertion_7_5_2(self, log):
+    log.AssertionID = '7.5.2'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -180,15 +220,15 @@ def Assertion_7_4_3(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
-## end Assertion 7_4_3
+## end Assertion 7_5_2
 
 ###################################################################################################
-# Name: Assertion_7_4_4(self, log)  Resource Type Definitions                                                
+# Name: Assertion_7_5_3(self, log)  Resource Type Definitions                                                
 # Assertion text: 
 # All resources shall include Description and LongDescription annotations i.e EntityTypes under Schema
 ###################################################################################################
-def Assertion_7_4_4(self, log):
-    log.AssertionID = '7.4.4'
+def Assertion_7_5_3(self, log):
+    log.AssertionID = '7.5.3'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
     authorization = 'on'
@@ -210,16 +250,73 @@ def Assertion_7_4_4(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
-## end Assertion 7_4_4
+## end Assertion 7_5_3
+
 
 ###################################################################################################
-# Name: Assertion_7_4_6(self, log)  Resource Properties                                                
+# Name: Assertion_7_5_4(self, log)  Resource Properties                                                
+# Assertion text: 
+# Property names in the Request and Response JSON Payload shall match the casing of the value of the Name attribute
+###################################################################################################
+def Assertion_7_5_4(self, log):
+    log.AssertionID = '7.5.4'
+    assertion_status =  log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    authorization = 'on'
+    resource = 'Chassis'
+    rq_headers = self.request_headers()
+    csdl_schema_model = self.csdl_schema_model
+    relative_uris = self.relative_uris
+    #find alias in Include first?
+    for relative_uri in relative_uris:
+        if resource in relative_uri:
+                json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                if status == 200:
+                    if 'ChassisType' in json_payload :
+                            json_payload['Chassistype'] = json_payload['ChassisType']
+                            del json_payload['ChassisType']
+                            print ('The json value is now %s' %json_payload)
+                            assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
+                             # manage assertion status
+                            assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                            if assertion_status_ != log.PASS: 
+                                    continue
+                            elif not json_payload:
+                                    assertion_status_ = log.WARN
+                            else:
+                                if '@odata.type' in json_payload:
+                                            namespace, typename = rf_utility.parse_odata_type(json_payload['@odata.type'])
+                                            namespace = resource + '_v1'
+                                            if namespace and typename:
+                                                xml_metadata, schema_file = rf_utility.get_resource_xml_metadata(namespace, self.xml_directory)
+                                                if xml_metadata and schema_file:
+                                                    print ('The xml_metadata is %s' %xml_metadata)                                      
+                                                    properties = xml_metadata.getElementsByTagName('Property')[0]
+                                                    print ('Properties is %s' %properties)
+                                                    if(properties.getAttribute('Name') == 'Chassistype'):
+                                                        assertion_status = log.FAIL
+                                                        print('Property names in the Request and Response JSON Payload is matching even when the casing of the value does not match')                                                                                                     
+                                                    else :
+                                                            assertion_status = log.PASS
+                                                            continue
+                    else :
+                        continue
+                else :
+                    print('Not a valid URI, go to another URI')
+                    continue
+    log.assertion_log(assertion_status, None)
+    return (assertion_status)
+
+## end Assertion 7_5_4
+
+###################################################################################################
+# Name: Assertion_7_5_5(self, log)  Resource Properties                                                
 # Assertion text: 
 # All properties shall include Description and LongDescription annotations.  Checking all
 # Property types : Property (within EntityType and ComplexType)
 ###################################################################################################
-def Assertion_7_4_6(self, log):
-    log.AssertionID = '7.4.6'
+def Assertion_7_5_5(self, log):
+    log.AssertionID = '7.5.5'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
     authorization = 'on'
@@ -252,44 +349,120 @@ def Assertion_7_4_6(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
-## end Assertion 7_4_6
+## end Assertion 7_5_5
 
-###################################################################################################
-# Name: Assertion_7_4_8(self, log)  Resource Properties                                                
+####################################################################################################################
+# Name: Assertion_7_5_6(self, log)  Resource Properties                                                
 # Assertion text: 
-# Structured types shall include Description and LongDescription annotations. i.e ComplexTypes 
-###################################################################################################
-def Assertion_7_4_8(self, log):
-    log.AssertionID = '7.4.8'
+# Properties that are read-only are annotated with the Permissions annotation with a value of ODataPermissions/Read
+#####################################################################################################################
+
+def Assertion_7_5_6(self, log):
+    log.AssertionID = '7.5.6'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
-    
+    authorization = 'on'
+    ns_tag = 'Property'
+    find_ns_tag = ['Annotation']
+
     csdl_schema_model = self.csdl_schema_model
     #find alias in Include first?
     for rf_schema in csdl_schema_model.RedfishSchemas:
         resource_namespaces = rf_schema.Schemas
         for r_namespace in resource_namespaces:
-            complextypes = r_namespace.ComplexTypes
-            for complextype in complextypes:
-                if not csdl_schema_model.verify_annotation_recur(complextype,'OData.Description'): #should alias be prepended or should this be independent of Alias?
-                   assertion_status = log.FAIL
-                   log.assertion_log('line', "~ ComplexType: %s, BaseType: %s and any of its parent BaseType resources (based on inheritance) does not have annotation 'OData.Description' in its OData schema representation document: %s" % (complextype.Name, complextype.BaseType, rf_schema.SchemaUri))
-                if not csdl_schema_model.verify_annotation_recur(complextype,'OData.LongDescription'): #should alias be prepended or should this be independent of Alias?
-                   assertion_status = log.FAIL
-                   log.assertion_log('line', "~ ComplexType: %s, BaseType: %s and any of its parent BaseType resources (based on inheritance) does not have annotation 'OData.LongDescription' in its OData schema representation document: %s" % (complextype.Name, complextype.BaseType, rf_schema.SchemaUri))   
+            for entity_type in r_namespace.EntityTypes:
+                for prop in entity_type.Properties:
+                    if csdl_schema_model.verify_annotation_recur(prop,'OData.Permission/Read'): #should alias be prepended or should this be independent of Alias?
+                        log.assertion_log('line', "~ Property: %s, Type: %s and any of its parent Type resources (based on inheritance) does  have annotation 'OData.Permission/Read' in its OData schema representation document which is read-only: %s" % (prop.Name, prop.Type, rf_schema.SchemaUri))
+
+            for complextype in r_namespace.ComplexTypes:
+                for prop in complextype.Properties:
+                    if csdl_schema_model.verify_annotation_recur(prop,'OData.Permission/Read'): #should alias be prepended or should this be independent of Alias?
+                        log.assertion_log('line', "~ Property: %s, Type: %s and any of its parent Type resources (based on inheritance) does have annotation 'OData.Permission/Read' in its OData schema representation document which is read-only: %s" % (prop.Name, prop.Type, rf_schema.SchemaUri))
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
-## end Assertion 7_4_8
+## end Assertion 7_5_6
+
+##############################################################################################################
+# Name: Assertion_7_5_7(self, log)  Resource Properties                                                
+# Assertion text: 
+# Properties that are required to be implemented by all services are annotated with the required annotation.
+###############################################################################################################
+
+def Assertion_7_5_7(self, log):
+    log.AssertionID = '7.5.7'
+    assertion_status =  log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    authorization = 'on'
+    ns_tag = 'Property'
+    find_ns_tag = ['Annotation']
+
+    csdl_schema_model = self.csdl_schema_model
+    #find alias in Include first?
+    for rf_schema in csdl_schema_model.RedfishSchemas:
+        resource_namespaces = rf_schema.Schemas
+        for r_namespace in resource_namespaces:
+            for entity_type in r_namespace.EntityTypes:
+                for prop in entity_type.Properties:
+                    if csdl_schema_model.verify_annotation_recur(prop,'Redfish.Required'): #should alias be prepended or should this be independent of Alias?
+                        log.assertion_log('line', "~ Property: %s, Type: %s and any of its parent Type resources (based on inheritance) does  have annotation 'Redfish.Required' in its OData schema representation document which is a required property: %s" % (prop.Name, prop.Type, rf_schema.SchemaUri))
+
+            for complextype in r_namespace.ComplexTypes:
+                for prop in complextype.Properties:
+                    if csdl_schema_model.verify_annotation_recur(prop,'Redfish.Required'): #should alias be prepended or should this be independent of Alias?
+                        log.assertion_log('line', "~ Property: %s, Type: %s and any of its parent Type resources (based on inheritance) does have annotation 'Redfish.Required' in its OData schema representation document which is a required property: %s" % (prop.Name, prop.Type, rf_schema.SchemaUri))
+
+    log.assertion_log(assertion_status, None)
+    return (assertion_status)
+
+## end Assertion 7_5_7
 
 ###################################################################################################
-# Name: Assertion_7_4_9(self, log)  Enums                                              
+# Name: Assertion_7_5_8(self, log)  Resource Properties                                                
+# Assertion text: 
+# Structured types shall include Description and LongDescription annotations. i.e ComplexTypes 
+###################################################################################################
+def Assertion_7_5_8(self, log):
+    log.AssertionID = '7.5.8'
+    assertion_status =  log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    resource = []
+    csdl_schema_model = self.csdl_schema_model
+    #find alias in Include first?
+    for rf_schema in csdl_schema_model.RedfishSchemas:
+        resource_namespaces = rf_schema.Schemas
+        for r_namespace in resource_namespaces:
+            print('Namespace is %s' %r_namespace.Namespace)
+            complextypes = r_namespace.ComplexTypes
+            for complextype in complextypes:
+                print('Complextype is %s' %complextype.Annotations)
+                if not csdl_schema_model.verify_annotation_recur(complextype,'OData.Description'): #should alias be prepended or should this be independent of Alias?
+                   assertion_status = log.FAIL
+                   print('The namespace %s has Complex type but does not include OData.Description' %r_namespace.Namespace)
+                   resource.append(r_namespace.Namespace)
+                   log.assertion_log('line', "~ ComplexType: %s, BaseType: %s and any of its parent BaseType resources (based on inheritance) does not have annotation 'OData.Description' in its OData schema representation document: %s" % (complextype.Name, complextype.BaseType, rf_schema.SchemaUri))
+                if not csdl_schema_model.verify_annotation_recur(complextype,'OData.LongDescription'): #should alias be prepended or should this be independent of Alias?
+                   assertion_status = log.FAIL
+                   print('The namespace %s has Complex type but does not include OData.LongDescription' %r_namespace.Namespace)
+                   if r_namespace.Namespace not in resource:
+                       resource.append(r_namespace.Namespace)
+                   log.assertion_log('line', "~ ComplexType: %s, BaseType: %s and any of its parent BaseType resources (based on inheritance) does not have annotation 'OData.LongDescription' in its OData schema representation document: %s" % (complextype.Name, complextype.BaseType, rf_schema.SchemaUri))   
+    while resource.pop() :
+        print('The list of namespaces that do not have the required annotations are %s' %resource.pop)   
+    log.assertion_log(assertion_status, None)
+    return (assertion_status)
+
+## end Assertion 7_5_8
+
+###################################################################################################
+# Name: Assertion_7_5_9(self, log)  Enums                                              
 # Assertion text: 
 # Enumeration Types shall include Description and LongDescription annotations.
 ###################################################################################################
-def Assertion_7_4_9(self, log):
-    log.AssertionID = '7.4.9'
+def Assertion_7_5_9(self, log):
+    log.AssertionID = '7.5.9'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -310,14 +483,14 @@ def Assertion_7_4_9(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
-## end Assertion 7_4_9
+## end Assertion 7_5_9
 ###################################################################################################
-# Name: Assertion_7_4_10(self, log)  Enums                                              
+# Name: Assertion_7_5_10(self, log)  Enums                                              
 # Assertion text: 
 # Enumeration Members shall include Description annotations.
 ###################################################################################################
-def Assertion_7_4_10(self, log):
-    log.AssertionID = '7.4.10'
+def Assertion_7_5_10(self, log):
+    log.AssertionID = '7.5.10'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
     
@@ -336,7 +509,7 @@ def Assertion_7_4_10(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
-## end Assertion 7_4_10
+## end Assertion 7_5_10
 
 ###################################################################################################
 # Name: check_addprop_annotation()
@@ -447,7 +620,7 @@ def verify_typename_in_json_metadata(typename, json_metadata):
     return False
            
 ###################################################################################################
-# Name: Assertion_7_4_11(self, log)  Additional Properties   - checked via json metadata                                        
+# Name: Assertion_7_5_11(self, log)  Additional Properties   - checked via json metadata                                        
 # Assertion text: 
 # The AdditionalProperties annotation term is used to specify whether a type can contain additional 
 # properties outside of those defined. Types annotated with the AdditionalProperties annotation with 
@@ -458,8 +631,8 @@ def verify_typename_in_json_metadata(typename, json_metadata):
 # String="Instances of this type may contain properties in addition to those declared in $metadata", 
 # does it mean the context url of the resource?
 ###################################################################################################
-def Assertion_7_4_11(self, log):
-    log.AssertionID = '7.4.11'
+def Assertion_7_5_11(self, log):
+    log.AssertionID = '7.5.11'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -502,6 +675,8 @@ def Assertion_7_4_11(self, log):
                                                 log.assertion_log('line', "~ Resource: %s of type: %s has Annotation: '%s' set to 'False' in its schema document %s, but additional property: %s found in resource payload" % (json_payload['@odata.id'], namespace, annotation_term, schema_file, property_key))  
     log.assertion_log(assertion_status, None)
     return (assertion_status)
+
+## end Assertion 7_5_11
 
 ###################################################################################################
 # check_required_property_in_payload()
@@ -570,14 +745,14 @@ def _Assertion_7_4_13(self, log):
     return (assertion_status)
 
 ###################################################################################################
-# Name: _Assertion_7_4_13(self, log)  Required Properties   - checked via json schema                                 
+# Name: _Assertion_7_5_14(self, log)  Required Properties   - checked via json schema                                 
 # Assertion text: 
 # If an implementation supports a property, it shall always provide a value for that property.
 # If a value is unknown, then null is an acceptable values in most cases. 
 # required is True by default, so unless it is a False, it should be in the payload with a value or null
 ###################################################################################################
-def Assertion_7_4_13(self, log):
-    log.AssertionID = '7.4.13'
+def Assertion_7_5_14(self, log):
+    log.AssertionID = '7.5.14'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -615,6 +790,58 @@ def Assertion_7_4_13(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
+## end Assertion 7_5_14
+
+
+###################################################################################################
+# Name: _Assertion_7_5_14_1(self, log)  Required Properties                                 
+# Assertion text: 
+# Properties not returned from a GET operation shall indicate that the property is not currently supported by the 
+# implementation
+###################################################################################################
+def Assertion_7_5_14_1(self, log):
+    log.AssertionID = '7.5.14.1'
+    assertion_status =  log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+
+    authorization = 'on'
+    rq_headers = self.request_headers()
+
+    csdl_schema_model = self.csdl_schema_model
+    relative_uris = self.relative_uris
+    annotation_term = 'required'
+    supported_term = 'the property is not currently supported'
+    for relative_uri in relative_uris:
+        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
+        # manage assertion status
+        assertion_status = log.status_fixup(assertion_status,assertion_status_)
+        if assertion_status_ != log.PASS: 
+            continue
+        elif not json_payload:
+            assertion_status_ = log.WARN
+            # manage assertion status
+            assertion_status = log.status_fixup(assertion_status,assertion_status_)
+            log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
+        else:
+            if '@odata.type' in json_payload:
+                namespace, typename = rf_utility.parse_odata_type(json_payload['@odata.type'])
+                if namespace and typename:
+                    json_metadata, schema_file = rf_utility.get_resource_json_metadata(namespace, self.json_directory)     
+                    if json_metadata and schema_file:           
+                        if verify_typename_in_json_metadata(typename, json_metadata):
+                            if annotation_term in json_metadata['definitions'][typename]:
+                                for req_prop in json_metadata['definitions'][typename][annotation_term]:                                       
+                                    if req_prop not in json_payload.keys():
+                                        if supported_term not in headers:
+                                            assertion_status = log.FAIL
+                                            log.assertion_log('line', "~ Resource: %s of type: %s has Annotation: '\%s'\ for property: %s in its schema document %s, but property not found in resource payload and is not indicated that the property is not supported by the implementation" % (json_payload['@odata.id'], namespace, annotation_term, req_prop, schema_file))                     
+    log.assertion_log(assertion_status, None)
+    return (assertion_status)
+
+## end Assertion 7_5_14_1
+
+
 ###################################################################################################
 # check_property_in_payload()
 #   This function check the payload for a non-nullable property
@@ -628,13 +855,13 @@ def check_property_in_payload(property, json_payload):
     return True
 
 ###################################################################################################
-# Name: Assertion_7_4_14(self, log)  Required Properties  - checked via xml schema                                     
+# Name: Assertion_7_5_13_xml(self, log)  Required Properties  - checked via xml schema                                     
 # Description: 
-# Assertion text: required property should be annotated with Nullable = False
+# Assertion text: required property shall be annotated with Nullable = False
 # cannot contain null values, (not necc to have the property in the payload?)
 ###################################################################################################
-def Assertion_7_4_14(self, log):
-    log.AssertionID = '7.4.14'
+def Assertion_7_5_13_xml(self, log):
+    log.AssertionID = '7.5.13'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -679,14 +906,17 @@ def Assertion_7_4_14(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
+## end Assertion 7_5_13_xml
+
+
 ###################################################################################################
-# Name: Assertion_7_4_14(self, log)  Required Properties       - check via json schema                                
+# Name: Assertion_7_5_13(self, log)  Required Properties       - check via json schema                                
 # Description: 
-# Assertion text: required property should be annotated with Nullable = False
+# Assertion text: required property shall be annotated with Nullable = False
 # cannot contain null values, (not necc to have the property in the payload?)
 ###################################################################################################
-def _Assertion_7_4_14(self, log):
-    log.AssertionID = '7.4.14'
+def _Assertion_7_5_13(self, log):
+    log.AssertionID = '7.5.13'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -728,6 +958,7 @@ def _Assertion_7_4_14(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
+## end Assertion 7_5_13
 ###################################################################################################
 # check_unit_instance(xtype, schema, namespace, log) WIP
 # This helper function checks Redfish schema Annotation 'Measures.Unit' type. It should follow the 
@@ -744,14 +975,14 @@ def check_unit_instance(xtype, schema, namespace, log):
                 log.assertion_log('line', "~ The value of Property 'Measures.Unit': %s: %s within Schema Namespace: %s in resource file %s is not of type string as required by the Redfish specification document %s" % (xtype.AttrKey, xtype.AttrValue, namespace.Namespace, schema.SchemaUri, REDFISH_SPEC_VERSION))   
                      
 ###################################################################################################
-# Name: Assertion_7_4_15(self, log) Units of Measure WIP                                  
+# Name: Assertion_7_5_15(self, log) Units of Measure                               
 # Assertion text: 
 # In addition to following naming conventions, properties representing units of measure 
 # shall be annotated with the Units annotation term in order to specify the units of measurement for 
 # the property. check for annotation term 'Measures.Unit'
 ###################################################################################################
-def Assertion_7_4_15(self, log):
-    log.AssertionID = '7.4.15'
+def Assertion_7_5_15(self, log):
+    log.AssertionID = '7.5.15'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -813,16 +1044,16 @@ def Assertion_7_4_15(self, log):
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
-## end Assertion 7_4_15
+## end Assertion 7_5_15
 
 ###################################################################################################
-# Name: Assertion_7_4_16(self, log) Reference Properties                                
+# Name: Assertion_7_5_16(self, log) Reference Properties                                
 # Assertion text: 
 # All reference properties shall include Description and LongDescription annotations.
 # NavigationProperty within EntityType and ComplexType
 ###################################################################################################
-def Assertion_7_4_16(self, log):
-    log.AssertionID = '7.4.16'
+def Assertion_7_5_16(self, log):
+    log.AssertionID = '7.5.16'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -852,15 +1083,15 @@ def Assertion_7_4_16(self, log):
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
-## end Assertion 7_4_16
+## end Assertion 7_5_16
 
 ###################################################################################################
-# Name: Assertion_7_4_18(self, log) Oem Property Format and Content   WIP                         
+# Name: Assertion_7_5_18(self, log) Oem Property Format and Content   WIP                         
 # Assertion text: 
 # OEM-specified objects that are contained within the Oem property must be 
 # valid JSON objects that follow the format of a Redfishcomplex type. 
 ###################################################################################################
-def Assertion_7_4_18(self, log):
+def Assertion_7_5_18(self, log):
     log.AssertionID = '7.4.18'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
@@ -903,16 +1134,16 @@ def Assertion_7_4_18(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
-#end Assertion_7_4_18
+#end Assertion_7_5_18
 
 ###################################################################################################
-# Name: Assertion_7_4_18_1(self, log) Oem Property Format and Content  WIP                            
+# Name: Assertion_7_5_18_1(self, log) Oem Property Format and Content  WIP                            
 # Assertion text: 
 # OEM-specified objects... The name of the object (property) shall uniquely identify 
 # the OEM or organization that manages the top of the namespace under which the property is defined.
 ###################################################################################################
-def Assertion_7_4_18_1(self, log):
-    log.AssertionID = '7.4.18.1'
+def Assertion_7_5_18_1(self, log):
+    log.AssertionID = '7.5.18.1'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -955,16 +1186,16 @@ def Assertion_7_4_18_1(self, log):
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
-#end Assertion_7_4_18_1
+#end Assertion_7_5_18_1
 
 ###################################################################################################
-# Name: Assertion_7_4_18_2(self, log) Oem Property Format and Content WIP                             
+# Name: Assertion_7_5_18_2(self, log) Oem Property Format and Content WIP                             
 # Assertion text: 
 # The OEM-specified property shall also include a type property that provides
 # the location of the schema and the type definition for the property within that schema. 
 ###################################################################################################
-def Assertion_7_4_18_2(self, log):
-    log.AssertionID = '7.4.18.2'
+def Assertion_7_5_18_2(self, log):
+    log.AssertionID = '7.5.18.2'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -1014,7 +1245,7 @@ def Assertion_7_4_18_2(self, log):
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
-#end Assertion_7_4_18_2
+#end Assertion_7_5_18_2
 
 ###################################################################################################
 # check_name_instance(xtype, schema, log)
@@ -1027,17 +1258,17 @@ def check_name_instance(xtype, schema, log):
             log.assertion_log('line', "~ Property 'Name': %s in resource file %s is not of type string as required by the Redfish specification document version: %s" % (xtype.Name, schema.SchemaUri, REDFISH_SPEC_VERSION))   
 
 ###################################################################################################
-# Name: Assertion_7_5_1_2(self, log)  Description                                                
+# Name: Assertion_7_6_2(self, log)  Description                                                
 # Description: 
 #
 # Assertion text: 
-#   The Name property is used to convey a human readable moniker for a resource.  The type of the Name 
+#   The Name property is used to convey a human readable moniter for a resource.  The type of the Name 
 #   property shall be string.  The value of Name is NOT required to be unique across resource instances
 #   within a collection.
 # checking EntityTypes under Schema
 ###################################################################################################
-def Assertion_7_5_1_2(self, log):
-    log.AssertionID = '7.5.1.2'
+def Assertion_7_6_2(self, log):
+    log.AssertionID = '7.6.2'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
@@ -1083,7 +1314,7 @@ def Assertion_7_5_1_2(self, log):
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
-## end Assertion 7_5_1_2
+## end Assertion 7_6_2
 
 ###################################################################################################
 # check_description_instance(xtype, schema, namespace, log)
@@ -1172,28 +1403,199 @@ def Assertion_7_5_1_3(self, log):
 ## end Assertion 7_5_1_3
 
 ###################################################################################################
+# Name: Assertion_7_6_1(self, log)  Id                                              
+# Assertion text: 
+# The Id property of a resource uniquely identifies the resource within the Resource Collection that contains
+# it. The value of Id shall be unique across a Resource Collection.
+###################################################################################################
+def Assertion_7_6_1(self, log):
+    log.AssertionID = '7.6.1'
+    assertion_status =  log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    rq_headers = self.request_headers()
+    uri = 'http://redfish.dmtf.org/schemas/v1/Resource_v1.xml'
+    flag = False
+
+    rq_headers['Content-Type'] = rf_utility.content_type['xml']
+    response = urlopen(uri)
+    myfile = response.read()
+    myfile = myfile.decode('utf-8')
+    print('The response is %s' %myfile)
+    doc = minidom.parseString(myfile)
+    type_definition = doc.getElementsByTagName('TypeDefinition')
+    for t in type_definition:
+            name = t.getAttribute('Name')
+            if 'Id' in name:
+                  flag = True
+            else :
+                  continue
+
+    if flag :
+        assertion_status = log.PASS
+    else :
+        assertion_status = log.FAIL
+
+    log.assertion_log(assertion_status, None)
+    return (assertion_status)
+## end Assertion 7_6_1
+
+
+###################################################################################################
+# Name: Assertion_7_6_2(self, log)  Name                                              
+# Assertion text: 
+# The Name property is used to convey a human readable moniker for a resource.  
+# The type of the Name property shall be string.  The value of Name is NOT required to be unique across resource instances
+# within a collection.
+###################################################################################################
+def Assertion_7_6_2(self, log):
+    log.AssertionID = '7.6.2'
+    assertion_status =  log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    rq_headers = self.request_headers()
+    uri = 'http://redfish.dmtf.org/schemas/v1/Resource_v1.xml'
+    flag = False
+
+    rq_headers['Content-Type'] = rf_utility.content_type['xml']
+    response = urlopen(uri)
+    myfile = response.read()
+    myfile = myfile.decode('utf-8')
+    print('The response is %s' %myfile)
+    doc = minidom.parseString(myfile)
+    type_definition = doc.getElementsByTagName('TypeDefinition')
+    for t in type_definition:
+            name = t.getAttribute('Name')
+            if 'Name' in name:
+                  flag = True
+            else :
+                  continue
+
+    if flag :
+        assertion_status = log.PASS
+    else :
+        assertion_status = log.FAIL
+
+    log.assertion_log(assertion_status, None)
+    return (assertion_status)
+
+## end Assertion 7_6_2
+
+
+
+###################################################################################################
+# Name: Assertion_7_6_3(self, log)  Description                                              
+# Assertion text: 
+# The Description property is used to convey a human readable description of the resource.  
+# The type of the Description property shall be string.
+###################################################################################################
+def Assertion_7_6_3(self, log):
+    log.AssertionID = '7.6.3'
+    assertion_status =  log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    rq_headers = self.request_headers()
+    uri = 'http://redfish.dmtf.org/schemas/v1/Resource_v1.xml'
+    flag = False
+
+    rq_headers['Content-Type'] = rf_utility.content_type['xml']
+    response = urlopen(uri)
+    myfile = response.read()
+    myfile = myfile.decode('utf-8')
+    print('The response is %s' %myfile)
+    doc = minidom.parseString(myfile)
+    type_definition = doc.getElementsByTagName('TypeDefinition')
+    for t in type_definition:
+            name = t.getAttribute('Name')
+            if 'Description' in name:
+                  flag = True
+            else :
+                  continue
+
+    if flag :
+        assertion_status = log.PASS
+    else :
+        assertion_status = log.FAIL
+
+    log.assertion_log(assertion_status, None)
+    return (assertion_status)
+
+## end Assertion 7_6_3
+
+
+###################################################################################################
+# Name: Assertion_7_6_5_1(self, log)  Links                                              
+# Assertion text: 
+#  All associated reference properties defined for a resource shall be nested under the links property.  
+###################################################################################################
+def Assertion_7_6_5_1(self, log):
+    log.AssertionID = '7.6.5.1'
+    assertion_status =  log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    rq_headers = self.request_headers()
+    uri = 'http://redfish.dmtf.org/schemas/v1/Resource_v1.xml'
+    flag = False
+
+    rq_headers['Content-Type'] = rf_utility.content_type['xml']
+    response = urlopen(uri)
+    myfile = response.read()
+    myfile = myfile.decode('utf-8')
+    print('The response is %s' %myfile)
+    doc = minidom.parseString(myfile)
+    type_definition = doc.getElementsByTagName('ComplexType')
+    for t in type_definition:
+            name = t.getAttribute('Name')
+            if 'Links' in name:
+                  flag = True
+            else :
+                  continue
+
+    if flag :
+        assertion_status = log.PASS
+    else :
+        assertion_status = log.FAIL
+
+    log.assertion_log(assertion_status, None)
+    return (assertion_status)
+
+## end Assertion 7_6_5_1
+
+
+
+
+###################################################################################################
 # run(self, log):
 # Takes sut obj and logger obj 
 ###################################################################################################
 def run(self, log):
     #Section 7
+    assertion_status = Assertion_7_6_1(self, log)
     assertion_status = Assertion_7_0_1(self, log)
-    assertion_status = Assertion_7_1_1(self, log)
-    assertion_status = Assertion_7_4_3(self, log)
-    assertion_status = Assertion_7_4_4(self, log)
-    assertion_status = Assertion_7_4_6(self, log)
-    assertion_status = Assertion_7_4_8(self, log)
-    assertion_status = Assertion_7_4_9(self, log)
-    assertion_status = Assertion_7_4_10(self, log)      
-    assertion_status = Assertion_7_4_11(self, log)
-    assertion_status = Assertion_7_4_13(self, log)        
-    assertion_status = Assertion_7_4_14(self, log)
-    assertion_status = Assertion_7_4_16(self, log)
+    assertion_status = Assertion_7_2_1(self, log)
+    assertion_status = Assertion_7_3_0(self, log)
+    assertion_status = Assertion_7_5_2(self, log)
+    assertion_status = Assertion_7_5_3(self, log)
+    assertion_status = Assertion_7_5_4(self, log)
+    assertion_status = Assertion_7_5_5(self, log)
+    assertion_status = Assertion_7_5_6(self, log)
+    assertion_status = Assertion_7_5_7(self, log)
+    assertion_status = Assertion_7_5_8(self, log)
+    assertion_status = Assertion_7_5_9(self, log)
+    assertion_status = Assertion_7_5_10(self, log)      
+    assertion_status = Assertion_7_5_11(self, log)          
+    assertion_status = Assertion_7_5_13(self, log)
+    assertion_status = Assertion_7_5_13_xml(self, log)
+    assertion_status = Assertion_7_5_14(self, log) 
+    assertion_status = Assertion_7_5_14_1(self, log)
+    assertion_status = Assertion_7_5_15(self, log)
+    assertion_status = Assertion_7_5_16(self, log)
     #WIP
-    #assertion_status = Assertion_7_4_18(self, log)
+    #assertion_status = Assertion_7_5_18(self, log)
     #WIP
-    #assertion_status = Assertion_7_4_18_1(self, log)
+    #assertion_status = Assertion_7_5_18_1(self, log)
     #WIP
-    #assertion_status = Assertion_7_4_18_2(self, log)
+    #assertion_status = Assertion_7_5_18_2(self, log)
     assertion_status = Assertion_7_5_1_2(self, log)
-    assertion_status = Assertion_7_5_1_3(self, log)   
+    assertion_status = Assertion_7_5_1_3(self, log)  
+    assertion_status = Assertion_7_6_1(self, log) 
+    assertion_status = Assertion_7_6_2(self, log)
+    assertion_status = Assertion_7_6_3(self, log)
+    assertion_status = Assertion_7_6_5_1(self, log)
+    #assertion_status = Assertion_7_8_1(self, log)
