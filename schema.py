@@ -1,24 +1,26 @@
-﻿###################################################################################################
+﻿# Copyright Notice:
+# Copyright 2016-2017 Distributed Management Task Force, Inc. All rights reserved.
+# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
+
+###################################################################################################
 # File: schema.py
-# Description:  This module contains classes and functions used to trace out the Redfish schemas 
+# Description:  This module contains classes and functions used to trace out the Redfish schemas
 #               according to OData v4.0 Schema representation and to seaarch within them for testing
-#               and conformance purpose. Some classes in this file represent strucutures defined in 
-#               OData CSDL and related member helper functions. While class SchemaModel contains 
-#               functions to open the schema files and serialize them into relevant structures 
-#               defined in this module and collect them as a list for the client tool. For more info 
-#               on any Schema Element defined here, refer to Redfish Specification and OData Version 
+#               and conformance purpose. Some classes in this file represent strucutures defined in
+#               OData CSDL and related member helper functions. While class SchemaModel contains
+#               functions to open the schema files and serialize them into relevant structures
+#               defined in this module and collect them as a list for the client tool. For more info
+#               on any Schema Element defined here, refer to Redfish Specification and OData Version
 #               4.0 Part 3: CSDL: http://docs.oasis-open.org/odata/odata/v4.0/errata02/os/complete/
 #
-# Licensed under the Apache license: http://www.apache.org/licenses/LICENSE-2.0
 # Verified/operational Python revisions (Windows OS) :
 #       2.7.10
 #       3.4.3
 #
 # Initial code released : 01/2016
-#   Steve Krig      ~ Intel 
+#   Steve Krig      ~ Intel
 #   Fatima Saleem   ~ Intel
 #   Priyanka Kumari ~ Texas Tech University
-#   Copyright (c) 2015 Intel Corporation
 ###################################################################################################
 
 import io

@@ -1,11 +1,11 @@
 # Copyright Notice:
-# Copyright 2016 Distributed Management Task Force, Inc. All rights reserved.
+# Copyright 2016-2017 Distributed Management Task Force, Inc. All rights reserved.
 # License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
 
 # File: rfs_check.py
-# Description: Redfish service conformance check tool. This module contains implemented assertions for 
-#   SUT.These assertions are based on operational checks on Redfish Service to verify that it conforms 
-#   to the normative statements from the Redfish specification. 
+# Description: Redfish service conformance check tool. This module contains implemented assertions for
+#   SUT.These assertions are based on operational checks on Redfish Service to verify that it conforms
+#   to the normative statements from the Redfish specification.
 #   See assertions in redfish-assertions.xlxs for assertions summary
 
 import sys

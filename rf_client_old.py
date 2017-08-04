@@ -1,25 +1,27 @@
+# Copyright Notice:
+# Copyright 2016-2017 Distributed Management Task Force, Inc. All rights reserved.
+# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
+
 ###################################################################################################
 # File: rf_client.py
-# Description: This module is responsible for setting up client tool with settings provided in 
-#   properties.json as well as gathering preliminary Redfish Service information of SUT such as 
-#   Service versions, schema directory, schemas (also serialize schemas), top level uris, 
+# Description: This module is responsible for setting up client tool with settings provided in
+#   properties.json as well as gathering preliminary Redfish Service information of SUT such as
+#   Service versions, schema directory, schemas (also serialize schemas), top level uris,
 #   relative uris etc.
 #
-# Licensed under the Apache license: http://www.apache.org/licenses/LICENSE-2.0
 # Verified/operational Python revisions (Windows OS) :
 #       2.7.10
 #       3.4.3
 #
 # Initial code released : 01/2016
-#   Steve Krig      ~ Intel 
+#   Steve Krig      ~ Intel
 #   Fatima Saleem   ~ Intel
 #   Priyanka Kumari ~ Texas Tech University
-#   Copyright (c) 2015 Intel Corporation
 #
-# Note: Current implementation for schemas found in local directory (or remotely retrieved) does not 
-#       guarantee that SUT service is using the same version of the schema files. It is a WIP for this tool. 
-#       Please make sure that schema file version found in $metadata for SUT is the same as the 
-#       version of files in the directory to get correct results...     
+# Note: Current implementation for schemas found in local directory (or remotely retrieved) does not
+#       guarantee that SUT service is using the same version of the schema files. It is a WIP for this tool.
+#       Please make sure that schema file version found in $metadata for SUT is the same as the
+#       version of files in the directory to get correct results...
 ###################################################################################################
 import ssl
 import json

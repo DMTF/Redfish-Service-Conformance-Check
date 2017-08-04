@@ -1,18 +1,20 @@
+# Copyright Notice:
+# Copyright 2016-2017 Distributed Management Task Force, Inc. All rights reserved.
+# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
+
 ###################################################################################################
 # File: rf_utility.py
-#   This module contains Service class with each instance containing information specific to the 
-#   System Under Test (SUT) and functions related to redfish service and resources available on SUT. 
+#   This module contains Service class with each instance containing information specific to the
+#   System Under Test (SUT) and functions related to redfish service and resources available on SUT.
 #
-# Licensed under the Apache license: http://www.apache.org/licenses/LICENSE-2.0
 # Verified/operational Python revisions (Windows OS) :
 #       2.7.10
 #       3.4.3
 #
 # Initial code released : 01/2016
-#   Steve Krig      ~ Intel 
+#   Steve Krig      ~ Intel
 #   Fatima Saleem   ~ Intel
 #   Priyanka Kumari ~ Texas Tech University
-#   Copyright (c) 2015 Intel Corporation
 ###################################################################################################
 import sys
 from schema import SchemaModel
