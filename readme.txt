@@ -1,9 +1,5 @@
   
   
-  Licensed under the Apache license: http://www.apache.org/licenses/LICENSE-2.0
-
- 
-   
   Tool Revision history:
     01.15.16 : 	Jan 15, 2016 initial push to the DMTF/SPMF repository https://github.com/DMTF/spmf.git. 
                	This tool revision has been verified against only 1 Redfish Service 1.0 enabled production
