@@ -579,7 +579,7 @@ class SUT():
     ###############################################################################################            
     def process_list(self, json_payload, nested_key):
         for list_key in json_payload:
-            if '@odata.id' in list_key:                                    
+            if isinstance(list_key, dict) and '@odata.id' in list_key:
                 yield list_key['@odata.id'], nested_key
                 
             elif isinstance(list_key, dict):               

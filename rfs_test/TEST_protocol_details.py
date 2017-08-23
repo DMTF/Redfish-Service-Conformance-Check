@@ -281,13 +281,13 @@ def Assertion_6_1_8_1_2(location_url, json_payload, self, log):
     rq_headers = self.request_headers()
 
     # get the object using GET on location and compare it against the payload returned during POST
-    json_payload, headers, status = self.http_GET(location_url, rq_headers, authorization)
+    check_payload, headers, status = self.http_GET(location_url, rq_headers, authorization)
     assertion_status_ = self.response_status_check(location_url, status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
     if assertion_status_ != log.PASS:                 
         pass
-    elif not json_payload:
+    elif not check_payload:
         assertion_status = log.WARN
         log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (location_url))
     else:
@@ -298,7 +298,7 @@ def Assertion_6_1_8_1_2(location_url, json_payload, self, log):
             try:
                 log.assertion_log('line', "~ The response body does not contain a full representation of the newly created session object at %s" % (check_payload['@odata.id'] ))
             except:
-                log.assertion_log('line', "~ The response body does not contain a full representation of the newly created session object" % (key))
+                log.assertion_log('line', "~ The response body does not contain a full representation of the newly created session object")
                 
     log.assertion_log(assertion_status, None) 
     return assertion_status
@@ -391,7 +391,7 @@ def Assertion_6_1_8_3(self, log) :
                                 # manage assertion status
                                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
                                 if assertion_status_ != log.PASS:                 
-                                    log.assertion_log('line', "~ note: Unable to verify if PATCH succeeded" % (status) )       
+                                    log.assertion_log('line', "~ note: Unable to verify if PATCH succeeded, status %s" % status)
                                     break                                     
                                 elif json_payload:                             
                                     #if patch_value not in json_payload, FAIL
@@ -1726,18 +1726,19 @@ def Assertion_6_4_26(self, log) :
                         members = json_payload['Members']
                         if members == [] :
                             print('There are no members')
-                        else :
+                        else:
                             for each_member in members:
-                                    print('The members of the Session collection are %s' %each_member)
-                                    json_payload, headers, status = self.http_GET(each_member, rq_headers, authorization)
+                                each_member = each_member.get('@odata.id')
+                                print('The members of the Session collection are %s' %each_member)
+                                json_payload, headers, status = self.http_GET(each_member, rq_headers, authorization)
+                                assertion_status = self.response_status_check(each_member, status, log)
+                                if (assertion_status == log.PASS) :
+                                    rq_body = {'UserName' : 'testuser' , 'Password' : '123' }
+                                    rq_headers['Accept'] = rf_utility.accept_type['json']
+                                    rq_headers['content-type'] = 'application/json'
+                                    rq_headers['odata-version'] = '4.0'
+                                    json_payload, headers, status = self.http_POST(each_member, rq_headers, rq_body, authorization)
                                     assertion_status = self.response_status_check(each_member, status, log)
-                                    if (assertion_status == log.PASS) :
-                                        rq_body = {'UserName' : 'testuser' , 'Password' : '123' }
-                                        rq_headers['Accept'] = rf_utility.accept_type['json']
-                                        rq_headers['content-type'] = 'application/json'
-                                        rq_headers['odata-version'] = '4.0'
-                                        json_payload, headers, status = self.http_POST(each_member, rq_headers, rq_body, authorization)
-                                        assertion_status = self.response_status_check(each_member, status, log)
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -1760,6 +1761,7 @@ def Assertion_6_4_27(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
     csdl_schema_model = self.csdl_schema_model
+    rq_body = {'Name': 'New Name'}
 
     for relative_uri in relative_uris:
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
@@ -1775,7 +1777,7 @@ def Assertion_6_4_27(self, log) :
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
         else:
             if not (self.allowable_method('POST', headers)):
-                json_payload, headers, status = self.http_POST(relative_uris[relative_uri], rq_headers, authorization)
+                json_payload, headers, status = self.http_POST(relative_uris[relative_uri], rq_headers, rq_body, authorization)
                 assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'DELETE')       
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2041,10 +2043,15 @@ def Assertion_6_4_2_1(self, log) :
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (self.Redfish_URIs['Service_Metadata_Doc']))
         else:
-            xml = ET.fromstring(json_payload)
-            if xml is None:
+            try:
+                xml = ET.fromstring(json_payload)
+                if xml is None:
+                    assertion_status = log.FAIL
+                    log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml'], self.Redfish_URIs['Service_Metadata_Doc']))
+            except ET.ParseError as e:
                 assertion_status = log.FAIL
-                log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml'], self.Redfish_URIs['Service_Metadata_Doc']))
+                log.assertion_log('line', "XML parse error for %s, exception: %s" % (
+                                  self.Redfish_URIs['Service_Metadata_Doc'], e))
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -2659,17 +2666,17 @@ def Assertion_6_5_3(self, log) :
             key = 'Link'
             if key not in headers:
                assertion_status = log.FAIL
-               log.assertion_log('line', "Header %s required but not found in response header GET ~ %s : FAIL" % (key, uri))
+               log.assertion_log('line', "Header %s required but not found in response header GET ~ %s : FAIL" % (key, relative_uri))
                log.assertion_log('line', rf_utility.json_string(headers))
             else:
                 #link = re.search(r"<.*?(.json/>)", headers[key]).group()
                 if 'rel=describedby' not in headers[key]:
                     assertion_status = log.FAIL
-                    log.assertion_log('line', "~ GET~ %s expected a json url link followed by rel=describedby in response header" % (uri))
+                    log.assertion_log('line', "~ GET~ %s expected a json url link followed by rel=describedby in response header" % (relative_uri))
                     log.assertion_log('line', rf_utility.json_string(headers))
 
-        json_payload, headers, status = self.http_HEAD(uri, rq_headers, authorization)
-        assertion_status_ = self.response_status_check(uri, status, log)      
+        json_payload, headers, status = self.http_HEAD(relative_uri, rq_headers, authorization)
+        assertion_status_ = self.response_status_check(relative_uri, status, log)
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
         if assertion_status_ != log.PASS: 
@@ -2678,11 +2685,11 @@ def Assertion_6_5_3(self, log) :
             key = 'Link'
             if key not in headers:
                assertion_status = log.FAIL
-               log.assertion_log('line', "Header %s required but not found in response header HEAD ~ %s : FAIL" % (key, uri))
+               log.assertion_log('line', "Header %s required but not found in response header HEAD ~ %s : FAIL" % (key, relative_uri))
                log.assertion_log('line', rf_utility.json_string(headers))
             elif 'rel=describedby' not in headers[key]:
                 assertion_status = log.FAIL
-                log.assertion_log('line', "~ HEAD~ %s expected a json url link followed by rel=describedby in response header" % (uri))
+                log.assertion_log('line', "~ HEAD~ %s expected a json url link followed by rel=describedby in response header" % (relative_uri))
                 log.assertion_log('line', rf_utility.json_string(headers))
     
     log.assertion_log(assertion_status, None)
@@ -2760,7 +2767,7 @@ def Assertion_6_5_6_5(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
     for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uri, rq_headers, rq_body, authorization)
+        json_payload, headers, status = self.http_GET(relative_uri, rq_headers, authorization)
         if status == 204:
             print('The request for te resource %s has succeeded, but no content is being returned in the body of the response' %relative_uri)
             continue
@@ -2810,7 +2817,7 @@ def Assertion_6_5_6_6(self, log) :
                 except:
                     assertion_status = log.FAIL
                     log.assertion_log('line', "~ Expected Location in the headers of GET: %s with status %s:%s, not found" %(url_redirect,response.status, rf_utility.HTTP_status_string(response.status)))
-                    log.assertion_log('line', rf_utility.json_string(headers))
+                    log.assertion_log('line', rf_utility.json_string(rq_headers))
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -2954,7 +2961,7 @@ def Assertion_6_5_6_10(self, log) :
         rq_headers = self.request_headers()
         log.assertion_log('line', 'Requesting GET %s without header %s... ' % (relative_uris[relative_uri], header))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log, rf_utility.HTTP_UNAUTHORIZED)      
+        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_UNAUTHORIZED)
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
        
@@ -2962,7 +2969,7 @@ def Assertion_6_5_6_10(self, log) :
         rf_utility.http__set_auth_header(rq_headers, 'wrongid', 'wrongpass')
         log.assertion_log('line', 'Requesting GET %s with invalid credentials for header %s... ' % (relative_uris[relative_uri], header))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log, rf_utility.HTTP_UNAUTHORIZED)          
+        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_UNAUTHORIZED)
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
 
@@ -3130,7 +3137,7 @@ def Assertion_6_5_11(self, log) :
             log.assertion_log('line', "Expected property %s in Odata service document json content " % (key) )
         elif json_payload[key] != exp_value:
             assertion_status = log.FAIL
-            log.assertion_log('line', "Expected property %s with value %s in Odata service document json content, found: %s  " % (key, exp_value, json_data[key]) )
+            log.assertion_log('line', "Expected property %s with value %s in Odata service document json content, found: %s  " % (key, exp_value, json_payload[key]) )
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -3225,7 +3232,7 @@ def Assertion_6_5_13(self, log) :
         for entries in json_payload[key]: 
             if 'name' not in entries or 'kind' not in entries or 'url' not in entries:
                 assertion_status = log.FAIL
-                log.assertion_log('line', "Expected entry %s with value %s in Odata service document json content, found: %s  " % (entry, exp_value, entries['url']) )
+                log.assertion_log('line', "Expected properties named 'name', 'kind' and 'url' in Odata service document json content, found: %s  " % (entries) )
             else:
                 url=  urlparse(entries['url'])
                 if entries['kind'] != ('Singleton' or 'EntitySet') or (('/redfish/v1') not in url.path) or not entries['name']:
@@ -3537,7 +3544,7 @@ def Assertion_6_5_18(self, log) :
 
     for relative_uri in relative_uris:
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        if(isinstance(json_payload['@odata.type'],str)) :
+        if(json_payload is not None and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],str)) :
             print ('Resources identifiers represented in JSON payloads are represented as strings that conform to the rules for %s' %relative_uri)
         else :
             print ('Resources identifiers represented in JSON payloads are not represented as strings that conform to the rules for %s' %relative_uri)
@@ -3731,7 +3738,8 @@ def Assertion_6_5_20(self, log):
                         for d in dataServices:
                             uris = d.getAttribute('Uri')
                             print('The uri is %s' %uris)
-                            schema = uris.split('Schemas/')
+                            #schema = uris.split('Schemas/')
+                            schema = uris.rsplit('/', 1)
                             schema = schema[1]
                             print(schema)
                             uris = "http://redfish.dmtf.org/schemas/v1/"+schema
@@ -3879,7 +3887,7 @@ def Assertion_6_5_22(self, log) :
                         if property.Name == 'DateTime':                          
                             if not check_datetime_suffix_in_payload(property.Name, json_payload):
                                 assertion_status = log.FAIL
-                                log.assertion_log('line','%s value should have capital T and Z, found: %s' %(response_key, json_payload[response_key]))
+                                log.assertion_log('line','%s value should have capital T and Z, found: %s' %(property.Name, json_payload[property.Name]))
             else:      
                 assertion_status = log.WARN
                 log.assertion_log('line', "~ @odata.type (resource identifier property) not found in redfish resource %s" % (relative_uris[relative_uri]))
@@ -3928,12 +3936,12 @@ def Assertion_6_5_23(self, log) :
                             print ('The nextlink is present in uri %s' %relative_uri)
                             if json_payload[key] is None:
                                 assertion_status = log.FAIL
-                                log.assertion_log('line','property %s should have a value, found %s' %(response_key, json_payload[key]))
+                                log.assertion_log('line','property %s should have a value, found %s' %(key, json_payload[key]))
                             else:
-                                url= urlparse(json_payload[keys])
+                                url= urlparse(json_payload[key])
                                 if not url.path:
                                     assertion_status = log.FAIL
-                                    log.assertion_log('line','%s value should be url to retrieve next set of collection, found %s' %(nextlink, json_payload[keys]))
+                                    log.assertion_log('line','%s value should be url to retrieve next set of collection, found %s' %(nextlink, json_payload[key]))
 
             else:      
                 assertion_status = log.WARN
@@ -4102,7 +4110,7 @@ def Assertion_6_5_25(self, log) :
                              print('%s is present in %s' %(member,relative_uri)) 
                              if not isinstance(json_payload[member], list):
                                  assertion_status = log.FAIL
-                                 log.assertion_log('line','property %s should have an empty or nonempty array in its value, found %s' %(member, json_payload[key]))
+                                 log.assertion_log('line','property %s should have an empty or nonempty array in its value, found %s' %(member, json_payload[member]))
                                  break
                              else:
                                  print('The property has an empty array for %s' %json_payload['@odata.type'])
@@ -4195,20 +4203,19 @@ def Assertion_6_5_26(self, log) :
 def check_reference_type(links):
     reference_found = True  
     if isinstance(links, dict):
-        if any(isinstance(links[key], dict) for key in links):
+        if any(isinstance(links[key], dict) or isinstance(links[key], list) for key in links):
             for key in links:
                 if '@odata.count' in key:
                     continue
-                if '@odata.id' not in links[key].keys():
-                    reference_found = False
-            
-        elif any(isinstance(links[key], list) for key in links):
-            for key in links:
-                if '@odata.count' in key:
-                    continue
-                for reference in links[key]:            
-                    if '@odata.id' not in reference.keys():
+                if isinstance(links[key], dict):
+                    if '@odata.id' not in links[key].keys():
                         reference_found = False
+                elif isinstance(links[key], list):
+                    for reference in links[key]:
+                        if '@odata.id' not in reference.keys():
+                            reference_found = False
+                else:
+                    reference_found = False
         else:
             reference_found = False
     else:
@@ -4550,8 +4557,8 @@ def Assertion_6_5_35(self, log) :
                     if '@odata.nextLink' in json_payload:
                         print ('The nextlink is present in uri %s, which shows that single resource is broken into multiple results' %relative_uri)
                         assertion_status = log.FAIL
-                        log.assertion_log('line','property %s should not have a value, found %s' %(response_key, json_payload[key]))
-                            
+                        #log.assertion_log('line','property %s should not have a value, found %s' %(response_key, json_payload[key]))
+                        log.assertion_log('line', 'The nextlink is present in uri %s, which shows that single resource is broken into multiple results' %relative_uri)
             else:      
                 assertion_status = log.WARN
                 log.assertion_log('line', "~ @odata.type (resource identifier property) not found in redfish resource %s" % (relative_uris[relative_uri]))
@@ -4945,7 +4952,7 @@ def run(self, log):
     # Assertion 6.4.13 tested for the fragments that is ignored in the uri- Priyanka           
     assertion_status = Assertion_6_4_13(self, log) 
     assertion_status = Assertion_6_4_14(self, log)   
-    assertion_status = Assertion_6_4_15(self, log)  
+    #-assertion_status = Assertion_6_4_15(self, log)
     assertion_status = Assertion_6_4_16(self, log)  
     assertion_status = Assertion_6_4_18(self, log)  
     assertion_status = Assertion_6_4_21(self, log)    
@@ -4968,7 +4975,7 @@ def run(self, log):
              
          
     assertion_status = Assertion_6_5_1(self, log) 
-    assertion_status = Assertion_6_5_2_4(self, log)
+    #-assertion_status = Assertion_6_5_2_4(self, log)
     assertion_status = Assertion_6_5_2_6(self, log)
     assertion_status = Assertion_6_5_2_6_1(self, log)
     assertion_status = Assertion_6_5_3(self, log)             

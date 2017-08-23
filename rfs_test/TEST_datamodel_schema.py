@@ -211,13 +211,13 @@ def Assertion_7_5_2(self, log):
     for schema in csdl_schema_model.FullRedfishSchemas:
         if csdl_schema_model.map_element_to_csdlnamespace('Edmx') != schema.edmx:
             assertion_status = log.FAIL
-            log.assertion_log('line', "~ The outer element of the OData Schema representation document %s is not the Edmx element, instead found %s" % (rf_schema.SchemaUri, schema.edmx))
+            log.assertion_log('line', "~ The outer element of the OData Schema representation document %s is not the Edmx element, instead found %s" % (schema.SchemaUri, schema.edmx))
         if schema.Version is None:
             assertion_status = log.FAIL
-            log.assertion_log('line', "~ The outer Edmx element of the OData Schema representation document %s does not have a 'Version' attribute" % rf_schema.SchemaUri)
+            log.assertion_log('line', "~ The outer Edmx element of the OData Schema representation document %s does not have a 'Version' attribute" % schema.SchemaUri)
         elif schema.Version != '4.0':
             assertion_status = log.FAIL
-            log.assertion_log('line', "~ The outer Edmx element of the OData Schema representation document %s does not have a value of '4.0' in the 'Version' attribute, instead found %s" % (rf_schema.SchemaUri, schema.Version))
+            log.assertion_log('line', "~ The outer Edmx element of the OData Schema representation document %s does not have a value of '4.0' in the 'Version' attribute, instead found %s" % (schema.SchemaUri, schema.Version))
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -290,6 +290,7 @@ def Assertion_7_5_4(self, log):
                                             namespace, typename = rf_utility.parse_odata_type(json_payload['@odata.type'])
                                             namespace = resource + '_v1'
                                             if namespace and typename:
+                                                # TODO: rf_utility.get_resource_xml_metadata() is missing
                                                 xml_metadata, schema_file = rf_utility.get_resource_xml_metadata(namespace, self.xml_directory)
                                                 if xml_metadata and schema_file:
                                                     print ('The xml_metadata is %s' %xml_metadata)                                      
@@ -451,8 +452,8 @@ def Assertion_7_5_8(self, log):
                    if r_namespace.Namespace not in resource:
                        resource.append(r_namespace.Namespace)
                    log.assertion_log('line', "~ ComplexType: %s, BaseType: %s and any of its parent BaseType resources (based on inheritance) does not have annotation 'OData.LongDescription' in its OData schema representation document: %s" % (complextype.Name, complextype.BaseType, rf_schema.SchemaUri))   
-    while resource.pop() :
-        print('The list of namespaces that do not have the required annotations are %s' %resource.pop)   
+    while resource:
+        print('The list of namespaces that do not have the required annotations are %s' % resource.pop())
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
@@ -1260,7 +1261,7 @@ def check_name_instance(xtype, schema, log):
             log.assertion_log('line', "~ Property 'Name': %s in resource file %s is not of type string as required by the Redfish specification document version: %s" % (xtype.Name, schema.SchemaUri, REDFISH_SPEC_VERSION))   
 
 ###################################################################################################
-# Name: Assertion_7_6_2(self, log)  Description                                                
+# Name: Assertion_7_6_2(self, log)  Description
 # Description: 
 #
 # Assertion text: 
@@ -1269,6 +1270,8 @@ def check_name_instance(xtype, schema, log):
 #   within a collection.
 # checking EntityTypes under Schema
 ###################################################################################################
+# TODO: Is this supposed to be Assertion_7_5_1_2()?
+"""
 def Assertion_7_6_2(self, log):
     log.AssertionID = '7.6.2'
     assertion_status =  log.PASS
@@ -1316,6 +1319,7 @@ def Assertion_7_6_2(self, log):
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
+"""
 ## end Assertion 7_6_2
 
 ###################################################################################################
@@ -1574,7 +1578,8 @@ def run(self, log):
     assertion_status = Assertion_7_3_0(self, log)
     assertion_status = Assertion_7_5_2(self, log)
     assertion_status = Assertion_7_5_3(self, log)
-    assertion_status = Assertion_7_5_4(self, log)
+    # Needs a fix: rf_utility.get_resource_xml_metadata() missing
+    # assertion_status = Assertion_7_5_4(self, log)
     assertion_status = Assertion_7_5_5(self, log)
     assertion_status = Assertion_7_5_6(self, log)
     assertion_status = Assertion_7_5_7(self, log)
@@ -1582,7 +1587,8 @@ def run(self, log):
     assertion_status = Assertion_7_5_9(self, log)
     assertion_status = Assertion_7_5_10(self, log)      
     assertion_status = Assertion_7_5_11(self, log)          
-    assertion_status = Assertion_7_5_13(self, log)
+    # Missing
+    # assertion_status = Assertion_7_5_13(self, log)
     assertion_status = Assertion_7_5_13_xml(self, log)
     assertion_status = Assertion_7_5_14(self, log) 
     assertion_status = Assertion_7_5_14_1(self, log)
@@ -1594,7 +1600,8 @@ def run(self, log):
     #assertion_status = Assertion_7_5_18_1(self, log)
     #WIP
     #assertion_status = Assertion_7_5_18_2(self, log)
-    assertion_status = Assertion_7_5_1_2(self, log)
+    # Missing
+    # assertion_status = Assertion_7_5_1_2(self, log)
     assertion_status = Assertion_7_5_1_3(self, log)  
     assertion_status = Assertion_7_6_1(self, log) 
     assertion_status = Assertion_7_6_2(self, log)

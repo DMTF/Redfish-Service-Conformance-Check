@@ -213,9 +213,9 @@ def http__set_auth_header(rq_headers, login, password) :
     if (Python3 == True):
         bstr = login + ":" + password
         bencode =   base64.b64encode(bstr.encode(), altchars=None)              
-        rq_headers['Authorization'] = ("BASIC " + bencode.decode())
+        rq_headers['Authorization'] = ("Basic " + bencode.decode())
     else: # python 2.x
-        rq_headers['Authorization'] = ("BASIC " + base64.b64encode(login + ":" + password))
+        rq_headers['Authorization'] = ("Basic " + base64.b64encode(login + ":" + password))
  
 #
 ## end http__set_auth_header
@@ -237,9 +237,9 @@ def get_auth_encoded(login, password) :
     if (Python3 == True):
         bstr = login + ":" + password
         bencode =   base64.b64encode(bstr.encode(), altchars=None)              
-        authorization = ("BASIC " + bencode.decode())
+        authorization = ("Basic " + bencode.decode())
     else: # python 2.x
-        authorization = ("BASIC " + base64.b64encode(login + ":" + password))
+        authorization = ("Basic " + base64.b64encode(login + ":" + password))
 
     return authorization
  
