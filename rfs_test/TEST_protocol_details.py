@@ -155,7 +155,7 @@ def Assertion_6_1_8_1(self, log) :
     authorization = 'on'
 
     rq_headers = self.request_headers()
-    user_name = 'root'
+    user_name = 'xxuserxx'
     root_link_key = 'SessionService'
 
     sample = dict()
@@ -215,7 +215,7 @@ def Assertion_6_1_8_1(self, log) :
                                     break'''
 
                     if (assertion_status == log.PASS): # Ok to create the session now                                   
-                        rq_body = {'UserName' : 'root' , 'Password' : '12345' }            
+                        rq_body = {'UserName' : user_name, 'Password' : '12345' }
                         log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (acc_collection, rq_body))                            
                         json_payload, headers, status = self.http_POST(acc_collection, rq_headers, rq_body, authorization)
                         assertion_status_ = self.response_status_check(acc_collection, status, log, rf_utility.HTTP_CREATED, 'POST')      
@@ -337,7 +337,7 @@ def Assertion_6_1_8_3(self, log) :
 
     authorization = 'on'
     rq_headers = self.request_headers()
-    user_name = 'root'
+    user_name = 'xxuserxx'
     root_link_key = 'AccountService'
 
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
@@ -375,7 +375,7 @@ def Assertion_6_1_8_3(self, log) :
                             account_url = json_payload['@odata.id']
                             patch_key = 'RoleId'   
                             patch_value = 'Operator'
-                            rq_body = {'UserName': 'root', 'Password': '12345' , 'RoleId' : patch_value}
+                            rq_body = {'UserName': user_name, 'Password': '12345' , 'RoleId' : patch_value}
                             rq_headers['Content-Type'] = rf_utility.content_type['json']
                             json_payload_, headers_, status_ = self.http_PATCH(account_url, rq_headers, rq_body, authorization)
                             assertion_status_ = self.response_status_check(account_url, status_, log, request_type = 'PATCH')      
@@ -1305,7 +1305,7 @@ def Assertion_6_4_18(self, log) :
                 json_payload, headers, status = self.http_HEAD(relative_uris[relative_uri], rq_headers, authorization)
                 if (status == rf_utility.HTTP_OK) :
                     assertion_status = log.FAIL
-                    log.assertion_log('line', "~ HEAD on %s without authorization returned status %s:%s" % relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status))
+                    log.assertion_log('line', "~ HEAD on %s without authorization returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)))
 
                 elif (status != rf_utility.HTTP_UNAUTHORIZED):
                     assertion_status = log.WARN
@@ -1684,7 +1684,6 @@ def Assertion_6_4_26(self, log) :
 
     rq_headers = self.request_headers()
     # get the collection of user accounts...
-    user_name = 'root'
 
     root_link_key = 'SessionService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
@@ -2077,7 +2076,7 @@ def Assertion_6_4_2_2(self, log) :
 
     rq_headers = self.request_headers()
     # get the collection of user accounts...
-    user_name = 'root'
+    user_name = 'xxuserxx'
 
     root_link_key = 'SessionService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
@@ -2136,7 +2135,7 @@ def Assertion_6_4_2_2(self, log) :
                         
                     if (assertion_status == log.PASS) : # Ok to create the session now
                         deleted =  False
-                        rq_body = {'UserName' : 'root' , 'Password' : '12345' }
+                        rq_body = {'UserName' : user_name, 'Password' : '12345' }
                         #1. try POST without Content-Type, should FAIL    
                         rq_headers = dict()
                         rq_headers['Accept'] = rf_utility.accept_type['json']
@@ -3730,6 +3729,11 @@ def Assertion_6_5_20(self, log):
                         rq_headers['Content-Type'] = rf_utility.content_type['xml']
                         rq_headers['Accept'] = rf_utility.accept_type['json_xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
+                        if isinstance(response, dict):
+                            # received JSON, skip
+                            print('Resource URI {}: received JSON content from @odata.context {}'
+                                  .format(relative_uris[relative_uri], resource))
+                            continue
                         response = response.decode('utf-8')
                         print('The response is %s' %response)
                         doc = minidom.parseString(response)
@@ -4414,6 +4418,11 @@ def Assertion_6_5_8(self, log) :
                 rq_headers['Content-Type'] = rf_utility.content_type['xml']
                 rq_headers['Accept'] = rf_utility.accept_type['json_xml']
                 response,headers,status = self.http_GET(resource,rq_headers,None)
+                if isinstance(response, dict):
+                    # received JSON, skip
+                    print('Resource URI {}: received JSON content from @odata.context {}'
+                          .format(relative_uris[relative_uri], resource))
+                    continue
                 response = response.decode('utf-8')
                 print('The response is %s' %response)
                 doc = minidom.parseString(response)
@@ -4491,6 +4500,11 @@ def Assertion_6_5_9(self, log) :
                         rq_headers['Content-Type'] = rf_utility.content_type['xml']
                         rq_headers['Accept'] = rf_utility.accept_type['json_xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
+                        if isinstance(response, dict):
+                            # received JSON, skip
+                            print('Resource URI {}: received JSON content from @odata.context {}'
+                                  .format(relative_uris[relative_uri], resource))
+                            continue
                         response = response.decode('utf-8')
                         print('The response is %s' %response)
                         doc = minidom.parseString(response)
