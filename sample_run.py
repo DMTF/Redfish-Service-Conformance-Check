@@ -1,9 +1,21 @@
 ﻿# Copyright Notice:
-# Copyright 2016 Distributed Management Task Force, Inc. All rights reserved.
+# Copyright 2016-2017 Distributed Management Task Force, Inc. All rights reserved.
 # License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
 
-# Name: sample_run                                              
-# Description: This sample module provides steps to run the client tool in order to run assertions on SUT. 
+###################################################################################################
+# Name: sample_run
+# Description: This sample module provides steps to run the client tool in order to run assertions
+#   on SUT.
+#
+# Verified/operational Python revisions (Windows OS) :
+#       2.7.10
+#       3.4.3
+#
+# Initial code released : 01/2016
+#   Steve Krig      ~ Intel
+#   Fatima Saleem   ~ Intel
+#   Priyanka Kumari ~ Texas Tech University
+###################################################################################################
 
 import rf_client
 import rfs_test 

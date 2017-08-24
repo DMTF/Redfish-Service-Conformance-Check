@@ -1,12 +1,21 @@
 # Copyright Notice:
-# Copyright 2016 Distributed Management Task Force, Inc. All rights reserved.
+# Copyright 2016-2017 Distributed Management Task Force, Inc. All rights reserved.
 # License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
 
+###################################################################################################
 # File: rf_utility.py
-#   This module contains Service class with each instance containing information specific to the 
-#   System Under Test (SUT) and functions related to redfish service and resources available on SUT. 
+#   This module contains Service class with each instance containing information specific to the
+#   System Under Test (SUT) and functions related to redfish service and resources available on SUT.
 #
-
+# Verified/operational Python revisions (Windows OS) :
+#       2.7.10
+#       3.4.3
+#
+# Initial code released : 01/2016
+#   Steve Krig      ~ Intel
+#   Fatima Saleem   ~ Intel
+#   Priyanka Kumari ~ Texas Tech University
+###################################################################################################
 import sys
 from schema import SchemaModel
 import rf_utility
@@ -108,6 +117,7 @@ class SUT():
         self.schema_directory = None
         self.csdl_directory = None
         self.json_directory = None
+        self.xml_directory = None
 
     ###############################################################################################
     # Name: self.request_headers()                                                
@@ -360,7 +370,7 @@ class SUT():
     # Name: parse_serviceroot_toplevel_uris(service_root):                                               
     #   Takes Service root uri, performs GET on it and walk the response body to get all root links     
     # Returns:
-    #   dictionary of top level links
+    #   dictionary of top level links - Updated by Priyanka
     ###############################################################################################
     def parse_serviceroot_toplevel_uris(self, service_root):
         rq_headers = self.request_headers()
@@ -376,7 +386,7 @@ class SUT():
             'Systems' : '',\
             'Chassis' : '',\
             'Managers' : '',\
-            'Tasks' : '',\
+            'TaskService' : '',\
             'AccountService' : '',\
             'SessionService' : '',\
             'EventService' : '',\
@@ -569,7 +579,7 @@ class SUT():
     ###############################################################################################            
     def process_list(self, json_payload, nested_key):
         for list_key in json_payload:
-            if '@odata.id' in list_key:                                    
+            if isinstance(list_key, dict) and '@odata.id' in list_key:
                 yield list_key['@odata.id'], nested_key
                 
             elif isinstance(list_key, dict):               

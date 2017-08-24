@@ -1,14 +1,25 @@
 # Copyright Notice:
-# Copyright 2016 Distributed Management Task Force, Inc. All rights reserved.
+# Copyright 2016-2017 Distributed Management Task Force, Inc. All rights reserved.
 # License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
 
+###################################################################################################
 # Name: logger
 # Description: This module contains Log class for logging purpose of this tool based on each inst-
 #   -ance of SUT. It contains limited functionality and functionalities could be expanded
-#   What works: Functions related to manipulating assertion excel sheet provided with the tool 
-#   (rf-assertions-run.xlsx in assertions folder) updating the assertion status against each 
-#   assertion id plus some additional comments into the assertion excel sheet and places it in a 
+#   What works: Functions related to manipulating assertion excel sheet provided with the tool
+#   (rf-assertions-run.xlsx in assertions folder) updating the assertion status against each
+#   assertion id plus some additional comments into the assertion excel sheet and places it in a
 #   result folder. It also produces a detailed log text file for the assertions.
+#
+# Verified/operational Python revisions (Windows OS) :
+#       2.7.10
+#       3.4.3
+#
+# Initial code released : 01/2016
+#   Steve Krig      ~ Intel
+#   Fatima Saleem   ~ Intel
+#   Priyanka Kumari ~ Texas Tech University
+###################################################################################################
 
 import argparse
 import base64

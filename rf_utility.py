@@ -1,12 +1,22 @@
-﻿# Copyright Notice:
-# Copyright 2016 Distributed Management Task Force, Inc. All rights reserved.
+# Copyright Notice:
+# Copyright 2016-2017 Distributed Management Task Force, Inc. All rights reserved.
 # License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
 
-# File: rf_utility.py 
+###################################################################################################
+# File: rf_utility.py
 #   This module contains basic HTTP connection and request functions (Based on Redfish requirement),
-#   Redfish service relevant HTTP status codes, request header and response payload helper functions to running assertions 
+#   Redfish service relevant HTTP status codes, request header and response payload helper functions to running assertions
 #   on SUT
-
+#
+# Verified/operational Python revisions (Windows OS) :
+#       2.7.10
+#       3.4.3
+#
+# Initial code released : 01/2016
+#   Steve Krig      - Intel
+#   Fatima Saleem   - Intel
+#   Priyanka Kumari ~ Texas Tech University
+###################################################################################################
 import sys
 from schema import SchemaModel
 from collections import OrderedDict
@@ -203,9 +213,9 @@ def http__set_auth_header(rq_headers, login, password) :
     if (Python3 == True):
         bstr = login + ":" + password
         bencode =   base64.b64encode(bstr.encode(), altchars=None)              
-        rq_headers['Authorization'] = ("BASIC " + bencode.decode())
+        rq_headers['Authorization'] = ("Basic " + bencode.decode())
     else: # python 2.x
-        rq_headers['Authorization'] = ("BASIC " + base64.b64encode(login + ":" + password))
+        rq_headers['Authorization'] = ("Basic " + base64.b64encode(login + ":" + password))
  
 #
 ## end http__set_auth_header
@@ -227,9 +237,9 @@ def get_auth_encoded(login, password) :
     if (Python3 == True):
         bstr = login + ":" + password
         bencode =   base64.b64encode(bstr.encode(), altchars=None)              
-        authorization = ("BASIC " + bencode.decode())
+        authorization = ("Basic " + bencode.decode())
     else: # python 2.x
-        authorization = ("BASIC " + base64.b64encode(login + ":" + password))
+        authorization = ("Basic " + base64.b64encode(login + ":" + password))
 
     return authorization
  

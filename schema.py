@@ -1,16 +1,27 @@
 ﻿# Copyright Notice:
-# Copyright 2016 Distributed Management Task Force, Inc. All rights reserved.
+# Copyright 2016-2017 Distributed Management Task Force, Inc. All rights reserved.
 # License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
 
+###################################################################################################
 # File: schema.py
-# Description:  This module contains classes and functions used to trace out the Redfish schemas 
+# Description:  This module contains classes and functions used to trace out the Redfish schemas
 #               according to OData v4.0 Schema representation and to seaarch within them for testing
-#               and conformance purpose. Some classes in this file represent strucutures defined in 
-#               OData CSDL and related member helper functions. While class SchemaModel contains 
-#               functions to open the schema files and serialize them into relevant structures 
-#               defined in this module and collect them as a list for the client tool. For more info 
-#               on any Schema Element defined here, refer to Redfish Specification and OData Version 
+#               and conformance purpose. Some classes in this file represent strucutures defined in
+#               OData CSDL and related member helper functions. While class SchemaModel contains
+#               functions to open the schema files and serialize them into relevant structures
+#               defined in this module and collect them as a list for the client tool. For more info
+#               on any Schema Element defined here, refer to Redfish Specification and OData Version
 #               4.0 Part 3: CSDL: http://docs.oasis-open.org/odata/odata/v4.0/errata02/os/complete/
+#
+# Verified/operational Python revisions (Windows OS) :
+#       2.7.10
+#       3.4.3
+#
+# Initial code released : 01/2016
+#   Steve Krig      ~ Intel
+#   Fatima Saleem   ~ Intel
+#   Priyanka Kumari ~ Texas Tech University
+###################################################################################################
 
 import io
 import os
@@ -507,11 +518,14 @@ class SchemaModel:
             for complextype in resource_namespace.ComplexTypes:
                 if complextype.Name == property_name:
                     return True
-
+ #Removing action as discussed with the Intel meeting - Fatima
             ## also action?
-            for action in resource_namespace.Actions:
+            '''
+for action in resource_namespace.Actions:
                 if action.Name  == property_name:
                     return True
+'''
+                 
 
         if xtype.BaseType:
             namespace_, typename_ = self.get_resource_namespace_typename(xtype.BaseType)
@@ -669,10 +683,10 @@ class SchemaModel:
         if isinstance(xelement, (EntityType, ComplexType)):
             if xelement.BaseType:
                 xelement_ = self.get_resource_typename(xelement.BaseType)
-
+        # changed here to return False as it is not inherited.
         elif isinstance(xelement, (Property, NavigationProperty)):
-            if xelement.Type:
-                xelement_ = self.get_resource_typename(xelement.Type)
+            return False
+            
 
         if xelement_:
             return self.verify_annotation_recur(xelement_, annotation_term)
@@ -715,11 +729,10 @@ class SchemaModel:
                 #verify annotation for base type in recursion
                 xelement_ = self.get_resource_typename(xelement.BaseType)
 
-
+        #changed to return to False, as it is not inherited.
         elif isinstance(xelement, (Property, NavigationProperty)):
-            if xelement.Type:
-                #verify annotation for type in recursion
-                xelement_ = self.get_resource_typename(xelement.Type)
+            return False
+            
 
         # if resource does not have an annotation within its own scope, check its
         # parents basetype's scope...
