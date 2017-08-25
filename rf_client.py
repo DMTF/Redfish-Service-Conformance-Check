@@ -681,8 +681,9 @@ def setup_sut_obj(sut):
     # 2. gets protocol and odata version for this service from GET /redfish
     protocol_version, service_root = sut.parse_protocol_version(sut.Redfish_URIs['Protocol_Version'])
     if not protocol_version and not service_root:
-        print('Protocol version and/or Service Root uri could not be retreived through %s' %(sut.Redfish_URIs['Protocol_Version']))
-        return False
+        print("Protocol version and Service Root uri could not be retrieved through '%s', assuming spec mandated values"
+              % (sut.Redfish_URIs['Protocol_Version']))
+        protocol_version, service_root = 'v1', '/redfish/v1/'
     # 2.1 Set protocol version for this sut in the tool
     sut.set_protocol_version(protocol_version)
     # 2.2 set appropraite values for sut's redfish-defined uris based on its service root 
