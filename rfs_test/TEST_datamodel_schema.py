@@ -673,6 +673,15 @@ def Assertion_7_5_11(self, log):
                                     # if value is False then check if there are any additional properties, which it shouldnt
                                     if 'properties' in json_metadata['definitions'][typename]:
                                         for property_key in json_payload:
+                                            if "@odata.etag" in property_key or\
+                                               "@odata.nextLink" in property_key:
+                                                # Skip etag properties as these may be appended to the resource
+                                                # by the service, according to section 6.5.4.4 of v1.2.0 of the spec
+                                                #
+                                                # Also skipping @odata.nextLink properties as these are allowed on 
+                                                # resource colelctions that are paged, but are not currently in the schema
+                                                continue
+
                                             if property_key not in json_metadata['definitions'][typename]['properties']:
                                                 assertion_status = log.FAIL
                                                 log.assertion_log('line', "~ Resource: %s of type: %s has Annotation: '%s' set to 'False' in its schema document %s, but additional property: %s found in resource payload" % (json_payload['@odata.id'], namespace, annotation_term, schema_file, property_key))  
