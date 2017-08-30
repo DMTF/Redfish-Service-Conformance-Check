@@ -2198,7 +2198,7 @@ def Assertion_6_4_2_3(self, log) :
     relative_uris = self.relative_uris
 
     rq_headers = self.request_headers()
-    header = 'odata-version'
+    header = 'OData-Version'
 
     for relative_uri in relative_uris:
         #supported version
