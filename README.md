@@ -9,14 +9,15 @@ This program has been tested with Python 2.7.10 and 3.4.3.
 
     C:\your_python>  pip --proxy <hostname>:<port> install openpyxl
 3. Copy the 'files included in this test package' into the python.exe installation directory (or put python.exe in your PATH)
-4. Edit properties.json
-	- Set the login and location parameters for your Redfish Service SUTs in the properties.json file.  
-    	- "SUTs[]" collection, You can batch SUTs by adding them to the "SUTs[]" collection to include them in the next run of rf_client.py.  
-	    - DisplayName(required) is a string for your choice of display name for the SUT
-	    - DnsName(required) is the domain name or ip address of the SUT
-	    - LoginName(required) is the Login id for the SUT
-		- Password(required) is the password for the SUT
-		- "AllowAction_LogServiceClearLog": A couple of the assertions verify Actions by sending an Action to Clear the System Log --- if you want to run those (and clear the system log) set "AllowAction_LogServiceClearLog" to "yes" -- "no" (or any other string besides "yes") will disable these Clear Log assertions
+4. Edit `properties.json`
+    - Set the login and location parameters for your Redfish Service System Under Test (SUT) in the `properties.json` file.
+        - `"SUTs"[]` collection: You can batch SUTs by adding them to the `"SUTs"[]` collection to include them in the next run of rf_client.py.
+        - `"DisplayName"` (required) is a string for your choice of display name for the SUT
+        - `"DnsName"` (required) is the domain name or ip address of the SUT
+        - `"LoginName"` (required) is the login name for the SUT
+        - `"Password"` (required) is the password for the SUT
+        - `"AllowAction_LogServiceClearLog"` (optional): A couple of the assertions verify Actions by sending an Action to Clear the System Log --- if you want to run those (and clear the system log) set `"AllowAction_LogServiceClearLog"` to "yes" -- "no" (or any other string besides "yes") will disable these Clear Log assertions
+        - `"SingleAssertion"` (optional): Specify this parameter if you wish to just run a single assertion for this SUT. The parameter value should be the name of one of the test assertion functions, for example `"Assertion_6_1_0"`. If the SingleAssertion parameter is missing or the length of its value is zero, the entire suite of assertions will be run.
 	- Set the parameters for Metadata file download include proxy setting, if applicable or set values to 'none'
 	- Set the parameters for Event Subscription and related Test Event generation. Note that the Event related assertions do not verify that a Test Event actually gets delivered to the "Destination" you specify - but the assertions will create a Subscription and request that the Service issue a Test Event to the Subscription "Destination" using the Test Event parameters you set here
 5. For operational results, open a DOS box and cd to the directory where you placed the files included with this package (example C:\rf_client_dir) and then run rf_client.py. (Make sure openpyxl is installed with this version of python else it will error out.)
