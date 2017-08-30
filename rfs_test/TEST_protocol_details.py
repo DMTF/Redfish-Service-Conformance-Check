@@ -1579,28 +1579,42 @@ def Assertion_6_4_24(self, log) :
                                                 if prop in json_payload.keys():                                                   
                                                     rq_body = {prop: 'PatchName'}		
                                                     json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers, rq_body, authorization)
-                                                    if status:
-                                                        if status == rf_utility.HTTP_OK:
-                                                            assertion_status = log.FAIL               
+                                                    if status == rf_utility.HTTP_OK:
+                                                        # An OK status is only valid if there is also an annotation on the property
+                                                        # that states it is readonly. If we don't have an annotation fail, otherwise
+                                                        # check that the annotation is of the right type
+                                                        found_annotation = False
+
+                                                        if prop + "@Message.ExtendedInfo" in json_payload:
+                                                            error_info = json_payload[prop + "@Message.ExtendedInfo"]
+                                                            for error_object in error_info:
+                                                                if "MessageId" in error_object:
+                                                                    if "PropertyNotWriteable" in error_object:
+                                                                        # We found the annotation and it was of the right type
+                                                                        found_annotation = True
+                                                                        break
+                                                        
+                                                        if not found_annotation:
+                                                            assertion_status = log.FAIL
                                                             log.assertion_log('line', "~ PATCH passed on property %s with annotation term %s : %s (check document %s) which is an unexpected behavior" % (prop, annotation_term, json_metadata['definitions'][typename]['properties'][prop][annotation_term], schema_file))
-                                                            continue                                                   
-                                                    else:
-                                                        #TODO check extended error should have property name in msgargs annotation...
-                                                        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                                                        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
-                                                        # manage assertion status
-                                                        assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                                                        if assertion_status_ != log.PASS:                 
                                                             continue
-                                                        if not json_payload:
-                                                            assertion_status = log.WARN
-                                                            log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
-                                                        else:
-                                                            if prop in json_payload.keys():
-                                                                #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
-                                                                if (json_payload[property.Name] == 'PatchName'):
-                                                                    assertion_status = log.FAIL
-                                                                    log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri]) )                                                                                         
+
+                                                    # Regardless of status - go ahead and check that the property has not been updated
+                                                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                                                    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
+                                                    # manage assertion status
+                                                    assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                                                    if assertion_status_ != log.PASS:                 
+                                                        continue
+                                                    if not json_payload:
+                                                        assertion_status = log.WARN
+                                                        log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
+                                                    else:
+                                                        if prop in json_payload.keys():
+                                                            #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
+                                                            if (json_payload[property.Name] == 'PatchName'):
+                                                                assertion_status = log.FAIL
+                                                                log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri]) )                                                                                         
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
