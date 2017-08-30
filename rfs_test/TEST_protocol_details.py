@@ -2663,7 +2663,7 @@ def Assertion_6_5_3(self, log) :
         if assertion_status_ != log.PASS: 
             continue         
         else:
-            key = 'Link'
+            key = 'link'
             if key not in headers:
                assertion_status = log.FAIL
                log.assertion_log('line', "Header %s required but not found in response header GET ~ %s : FAIL" % (key, uri))
@@ -2682,7 +2682,7 @@ def Assertion_6_5_3(self, log) :
         if assertion_status_ != log.PASS: 
             continue 
         else:
-            key = 'Link'
+            key = 'link'
             if key not in headers:
                assertion_status = log.FAIL
                log.assertion_log('line', "Header %s required but not found in response header HEAD ~ %s : FAIL" % (key, uri))
