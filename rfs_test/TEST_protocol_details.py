@@ -4798,10 +4798,10 @@ def Assertion_6_1_7(self, log) :
     print('Beginning assertion 6.1.7')
     query = '#123'
     for relative_uri in relative_uris:
-        relative_uri = relative_uri + query
+        uri = relative_uris[relative_uri] + query
         try:
-            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-            assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)    
+            json_payload, headers, status = self.http_GET(uri, rq_headers, authorization)
+            assertion_status_ = self.response_status_check(uri, status, log)    
             #print('The status is %s', status)         
             # manage assertion status
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
