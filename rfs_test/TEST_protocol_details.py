@@ -1919,29 +1919,27 @@ def Assertion_6_4_32(self, log) :
         members = self.get_resource_members(self.sut_toplevel_uris[root_link_key]['url'])               
         for json_payload, headers in members:
             # perfcorm the POST ~ clear the system log..
-            action_url= '/redfish/v1/Systems/System.Embedded.1'
             if 'Actions' in json_payload:
-                       log.assertion_log('line', 'Action %s found' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))
-                       log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))  
-                       json_payload_, headers_, status_ = self.http_POST(json_payload['Actions']['#ComputerSystem.Reset']['target'], rq_headers, rq_body, authorization)
-                       assertion_status_ = self.response_status_check(json_payload['Actions']['#ComputerSystem.Reset']['target'], status_, log, request_type = 'POST')      
-                       # manage assertion status
-                       assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                       print('JSON payload %s is failing' %json_payload_)
-                       print('Headers is %s' %headers_)
-                       if assertion_status_ != log.PASS:                 
-                           log.assertion_log('line', 'POST on action url %s failed' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))
-                           continue
-                       else:
-
-                           assertion_status_ = log.WARN
-                           assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                           log.assertion_log('line', ('Could not find any action with target in resource %s' % (json_payload['@odata.id']) ))
-                     
+                log.assertion_log('line', 'Action %s found' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))
+                log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))  
+                json_payload_, headers_, status_ = self.http_POST(json_payload['Actions']['#ComputerSystem.Reset']['target'], rq_headers, rq_body, authorization)
+                assertion_status_ = self.response_status_check(json_payload['Actions']['#ComputerSystem.Reset']['target'], status_, log, request_type = 'POST')
+                print('The status of POST method is %s' %status_)
+                # manage assertion status
+                assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                if assertion_status_ != log.PASS:                 
+                    log.assertion_log('line', 'POST on action url %s failed' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))
+                    continue
+                else:
+                    print('JSON payload %s is failing' %json_payload_)
+                    print('Headers is %s' %headers_)
             else:
-
-                assertion_status = log.WARN
-                log.assertion_log('line', "~ Uri to resource: %s not found in redfish top level links: %s" % (root_link_key, self.sut_toplevel_uris) )
+                assertion_status_ = log.WARN
+                assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                log.assertion_log('line', ('Could not find any action with target in resource %s' % (json_payload['@odata.id']) ))
+    else:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ Uri to resource: %s not found in redfish top level links: %s" % (root_link_key, self.sut_toplevel_uris) )
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
