@@ -735,6 +735,9 @@ def Assertion_6_1_1(self,log) :
     json_payload, headers, status_1 = self.http_GET(self.Redfish_URIs['Service_Root'], rq_headers, authorization)
     json_payload, headers, status_2 = self.http_GET(self.Redfish_URIs['Protocol_Version'], rq_headers, authorization)
     json_payload, headers, status_3 = self.http_GET(self.Redfish_URIs['Service_Odata_Doc'], rq_headers, authorization)
+
+    # Update the Accept header in the request since the metadata doc is XML
+    rq_headers['Accept'] = rf_utility.accept_type['xml']
     json_payload, headers, status_4 = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
     print('The different status are %s, %s, %s, %s' %(status_1, status_2, status_3, status_4))
     if ( status_1 == status_2 == status_3 == status_4 == 200) :
