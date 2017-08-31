@@ -2664,40 +2664,41 @@ def Assertion_6_5_3(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
     for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uri, rq_headers, authorization)
-        assertion_status_ = self.response_status_check(relative_uri, status, log)      
+        uri = relative_uris[relative_uri]
+        json_payload, headers, status = self.http_GET(uri, rq_headers, authorization)
+        assertion_status_ = self.response_status_check(uri, status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
         if assertion_status_ != log.PASS: 
             continue         
         else:
-            key = 'Link'
+            key = 'link'
             if key not in headers:
                assertion_status = log.FAIL
-               log.assertion_log('line', "Header %s required but not found in response header GET ~ %s : FAIL" % (key, relative_uri))
+               log.assertion_log('line', "Header %s required but not found in response header GET ~ %s : FAIL" % (key, uri))
                log.assertion_log('line', rf_utility.json_string(headers))
             else:
                 #link = re.search(r"<.*?(.json/>)", headers[key]).group()
                 if 'rel=describedby' not in headers[key]:
                     assertion_status = log.FAIL
-                    log.assertion_log('line', "~ GET~ %s expected a json url link followed by rel=describedby in response header" % (relative_uri))
+                    log.assertion_log('line', "~ GET~ %s expected a json url link followed by rel=describedby in response header" % (uri))
                     log.assertion_log('line', rf_utility.json_string(headers))
 
-        json_payload, headers, status = self.http_HEAD(relative_uri, rq_headers, authorization)
-        assertion_status_ = self.response_status_check(relative_uri, status, log)
+        json_payload, headers, status = self.http_HEAD(uri, rq_headers, authorization)
+        assertion_status_ = self.response_status_check(uri, status, log)
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
         if assertion_status_ != log.PASS: 
             continue 
         else:
-            key = 'Link'
+            key = 'link'
             if key not in headers:
                assertion_status = log.FAIL
-               log.assertion_log('line', "Header %s required but not found in response header HEAD ~ %s : FAIL" % (key, relative_uri))
+               log.assertion_log('line', "Header %s required but not found in response header HEAD ~ %s : FAIL" % (key, uri))
                log.assertion_log('line', rf_utility.json_string(headers))
             elif 'rel=describedby' not in headers[key]:
                 assertion_status = log.FAIL
-                log.assertion_log('line', "~ HEAD~ %s expected a json url link followed by rel=describedby in response header" % (relative_uri))
+                log.assertion_log('line', "~ HEAD~ %s expected a json url link followed by rel=describedby in response header" % (uri))
                 log.assertion_log('line', rf_utility.json_string(headers))
     
     log.assertion_log(assertion_status, None)
