@@ -1306,16 +1306,25 @@ def Assertion_6_4_18(self, log) :
                 authorization = 'off'
                 rq_headers = self.request_headers()
                 json_payload, headers, status = self.http_HEAD(relative_uris[relative_uri], rq_headers, authorization)
-                if (status == rf_utility.HTTP_OK) :
-                    assertion_status = log.FAIL
-                    log.assertion_log('line', "~ HEAD on %s without authorization returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)))
+                if "Root Service" == relative_uri:
+                    # Root service URI needs to be handled differently as it is allowed to be
+                    # retrieved without auth, so anything other than OK is a failure
+                    if status == rf_utility.HTTP_NOT_FOUND:
+                        log.assertion_log('TX_COMMENT',"WARN: GET %s failed : HTTP status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
+                    elif status != rf_utility.HTTP_OK:
+                        assertion_status = log.FAIL
+                        log.assertion_log('line', "~ HEAD on %s without authorization returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)))
+                else:
+                    if (status == rf_utility.HTTP_OK) :
+                        assertion_status = log.FAIL
+                        log.assertion_log('line', "~ HEAD on %s without authorization returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)))
 
-                elif (status != rf_utility.HTTP_UNAUTHORIZED):
-                    assertion_status = log.WARN
-                    log.assertion_log('line', "~ HEAD on %s expected HTTP UNAUTHORIZED; returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
+                    elif (status != rf_utility.HTTP_UNAUTHORIZED):
+                        assertion_status = log.WARN
+                        log.assertion_log('line', "~ HEAD on %s expected HTTP UNAUTHORIZED; returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
 
-                elif status == rf_utility.HTTP_NOT_FOUND:
-                    log.assertion_log('TX_COMMENT',"WARN: GET %s failed : HTTP status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
+                    elif status == rf_utility.HTTP_NOT_FOUND:
+                        log.assertion_log('TX_COMMENT',"WARN: GET %s failed : HTTP status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
                          
     log.assertion_log(assertion_status, None)
     return (assertion_status)
