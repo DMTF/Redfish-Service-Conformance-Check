@@ -3553,7 +3553,7 @@ def Assertion_6_5_18(self, log) :
 
     for relative_uri in relative_uris:
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        if(json_payload is not None and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],str)) :
+        if(json_payload is not None and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],basestring)) :
             print ('Resources identifiers represented in JSON payloads are represented as strings that conform to the rules for %s' %relative_uri)
         else :
             print ('Resources identifiers represented in JSON payloads are not represented as strings that conform to the rules for %s' %relative_uri)
