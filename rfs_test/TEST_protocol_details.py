@@ -1928,11 +1928,10 @@ def Assertion_6_4_32(self, log) :
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
                 if assertion_status_ != log.PASS:                 
-                    log.assertion_log('line', 'POST on action url %s failed' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))
-                    continue
-                else:
                     print('JSON payload %s is failing' %json_payload_)
                     print('Headers is %s' %headers_)
+                    log.assertion_log('line', 'POST on action url %s failed' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))
+                    continue
             else:
                 assertion_status_ = log.WARN
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
