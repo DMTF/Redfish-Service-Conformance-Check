@@ -155,8 +155,8 @@ def Assertion_6_1_8_1(self, log) :
     authorization = 'on'
 
     rq_headers = self.request_headers()
-    user_name = 'xxuserxx'
-    root_link_key = 'SessionService'
+    user_name = 'testuser'
+    root_link_key = 'AccountService'
 
     sample = dict()
 
@@ -173,11 +173,11 @@ def Assertion_6_1_8_1(self, log) :
         else:              
             ## get Accounts collection from payload
             try :
-                key = 'Sessions'
+                key = 'Accounts'
                 acc_collection = (json_payload[key])['@odata.id']
             except :
                 assertion_status = log.WARN
-                log.assertion_log('line', "~ \'Sessions\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))    
+                log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))    
             else:          
                 json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
                 assertion_status_ = self.response_status_check(acc_collection, status, log)      
@@ -195,7 +195,7 @@ def Assertion_6_1_8_1(self, log) :
                         log.assertion_log('line', rf_utility.json_string(headers))
                     else:
                         #check if user already exists, if it does perfcorm a delete to clean up
-                        '''members = self.get_resource_members(acc_collection)
+                        members = self.get_resource_members(acc_collection)
                         for json_payload, headers in members:
                             if json_payload['UserName'] == user_name:       
                                 log.assertion_log('TX_COMMENT', "~ note: the %s account pre-exists... deleting it now in prep for creation" % json_payload['UserName'])   
@@ -212,10 +212,10 @@ def Assertion_6_1_8_1(self, log) :
                                     assertion_status = log.FAIL
                                     log.assertion_log('line', "~ The response headers for %s do not indicate support for DELETE" % acc_collection)
                                     log.assertion_log('line', "~ Item already exists in %s and attempt to request DELETE failed, Try changing item configuration in the script" % acc_collection)                        
-                                    break'''
+                                    break
 
                     if (assertion_status == log.PASS): # Ok to create the session now                                   
-                        rq_body = {'UserName' : user_name, 'Password' : '12345' }
+                        rq_body = {'UserName' : user_name , 'Password' : '12345', 'RoleId' : 'Administrator' }            
                         log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (acc_collection, rq_body))                            
                         json_payload, headers, status = self.http_POST(acc_collection, rq_headers, rq_body, authorization)
                         assertion_status_ = self.response_status_check(acc_collection, status, log, rf_utility.HTTP_CREATED, 'POST')      
@@ -312,9 +312,22 @@ def Assertion_6_1_8_1_2(location_url, json_payload, self, log):
 #   the same resource using its location from header             
 #####################################################################################################
 def verifyCreatedObject(object_payload, check_payload, log):  
+    exclude_keys = [
+        "@odata.id",
+        "@odata.context",
+        "@odata.type",
+        "@odata.etag"
+    ]
+
     assertion_status = log.PASS
     # check for mismatch...
     for key in check_payload.keys():
+        if key in exclude_keys:
+            # Allow for the service to have added @odata by skipping them
+            # (they will not be in the object we created so the checks for
+            # these tags in the original object will fail)
+            continue
+
         if (key in object_payload):
             if (check_payload[key] != object_payload[key]):
                 assertion_status = log.FAIL
@@ -337,7 +350,7 @@ def Assertion_6_1_8_3(self, log) :
 
     authorization = 'on'
     rq_headers = self.request_headers()
-    user_name = 'xxuserxx'
+    user_name = 'testuser'
     root_link_key = 'AccountService'
 
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
