@@ -440,7 +440,7 @@ class Log:
             # log pass/fail status to the text log 
             if (log_control != self.PASS or log_control != self.INCOMPLETE):
                 # include the assertion description in the text log
-                log_string =  ('Assertion Description: %s\n<--- Assertion %s: %s\n' % (assertion_description, self.AssertionID, log_control))
+                log_string =  ('Assertion Description: %s\n<--- Assertion %s: %s\n' % (assertion_description.encode('utf-8'), self.AssertionID, log_control))
             else:
                 log_string =  ('<--- Assertion %s: %s\n' % (self.AssertionID, log_control))
 
