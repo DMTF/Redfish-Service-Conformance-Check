@@ -4532,14 +4532,22 @@ def Assertion_6_5_9(self, log) :
                         #print('The response is %s' %r)
                         rq_headers['Accept'] = rf_utility.accept_type['xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
+                        if status != 200:
+                            print('Unexpected status {} returned from resource {}'.format(status, resource))
+                            continue
                         if isinstance(response, dict):
                             # received JSON, skip
                             print('Resource URI {}: received JSON content from @odata.context {}'
                                   .format(relative_uris[relative_uri], resource))
                             continue
-                        response = response.decode('utf-8')
-                        print('The response is %s' %response)
-                        doc = minidom.parseString(response)
+                        response = response.decode('utf-8').strip('\x00')
+                        try:
+                            doc = minidom.parseString(response)
+                        except Exception as e:
+                            print('The response is %s' % response)
+                            print('Exception received when parsing response from resource {}; exception is "{}"'
+                                  .format(resource, e))
+                            continue
                         dataServices = doc.getElementsByTagName('edmx:DataServices')
                         entity = ET.Element('Schema')
                         element = ET.SubElement(entity, 'EntityContainer')
