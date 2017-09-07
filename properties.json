@@ -42,7 +42,7 @@
       "ClientProxy": {
         "http_proxy": "none",
         "https_proxy": "none",
-        "Description": "setup you10.6.87.25`r client proxy here or set the entries to 'none' if its not needed to get outside a firewall to the Schema Repository URL"
+        "Description": "setup your client proxy here or set the entries to 'none' if its not needed to get outside a firewall to the Schema Repository URL"
       },
       "LongDescription": "if RetrieveDMTFSchemas is set to 'no' then the tool expects that the scema files are already in LocalSchemaDirectoryFolder",
       "Description": "Set RetreiveDMTFSchemas to 'yes' to download the schema files from Schema Repository URL (current) to LocalSchemaDirectoryFolder",
