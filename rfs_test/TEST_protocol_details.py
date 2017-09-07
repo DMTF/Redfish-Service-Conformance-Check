@@ -3536,10 +3536,12 @@ def Assertion_6_5_17(self, log) :
             key = '@odata.id'
             if key not in json_payload:
                 assertion_status = log.FAIL
-                log.assertion_log('line', "Expected property %s in response body " % (key) )
+                log.assertion_log('line', "Expected property %s in response body for resource %s"
+                                  % (key, relative_uris[relative_uri]))
             elif json_payload[key] is None:
                 assertion_status = log.FAIL
-                log.assertion_log('line', "Expected property %s with a unique identifier in json body " % (key) )
+                log.assertion_log('line', "Property %s missing a unique identifier in response body for resource %s"
+                                  % (key, relative_uris[relative_uri]))
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
