@@ -4022,16 +4022,14 @@ def Assertion_6_5_23_1(self, log) :
                             for m in member_array:
                                 count = count+1
                     if count<=member_count: 
-                        for key in json_payload:
-                            nextlink = 'Members@odata.nextLink'
-                            if key == nextlink:
-                                if json_payload[key] is None:
-                                    assertion_status = log.FAIL
-                                    log.assertion_log('line','property %s should have a value, found %s' %(nextlink, json_payload[key]))
-
-                            else :
+                        nextlink = 'Members@odata.nextLink'
+                        if nextlink in json_payload:
+                            if json_payload[nextlink] is None:
                                 assertion_status = log.FAIL
-                                log.assertion_log('line', 'property %s should be present in the resource %s' %(nextlink,relative_uri))
+                                log.assertion_log('line','property %s should have a value, found %s' %(nextlink, json_payload[key]))
+                        else:
+                            assertion_status = log.FAIL
+                            log.assertion_log('line', 'property %s should be present in the resource %s' %(nextlink,relative_uri))
 
             else:      
                 assertion_status = log.WARN
