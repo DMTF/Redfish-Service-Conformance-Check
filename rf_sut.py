@@ -457,15 +457,16 @@ class SUT():
         # init SchemaModel obj
         csdl_schema_model = SchemaModel()
         rq_headers = self.request_headers()
+        rq_headers['Accept'] = rf_utility.accept_type['xml']
         authorization = 'off'
         #get service's $metadata json_payload 
-        json_payload, headers, status = self.http_GET(metadata_uri, rq_headers, authorization)
+        xml_payload, headers, status = self.http_GET(metadata_uri, rq_headers, authorization)
         if not (headers and status):
             return None
         elif (status != rf_utility.HTTP_OK):
             print('line', "~ GET for resource %s failed: FAIL (HTTP status %s)" % (metadata_uri, status)) 
-        elif json_payload:  
-            csdl_schema_model.serialize_schema(schema_payload = json_payload, schema_uri= metadata_uri)
+        elif xml_payload:  
+            csdl_schema_model.serialize_schema(schema_payload = xml_payload, schema_uri= metadata_uri)
             # there will be only one element in this case ans we only need that
             if csdl_schema_model.FullRedfishSchemas[0]:
                 return csdl_schema_model.FullRedfishSchemas[0]
