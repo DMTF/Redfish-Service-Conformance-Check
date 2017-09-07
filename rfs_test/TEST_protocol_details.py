@@ -38,6 +38,7 @@ if (sys.version_info < (3, 0)):
     from httplib import HTTPSConnection, HTTPConnection, HTTPResponse
     import urllib
     import urllib2
+    from urllib import urlopen
 else:
     # Python 3
     Python3 = True
@@ -3772,7 +3773,7 @@ def Assertion_6_5_20(self, log):
                             print(schema)
                             uris = "http://redfish.dmtf.org/schemas/v1/"+schema
                             print(uris)
-                            f = urllib.request.urlopen(uris)
+                            f = urlopen(uris)
                             myfile = f.read()
                             count = count + 1
                             #myfile = myfile.decode('utf-8')

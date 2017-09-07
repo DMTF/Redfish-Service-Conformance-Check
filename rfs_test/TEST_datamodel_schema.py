@@ -23,6 +23,7 @@ import sys
 import re
 import rf_utility
 import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
 # map python 2 vs 3 imports
 if (sys.version_info < (3, 0)):
@@ -33,6 +34,7 @@ if (sys.version_info < (3, 0)):
     from httplib import HTTPSConnection, HTTPConnection, HTTPResponse
     import urllib
     import urllib2
+    from urllib import urlopen
 else:
     # Python 3
     Python3 = True
@@ -41,7 +43,6 @@ else:
     from http.client import HTTPSConnection, HTTPConnection, HTTPResponse
     from urllib.request import urlopen
     import urllib
-    from xml.dom import minidom
 
 import ssl
 import re
