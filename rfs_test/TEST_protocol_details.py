@@ -1602,7 +1602,7 @@ def Assertion_6_4_24(self, log) :
                                                             error_info = json_payload[prop + "@Message.ExtendedInfo"]
                                                             for error_object in error_info:
                                                                 if "MessageId" in error_object:
-                                                                    if "PropertyNotWriteable" in error_object:
+                                                                    if "PropertyNotWritable" in error_object["MessageId"]:
                                                                         # We found the annotation and it was of the right type
                                                                         found_annotation = True
                                                                         break
@@ -1625,7 +1625,7 @@ def Assertion_6_4_24(self, log) :
                                                     else:
                                                         if prop in json_payload.keys():
                                                             #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
-                                                            if (json_payload[property.Name] == 'PatchName'):
+                                                            if (json_payload[prop] == 'PatchName'):
                                                                 assertion_status = log.FAIL
                                                                 log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri]) )                                                                                         
 
