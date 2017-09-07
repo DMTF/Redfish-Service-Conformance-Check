@@ -3735,6 +3735,7 @@ def Assertion_6_5_20(self, log):
     #find alias in Include first?
     for relative_uri in relative_uris:
         if 'Root Service' in relative_uri:
+                rq_headers['Accept'] = rf_utility.accept_type['json']
                 json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
                 assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
                 # manage assertion status
@@ -3751,8 +3752,7 @@ def Assertion_6_5_20(self, log):
                         resource = json_payload['@odata.context']
                         #r = requests.get(resource)
                         #print('The response is %s' %r)
-                        rq_headers['Content-Type'] = rf_utility.content_type['xml']
-                        rq_headers['Accept'] = rf_utility.accept_type['json_xml']
+                        rq_headers['Accept'] = rf_utility.accept_type['xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
                         if isinstance(response, dict):
                             # received JSON, skip
