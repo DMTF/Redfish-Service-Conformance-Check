@@ -3568,7 +3568,14 @@ def Assertion_6_5_18(self, log) :
 
     for relative_uri in relative_uris:
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        if(json_payload is not None and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],basestring)) :
+
+        # Determine which string type to compare against based on the currently running
+        # version of Python. Python 3 deprecated the basestring baseclass that was common
+        # for all variants of string, in favour of expanding the definition of str to include
+        # strings such as unicode ones
+        str_type = str if Python3 else basestring
+
+        if(json_payload is not None and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],str_type)) :
             print ('Resources identifiers represented in JSON payloads are represented as strings that conform to the rules for %s' %relative_uri)
         else :
             print ('Resources identifiers represented in JSON payloads are not represented as strings that conform to the rules for %s' %relative_uri)
