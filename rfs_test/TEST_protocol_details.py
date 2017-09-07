@@ -4450,23 +4450,31 @@ def Assertion_6_5_8(self, log) :
                 #print('The response is %s' %r)
                 rq_headers['Accept'] = rf_utility.accept_type['xml']
                 response,headers,status = self.http_GET(resource,rq_headers,None)
+                if status != 200:
+                    print('Unexpected status {} returned from resource {}'.format(status, resource))
+                    continue
                 if isinstance(response, dict):
                     # received JSON, skip
                     print('Resource URI {}: received JSON content from @odata.context {}'
                           .format(relative_uris[relative_uri], resource))
                     continue
-                response = response.decode('utf-8')
-                print('The response is %s' %response)
-                doc = minidom.parseString(response)
+                response = response.decode('utf-8').strip('\x00')
+                try:
+                    doc = minidom.parseString(response)
+                except Exception as e:
+                    print('The response is %s' % response)
+                    print('Exception received when parsing response from resource {}; exception is "{}"'
+                          .format(resource, e))
+                    continue
                 dataServices = doc.getElementsByTagName('edmx:Reference')
                 extension = doc.getElementsByTagName('edmx:Include')
-                print('The extension is %s' %extension)
+                # print('The extension is %s' %extension)
                 for v in extension:                   
                     a = v.getAttribute('Namespace')
-                    print('The valus is %s' %a)  
+                    # print('The value is %s' %a)
                     list1.append(a)
                     if 'RedfishExtensions.v1_0_0' in a :
-                            print('RedfishExtensions.v1_0_0 is present in %s' %relative_uri)
+                        print('RedfishExtensions.v1_0_0 is present in %s' %relative_uri)
                     else:
                         continue
              
@@ -4486,9 +4494,9 @@ def Assertion_6_5_8(self, log) :
         assertion_status = log.FAIL
         print('Local file list is %s' %(txt_files))   
 
-    print('The list is %s' %list1)
-    diff = list(set(list1) - set(txt_files))
-    print('The files that are not in metadata %s' %diff)
+    print('The list found in the metadata is %s' % list1)
+    diff = list(set(txt_files) - set(list1))
+    print('The files that are not found in metadata are %s' % diff)
     log.assertion_log(assertion_status, None)
     return (assertion_status)  
 #
@@ -4532,14 +4540,22 @@ def Assertion_6_5_9(self, log) :
                         #print('The response is %s' %r)
                         rq_headers['Accept'] = rf_utility.accept_type['xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
+                        if status != 200:
+                            print('Unexpected status {} returned from resource {}'.format(status, resource))
+                            continue
                         if isinstance(response, dict):
                             # received JSON, skip
                             print('Resource URI {}: received JSON content from @odata.context {}'
                                   .format(relative_uris[relative_uri], resource))
                             continue
-                        response = response.decode('utf-8')
-                        print('The response is %s' %response)
-                        doc = minidom.parseString(response)
+                        response = response.decode('utf-8').strip('\x00')
+                        try:
+                            doc = minidom.parseString(response)
+                        except Exception as e:
+                            print('The response is %s' % response)
+                            print('Exception received when parsing response from resource {}; exception is "{}"'
+                                  .format(resource, e))
+                            continue
                         dataServices = doc.getElementsByTagName('edmx:DataServices')
                         entity = ET.Element('Schema')
                         element = ET.SubElement(entity, 'EntityContainer')
