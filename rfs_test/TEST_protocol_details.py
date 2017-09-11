@@ -38,6 +38,7 @@ if (sys.version_info < (3, 0)):
     from httplib import HTTPSConnection, HTTPConnection, HTTPResponse
     import urllib
     import urllib2
+    from urllib import urlopen
 else:
     # Python 3
     Python3 = True
@@ -1601,7 +1602,7 @@ def Assertion_6_4_24(self, log) :
                                                             error_info = json_payload[prop + "@Message.ExtendedInfo"]
                                                             for error_object in error_info:
                                                                 if "MessageId" in error_object:
-                                                                    if "PropertyNotWriteable" in error_object:
+                                                                    if "PropertyNotWritable" in error_object["MessageId"]:
                                                                         # We found the annotation and it was of the right type
                                                                         found_annotation = True
                                                                         break
@@ -1624,7 +1625,7 @@ def Assertion_6_4_24(self, log) :
                                                     else:
                                                         if prop in json_payload.keys():
                                                             #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
-                                                            if (json_payload[property.Name] == 'PatchName'):
+                                                            if (json_payload[prop] == 'PatchName'):
                                                                 assertion_status = log.FAIL
                                                                 log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri]) )                                                                                         
 
@@ -3535,10 +3536,12 @@ def Assertion_6_5_17(self, log) :
             key = '@odata.id'
             if key not in json_payload:
                 assertion_status = log.FAIL
-                log.assertion_log('line', "Expected property %s in response body " % (key) )
+                log.assertion_log('line', "Expected property %s in response body for resource %s"
+                                  % (key, relative_uris[relative_uri]))
             elif json_payload[key] is None:
                 assertion_status = log.FAIL
-                log.assertion_log('line', "Expected property %s with a unique identifier in json body " % (key) )
+                log.assertion_log('line', "Property %s missing a unique identifier in response body for resource %s"
+                                  % (key, relative_uris[relative_uri]))
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -3567,7 +3570,14 @@ def Assertion_6_5_18(self, log) :
 
     for relative_uri in relative_uris:
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        if(json_payload is not None and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],basestring)) :
+
+        # Determine which string type to compare against based on the currently running
+        # version of Python. Python 3 deprecated the basestring baseclass that was common
+        # for all variants of string, in favour of expanding the definition of str to include
+        # strings such as unicode ones
+        str_type = str if Python3 else basestring
+
+        if(json_payload is not None and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],str_type)) :
             print ('Resources identifiers represented in JSON payloads are represented as strings that conform to the rules for %s' %relative_uri)
         else :
             print ('Resources identifiers represented in JSON payloads are not represented as strings that conform to the rules for %s' %relative_uri)
@@ -3734,6 +3744,7 @@ def Assertion_6_5_20(self, log):
     #find alias in Include first?
     for relative_uri in relative_uris:
         if 'Root Service' in relative_uri:
+                rq_headers['Accept'] = rf_utility.accept_type['json']
                 json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
                 assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
                 # manage assertion status
@@ -3750,8 +3761,7 @@ def Assertion_6_5_20(self, log):
                         resource = json_payload['@odata.context']
                         #r = requests.get(resource)
                         #print('The response is %s' %r)
-                        rq_headers['Content-Type'] = rf_utility.content_type['xml']
-                        rq_headers['Accept'] = rf_utility.accept_type['json_xml']
+                        rq_headers['Accept'] = rf_utility.accept_type['xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
                         if isinstance(response, dict):
                             # received JSON, skip
@@ -4015,16 +4025,14 @@ def Assertion_6_5_23_1(self, log) :
                             for m in member_array:
                                 count = count+1
                     if count<=member_count: 
-                        for key in json_payload:
-                            nextlink = 'Members@odata.nextLink'
-                            if key == nextlink:
-                                if json_payload[key] is None:
-                                    assertion_status = log.FAIL
-                                    log.assertion_log('line','property %s should have a value, found %s' %(nextlink, json_payload[key]))
-
-                            else :
+                        nextlink = 'Members@odata.nextLink'
+                        if nextlink in json_payload:
+                            if json_payload[nextlink] is None:
                                 assertion_status = log.FAIL
-                                log.assertion_log('line', 'property %s should be present in the resource %s' %(nextlink,relative_uri))
+                                log.assertion_log('line','property %s should have a value, found %s' %(nextlink, json_payload[key]))
+                        else:
+                            assertion_status = log.FAIL
+                            log.assertion_log('line', 'property %s should be present in the resource %s' %(nextlink,relative_uri))
 
             else:      
                 assertion_status = log.WARN
@@ -4436,23 +4444,31 @@ def Assertion_6_5_8(self, log) :
                 #print('The response is %s' %r)
                 rq_headers['Accept'] = rf_utility.accept_type['xml']
                 response,headers,status = self.http_GET(resource,rq_headers,None)
+                if status != 200:
+                    print('Unexpected status {} returned from resource {}'.format(status, resource))
+                    continue
                 if isinstance(response, dict):
                     # received JSON, skip
                     print('Resource URI {}: received JSON content from @odata.context {}'
                           .format(relative_uris[relative_uri], resource))
                     continue
-                response = response.decode('utf-8')
-                print('The response is %s' %response)
-                doc = minidom.parseString(response)
+                response = response.decode('utf-8').strip('\x00')
+                try:
+                    doc = minidom.parseString(response)
+                except Exception as e:
+                    print('The response is %s' % response)
+                    print('Exception received when parsing response from resource {}; exception is "{}"'
+                          .format(resource, e))
+                    continue
                 dataServices = doc.getElementsByTagName('edmx:Reference')
                 extension = doc.getElementsByTagName('edmx:Include')
-                print('The extension is %s' %extension)
+                # print('The extension is %s' %extension)
                 for v in extension:                   
                     a = v.getAttribute('Namespace')
-                    print('The valus is %s' %a)  
+                    # print('The value is %s' %a)
                     list1.append(a)
                     if 'RedfishExtensions.v1_0_0' in a :
-                            print('RedfishExtensions.v1_0_0 is present in %s' %relative_uri)
+                        print('RedfishExtensions.v1_0_0 is present in %s' %relative_uri)
                     else:
                         continue
              
@@ -4472,9 +4488,9 @@ def Assertion_6_5_8(self, log) :
         assertion_status = log.FAIL
         print('Local file list is %s' %(txt_files))   
 
-    print('The list is %s' %list1)
-    diff = list(set(list1) - set(txt_files))
-    print('The files that are not in metadata %s' %diff)
+    print('The list found in the metadata is %s' % list1)
+    diff = list(set(txt_files) - set(list1))
+    print('The files that are not found in metadata are %s' % diff)
     log.assertion_log(assertion_status, None)
     return (assertion_status)  
 #
@@ -4518,14 +4534,22 @@ def Assertion_6_5_9(self, log) :
                         #print('The response is %s' %r)
                         rq_headers['Accept'] = rf_utility.accept_type['xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
+                        if status != 200:
+                            print('Unexpected status {} returned from resource {}'.format(status, resource))
+                            continue
                         if isinstance(response, dict):
                             # received JSON, skip
                             print('Resource URI {}: received JSON content from @odata.context {}'
                                   .format(relative_uris[relative_uri], resource))
                             continue
-                        response = response.decode('utf-8')
-                        print('The response is %s' %response)
-                        doc = minidom.parseString(response)
+                        response = response.decode('utf-8').strip('\x00')
+                        try:
+                            doc = minidom.parseString(response)
+                        except Exception as e:
+                            print('The response is %s' % response)
+                            print('Exception received when parsing response from resource {}; exception is "{}"'
+                                  .format(resource, e))
+                            continue
                         dataServices = doc.getElementsByTagName('edmx:DataServices')
                         entity = ET.Element('Schema')
                         element = ET.SubElement(entity, 'EntityContainer')
