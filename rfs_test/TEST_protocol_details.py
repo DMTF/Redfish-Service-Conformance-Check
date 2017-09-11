@@ -3776,12 +3776,6 @@ def Assertion_6_5_20(self, log):
                         for d in dataServices:
                             uris = d.getAttribute('Uri')
                             print('The uri is %s' %uris)
-                            #schema = uris.split('Schemas/')
-                            schema = uris.rsplit('/', 1)
-                            schema = schema[1]
-                            print(schema)
-                            uris = "http://redfish.dmtf.org/schemas/v1/"+schema
-                            print(uris)
                             f = urlopen(uris)
                             myfile = f.read()
                             count = count + 1
