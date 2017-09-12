@@ -64,7 +64,7 @@ accept_type = {\
     'xml' : 'application/xml',\
     'bad' : 'snooop/dog' ,\
     'json_utf8' : 'application/json;charset=utf-8' ,\
-    'json_xml' : 'application/xml;charset=utf-8'
+    'xml_utf8' : 'application/xml;charset=utf-8'
 }
 content_type = {\
     'utf8' : 'application/json; charset=utf-8' ,\

@@ -738,7 +738,7 @@ def Assertion_6_1_1(self,log) :
     json_payload, headers, status_3 = self.http_GET(self.Redfish_URIs['Service_Odata_Doc'], rq_headers, authorization)
 
     # Update the Accept header in the request since the metadata doc is XML
-    rq_headers['Accept'] = rf_utility.accept_type['xml']
+    rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
     json_payload, headers, status_4 = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
     print('The different status are %s, %s, %s, %s' %(status_1, status_2, status_3, status_4))
     if ( status_1 == status_2 == status_3 == status_4 == 200) :
@@ -849,7 +849,7 @@ def Assertion_6_3_1(self, log) :
     if assertion_status == log.PASS:
         log.assertion_log('line',"~ GET %s : HTTP status %s:%s" % (self.Redfish_URIs['Service_Odata_Doc'], status, rf_utility.HTTP_status_string(status)) ) 
 
-    rq_headers ['Accept'] = rf_utility.accept_type['xml']
+    rq_headers ['Accept'] = rf_utility.accept_type['xml_utf8']
     json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Metadata_Doc'], status, log)      
     # manage assertion status
@@ -2044,10 +2044,10 @@ def Assertion_6_4_2_1(self, log) :
     authorization = 'off'
 
     rq_headers = self.request_headers()
-    rq_headers['Accept'] = rf_utility.accept_type['xml']
+    rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
 
     json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
-    log.assertion_log('line', "~ GET %s with Accept type '%s'" % (self.Redfish_URIs['Service_Metadata_Doc'], rf_utility.accept_type['xml']))
+    log.assertion_log('line', "~ GET %s with Accept type '%s'" % (self.Redfish_URIs['Service_Metadata_Doc'], rf_utility.accept_type['xml_utf8']))
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Metadata_Doc'], status, log)         
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2057,7 +2057,7 @@ def Assertion_6_4_2_1(self, log) :
         # check1: the response header should have the content type xml as requested    
         if rf_utility.accept_type['xml'] not in headers['content-type']:
             assertion_status = log.FAIL
-            log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml'], self.Redfish_URIs['Service_Metadata_Doc']))
+            log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml_utf8'], self.Redfish_URIs['Service_Metadata_Doc']))
 
         #check2: the content returned in response body should be xml, validate it by parsing
         elif not json_payload:
@@ -2070,7 +2070,7 @@ def Assertion_6_4_2_1(self, log) :
                 xml = ET.fromstring(json_payload)
                 if xml is None:
                     assertion_status = log.FAIL
-                    log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml'], self.Redfish_URIs['Service_Metadata_Doc']))
+                    log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml_utf8'], self.Redfish_URIs['Service_Metadata_Doc']))
             except ET.ParseError as e:
                 assertion_status = log.FAIL
                 log.assertion_log('line', "XML parse error for %s, exception: %s" % (
@@ -3761,7 +3761,7 @@ def Assertion_6_5_20(self, log):
                         resource = json_payload['@odata.context']
                         #r = requests.get(resource)
                         #print('The response is %s' %r)
-                        rq_headers['Accept'] = rf_utility.accept_type['xml']
+                        rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
                         if isinstance(response, dict):
                             # received JSON, skip
@@ -4442,7 +4442,7 @@ def Assertion_6_5_8(self, log) :
                 resource = json_payload['@odata.context']
                 #r = requests.get(resource)
                 #print('The response is %s' %r)
-                rq_headers['Accept'] = rf_utility.accept_type['xml']
+                rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
                 response,headers,status = self.http_GET(resource,rq_headers,None)
                 if status != 200:
                     print('Unexpected status {} returned from resource {}'.format(status, resource))
@@ -4532,7 +4532,7 @@ def Assertion_6_5_9(self, log) :
                 if 'ServiceRoot' in resource :
                         #r = requests.get(resource)
                         #print('The response is %s' %r)
-                        rq_headers['Accept'] = rf_utility.accept_type['xml']
+                        rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
                         if status != 200:
                             print('Unexpected status {} returned from resource {}'.format(status, resource))

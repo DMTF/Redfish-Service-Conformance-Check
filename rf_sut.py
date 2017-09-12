@@ -457,7 +457,7 @@ class SUT():
         # init SchemaModel obj
         csdl_schema_model = SchemaModel()
         rq_headers = self.request_headers()
-        rq_headers['Accept'] = rf_utility.accept_type['xml']
+        rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
         authorization = 'off'
         #get service's $metadata json_payload 
         xml_payload, headers, status = self.http_GET(metadata_uri, rq_headers, authorization)
