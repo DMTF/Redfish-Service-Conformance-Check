@@ -738,7 +738,7 @@ def Assertion_6_1_1(self,log) :
     json_payload, headers, status_3 = self.http_GET(self.Redfish_URIs['Service_Odata_Doc'], rq_headers, authorization)
 
     # Update the Accept header in the request since the metadata doc is XML
-    rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
+    rq_headers['Accept'] = rf_utility.accept_type['xml']
     json_payload, headers, status_4 = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
     print('The different status are %s, %s, %s, %s' %(status_1, status_2, status_3, status_4))
     if ( status_1 == status_2 == status_3 == status_4 == 200) :
@@ -849,7 +849,7 @@ def Assertion_6_3_1(self, log) :
     if assertion_status == log.PASS:
         log.assertion_log('line',"~ GET %s : HTTP status %s:%s" % (self.Redfish_URIs['Service_Odata_Doc'], status, rf_utility.HTTP_status_string(status)) ) 
 
-    rq_headers ['Accept'] = rf_utility.accept_type['xml_utf8']
+    rq_headers ['Accept'] = rf_utility.accept_type['xml']
     json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Metadata_Doc'], status, log)      
     # manage assertion status
@@ -2044,10 +2044,10 @@ def Assertion_6_4_2_1(self, log) :
     authorization = 'off'
 
     rq_headers = self.request_headers()
-    rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
+    rq_headers['Accept'] = rf_utility.accept_type['xml']
 
     json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
-    log.assertion_log('line', "~ GET %s with Accept type '%s'" % (self.Redfish_URIs['Service_Metadata_Doc'], rf_utility.accept_type['xml_utf8']))
+    log.assertion_log('line', "~ GET %s with Accept type '%s'" % (self.Redfish_URIs['Service_Metadata_Doc'], rf_utility.accept_type['xml']))
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Metadata_Doc'], status, log)         
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2057,7 +2057,7 @@ def Assertion_6_4_2_1(self, log) :
         # check1: the response header should have the content type xml as requested    
         if rf_utility.accept_type['xml'] not in headers['content-type']:
             assertion_status = log.FAIL
-            log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml_utf8'], self.Redfish_URIs['Service_Metadata_Doc']))
+            log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml'], self.Redfish_URIs['Service_Metadata_Doc']))
 
         #check2: the content returned in response body should be xml, validate it by parsing
         elif not json_payload:
@@ -2067,10 +2067,10 @@ def Assertion_6_4_2_1(self, log) :
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (self.Redfish_URIs['Service_Metadata_Doc']))
         else:
             try:
-                xml = ET.fromstring(json_payload)
+                xml = ET.fromstring(json_payload.strip(b'\x00'))
                 if xml is None:
                     assertion_status = log.FAIL
-                    log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml_utf8'], self.Redfish_URIs['Service_Metadata_Doc']))
+                    log.assertion_log('line', "Service did not support the Accept request for %s for %s" % (rf_utility.accept_type['xml'], self.Redfish_URIs['Service_Metadata_Doc']))
             except ET.ParseError as e:
                 assertion_status = log.FAIL
                 log.assertion_log('line', "XML parse error for %s, exception: %s" % (
@@ -3749,7 +3749,7 @@ def Assertion_6_5_20(self, log):
                 assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                if assertion_status_ != log.PASS: 
+                if assertion_status_ != log.PASS:
                     continue
                 elif not json_payload:
                     assertion_status_ = log.WARN
@@ -3761,52 +3761,79 @@ def Assertion_6_5_20(self, log):
                         resource = json_payload['@odata.context']
                         #r = requests.get(resource)
                         #print('The response is %s' %r)
-                        rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
+                        rq_headers['Accept'] = rf_utility.accept_type['xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
-                        if isinstance(response, dict):
-                            # received JSON, skip
-                            print('Resource URI {}: received JSON content from @odata.context {}'
-                                  .format(relative_uris[relative_uri], resource))
+                        if status == rf_utility.HTTP_NOT_FOUND:
+                            print('Resource {} not found'.format(resource))
                             continue
-                        response = response.decode('utf-8')
-                        print('The response is %s' %response)
-                        doc = minidom.parseString(response)
+                        if status != rf_utility.HTTP_OK:
+                            print('Unexpected status {} for resource {}'.format(status, resource))
+                            print('Response is {}'.format(response))
+                            continue
+                        response = response.decode('utf-8').strip('\x00')
+                        try:
+                            doc = minidom.parseString(response)
+                        except Exception as e:
+                            print('The response is %s' % response)
+                            print('Exception received when parsing response from resource {}; exception is "{}"'
+                                  .format(resource, e))
+                            continue
                         dataServices = doc.getElementsByTagName('edmx:Reference')
                         file_ = json.loads(primitive_types)
                         for d in dataServices:
                             uris = d.getAttribute('Uri')
                             print('The uri is %s' %uris)
-                            f = urlopen(uris)
-                            myfile = f.read()
+                            if uris.startswith('/'):
+                                # relative URI case
+                                rq_headers['Accept'] = rf_utility.accept_type['xml']
+                                myfile, headers, status = self.http_GET(uris, rq_headers, None)
+                                if status == rf_utility.HTTP_NOT_FOUND:
+                                    print('Resource {} not found'.format(uris))
+                                    continue
+                                if status != rf_utility.HTTP_OK:
+                                    print('Unexpected status {} for resource {}'.format(status, uris))
+                                    print('Response is {}'.format(myfile))
+                                    continue
+                                myfile = myfile.decode('utf-8').strip('\x00')
+                            else:
+                                # full URL case
+                                try:
+                                    f = urlopen(uris)
+                                    myfile = f.read()
+                                except Exception as e:
+                                    print('Exception received while reading uri {}. The exception is {}'.format(uris, e))
+                                    continue
                             count = count + 1
                             #myfile = myfile.decode('utf-8')
                             # print(myfile)
                             if count < 40:
-                                    doc = minidom.parseString(myfile)
-                                    entity = doc.getElementsByTagName('Property')
-                                    for e in entity:
-                                        name = e.getAttribute('Name')
-                                        type_ = e.getAttribute('Type')
+                                doc = minidom.parseString(myfile)
+                                entity = doc.getElementsByTagName('Property')
+                                for e in entity:
+                                    name = e.getAttribute('Name')
+                                    type_ = e.getAttribute('Type')
 
-                                        print('The name & type is %s %s' %(name,type_))
-                                        if type_ in primitive_types:
-                                            print('This is primitive type')
-                                            if name in json_payload:
-                                                    print(str(type(json_payload[name])))
-                                                    j = str(type(json_payload[name])).split('\'')
-                                                    type_1 = j[1]
-                                                    if(type_1 == file_[type_]):
-                                                        assertion_status = log.PASS
-                                                    else:
-                                                        assertion_status = log.FAIL
+                                    print('The name & type is %s %s' %(name,type_))
+                                    if type_ in primitive_types:
+                                        print('This is primitive type')
+                                        if name in json_payload:
+                                            print('The type is {}'.format(str(type(json_payload[name]))))
+                                            j = str(type(json_payload[name])).split('\'')
+                                            type_1 = j[1]
+                                            if(type_1 == file_[type_]):
+                                                assertion_status_ = log.PASS
                                             else:
-                                                continue
-
+                                                assertion_status_ = log.FAIL
+                                                assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                                                log.assertion_log('line', 'Type for attribute %s was %s; expected type %s. Resource is %s.'
+                                                                  % (name, type_1, file_[type_], relative_uris[relative_uri]))
                                         else:
                                             continue
+
+                                    else:
+                                        continue
                             else:
                                 break
-  
                                                                                                                     
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -4029,7 +4056,7 @@ def Assertion_6_5_23_1(self, log) :
                         if nextlink in json_payload:
                             if json_payload[nextlink] is None:
                                 assertion_status = log.FAIL
-                                log.assertion_log('line','property %s should have a value, found %s' %(nextlink, json_payload[key]))
+                                log.assertion_log('line','property %s should have a value, found %s' %(nextlink, json_payload[nextlink]))
                         else:
                             assertion_status = log.FAIL
                             log.assertion_log('line', 'property %s should be present in the resource %s' %(nextlink,relative_uri))
@@ -4442,15 +4469,10 @@ def Assertion_6_5_8(self, log) :
                 resource = json_payload['@odata.context']
                 #r = requests.get(resource)
                 #print('The response is %s' %r)
-                rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
+                rq_headers['Accept'] = rf_utility.accept_type['xml']
                 response,headers,status = self.http_GET(resource,rq_headers,None)
                 if status != 200:
                     print('Unexpected status {} returned from resource {}'.format(status, resource))
-                    continue
-                if isinstance(response, dict):
-                    # received JSON, skip
-                    print('Resource URI {}: received JSON content from @odata.context {}'
-                          .format(relative_uris[relative_uri], resource))
                     continue
                 response = response.decode('utf-8').strip('\x00')
                 try:
@@ -4532,15 +4554,10 @@ def Assertion_6_5_9(self, log) :
                 if 'ServiceRoot' in resource :
                         #r = requests.get(resource)
                         #print('The response is %s' %r)
-                        rq_headers['Accept'] = rf_utility.accept_type['xml_utf8']
+                        rq_headers['Accept'] = rf_utility.accept_type['xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
                         if status != 200:
                             print('Unexpected status {} returned from resource {}'.format(status, resource))
-                            continue
-                        if isinstance(response, dict):
-                            # received JSON, skip
-                            print('Resource URI {}: received JSON content from @odata.context {}'
-                                  .format(relative_uris[relative_uri], resource))
                             continue
                         response = response.decode('utf-8').strip('\x00')
                         try:
