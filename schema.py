@@ -787,7 +787,7 @@ for action in resource_namespace.Actions:
                     self.serialize_edmx(schema_root, schema_file)
 
         elif schema_payload and schema_uri:
-            schema_root = ET.fromstring(schema_payload)
+            schema_root = ET.fromstring(schema_payload.strip(b'\x00'))
             if schema_root is not None:
                 self.serialize_edmx(schema_root, schema_uri)
 
