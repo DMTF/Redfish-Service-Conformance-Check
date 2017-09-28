@@ -4466,6 +4466,13 @@ def Assertion_6_5_8(self, log) :
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
         else:
             if '@odata.context' in json_payload:
+                if not isinstance(json_payload, dict):
+                    assertion_status_ = log.WARN
+                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                    log.assertion_log('line',
+                                      'Response body for resource {} was not parsed into a JSON object. Check the Content-Type response header. Response headers: {}'
+                                      .format(relative_uris[relative_uri], headers))
+                    continue
                 resource = json_payload['@odata.context']
                 #r = requests.get(resource)
                 #print('The response is %s' %r)
@@ -4550,6 +4557,13 @@ def Assertion_6_5_9(self, log) :
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
         else:
             if '@odata.context' in json_payload:
+                if not isinstance(json_payload, dict):
+                    assertion_status_ = log.WARN
+                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                    log.assertion_log('line',
+                                      'Response body for resource {} was not parsed into a JSON object. Check the Content-Type response header. Response headers: {}'
+                                      .format(relative_uris[relative_uri], headers))
+                    continue
                 resource = json_payload['@odata.context']
                 if 'ServiceRoot' in resource :
                         #r = requests.get(resource)
