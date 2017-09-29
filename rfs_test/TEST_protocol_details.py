@@ -915,6 +915,13 @@ def Assertion_6_3_3(self, log) :
 
     relative_uris = self.relative_uris
 
+    # default to https unless overridden via "UseHttp" in the SUT config
+    proto = "https"
+    if "UseHttp" in self.SUT_prop:
+        use_http = self.SUT_prop.get("UseHttp").lower()
+        if use_http in ["yes", "true", "on"]:
+            proto = "http"
+
     authorization = 'on'
     rq_headers = self.request_headers()
     
@@ -931,7 +938,7 @@ def Assertion_6_3_3(self, log) :
     # httplib has url form limitation, using urllib2 for python 2.7
     # http://www.w3.org/pub/WWW/TheProject.html HTTP/1.1
     # try  path with //auth/path
-    url ="https://"+ self.SUT_prop['DnsName'] + self.Redfish_URIs['Service_Root']+'Systems'
+    url = proto + "://" + self.SUT_prop['DnsName'] + self.Redfish_URIs['Service_Root'] + 'Systems'
     # Made changes in accessing the url and opening the url and reading - Priyanka.
     json_payload, headers, status = self.http_GET(url, rq_headers, authorization)
     print('Status is %s' %status)
