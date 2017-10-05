@@ -272,10 +272,17 @@ def http__req_resp(sut_prop, http_req, resource_uri, rq_headers, rq_body, auth_o
     if (rq_headers == None):
         rq_headers = create_request_headers()
 
+    # default to https unless overridden via "UseHttp" in the SUT config
+    proto = "https"
+    if "UseHttp" in sut_prop:
+        use_http = sut_prop.get("UseHttp").lower()
+        if use_http in ["yes", "true", "on"]:
+            proto = "http"
+
     url = None
     # if dsn name is not prepended to the uri, then prepend uri with https protocol and dnsname as per redfish service requirement
     if sut_prop['DnsName'] not in resource_uri:
-        url = urlparse("https://" + sut_prop['DnsName'] + resource_uri)
+        url = urlparse(proto + "://" + sut_prop['DnsName'] + resource_uri)
     else:
         url = urlparse(resource_uri)
     

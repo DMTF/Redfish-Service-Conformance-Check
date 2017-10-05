@@ -365,6 +365,8 @@ def Assertion_6_1_8_3(self, log) :
                 members = self.get_resource_members(acc_collection)
                 # check for user we want to PATCH       
                 for json_payload, headers in members:
+                    if json_payload is None:
+                        continue
                     # check if intended method is an allowable method for resource
                     if (self.allowable_method('PATCH', headers) != True): 
                         assertion_status = log.WARN
@@ -915,6 +917,13 @@ def Assertion_6_3_3(self, log) :
 
     relative_uris = self.relative_uris
 
+    # default to https unless overridden via "UseHttp" in the SUT config
+    proto = "https"
+    if "UseHttp" in self.SUT_prop:
+        use_http = self.SUT_prop.get("UseHttp").lower()
+        if use_http in ["yes", "true", "on"]:
+            proto = "http"
+
     authorization = 'on'
     rq_headers = self.request_headers()
     
@@ -931,7 +940,7 @@ def Assertion_6_3_3(self, log) :
     # httplib has url form limitation, using urllib2 for python 2.7
     # http://www.w3.org/pub/WWW/TheProject.html HTTP/1.1
     # try  path with //auth/path
-    url ="https://"+ self.SUT_prop['DnsName'] + self.Redfish_URIs['Service_Root']+'Systems'
+    url = proto + "://" + self.SUT_prop['DnsName'] + self.Redfish_URIs['Service_Root'] + 'Systems'
     # Made changes in accessing the url and opening the url and reading - Priyanka.
     json_payload, headers, status = self.http_GET(url, rq_headers, authorization)
     print('Status is %s' %status)
@@ -1890,7 +1899,9 @@ def Assertion_6_4_31(self, log) :
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
         members = self.get_resource_members(self.sut_toplevel_uris[root_link_key]['url'])                
         for json_payload_systems, headers in members:
-            # perfcorm the POST ~ clear the system log..
+            if json_payload_systems is None:
+                continue
+            # perform the POST ~ clear the system log..
             if 'LogServices' not in json_payload_systems:
                 assertion_status = log.WARN
                 log.assertion_log('line', "~ Expected LogServices in payload of %s  ~ Not found" % (json_payload_systems['@odata.id']))
@@ -1945,7 +1956,9 @@ def Assertion_6_4_32(self, log) :
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
         members = self.get_resource_members(self.sut_toplevel_uris[root_link_key]['url'])               
         for json_payload, headers in members:
-            # perfcorm the POST ~ clear the system log..
+            if json_payload is None:
+                continue
+            # perform the POST ~ clear the system log..
             if 'Actions' in json_payload:
                 log.assertion_log('line', 'Action %s found' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))
                 log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))  
@@ -3577,7 +3590,7 @@ def Assertion_6_5_18(self, log) :
         # strings such as unicode ones
         str_type = str if Python3 else basestring
 
-        if(json_payload is not None and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],str_type)) :
+        if(json_payload is not None and isinstance(json_payload, dict) and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],str_type)) :
             print ('Resources identifiers represented in JSON payloads are represented as strings that conform to the rules for %s' %relative_uri)
         else :
             print ('Resources identifiers represented in JSON payloads are not represented as strings that conform to the rules for %s' %relative_uri)
