@@ -673,6 +673,18 @@ def Assertion_7_5_11(self, log):
                                 if not json_metadata['definitions'][typename][annotation_term]:
                                     # if value is False then check if there are any additional properties, which it shouldnt
                                     if 'properties' in json_metadata['definitions'][typename]:
+                                        regex = None
+                                        # get and compile the 'patternProperties' regex if present
+                                        if 'patternProperties' in json_metadata['definitions'][typename]:
+                                            prop = json_metadata['definitions'][typename]['patternProperties']
+                                            if isinstance(prop, dict) and len(list(prop)) == 1:
+                                                pattern = list(prop)[0]
+                                                try:
+                                                    regex = re.compile(pattern)
+                                                except Exception as e:
+                                                    print('Exception while compiling regex pattern "{}" from schema file {}; Exception is: "{}"'
+                                                          .format(pattern, schema_file, e))
+                                        # check the properties in the payload against the schema
                                         for property_key in json_payload:
                                             if "@odata.etag" in property_key or\
                                                "@odata.nextLink" in property_key:
@@ -682,6 +694,11 @@ def Assertion_7_5_11(self, log):
                                                 # Also skipping @odata.nextLink properties as these are allowed on 
                                                 # resource colelctions that are paged, but are not currently in the schema
                                                 continue
+
+                                            if regex is not None:
+                                                # If property matches patternProperties regex, it is good
+                                                if regex.match(property_key):
+                                                    continue
 
                                             if property_key not in json_metadata['definitions'][typename]['properties']:
                                                 assertion_status = log.FAIL
