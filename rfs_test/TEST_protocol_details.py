@@ -1445,7 +1445,7 @@ def Assertion_6_4_23(self, log) :
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
                     if assertion_status_ != log.PASS:                 
-                        log.assertion_log('Unable to verify PATCH for resource readonly property' & (relative_uris[relative_uri]))
+                        log.assertion_log('Unable to verify PATCH for resource %s readonly property' % (relative_uris[relative_uri]))
                         continue
                     elif json_payload:
                         if 'Name' in json_payload:
