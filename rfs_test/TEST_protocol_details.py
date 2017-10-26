@@ -2707,7 +2707,7 @@ def Assertion_6_5_3(self, log) :
                log.assertion_log('line', rf_utility.json_string(headers))
             else:
                 #link = re.search(r"<.*?(.json/>)", headers[key]).group()
-                if 'rel=describedby' not in headers[key]:
+                if 'rel=describedby' not in headers[key] and 'rel="describedby"' not in headers[key]:
                     assertion_status = log.FAIL
                     log.assertion_log('line', "~ GET~ %s expected a json url link followed by rel=describedby in response header" % (uri))
                     log.assertion_log('line', rf_utility.json_string(headers))
@@ -2724,7 +2724,7 @@ def Assertion_6_5_3(self, log) :
                assertion_status = log.FAIL
                log.assertion_log('line', "Header %s required but not found in response header HEAD ~ %s : FAIL" % (key, uri))
                log.assertion_log('line', rf_utility.json_string(headers))
-            elif 'rel=describedby' not in headers[key]:
+            elif 'rel=describedby' not in headers[key] and 'rel="describedby"' not in headers[key]:
                 assertion_status = log.FAIL
                 log.assertion_log('line', "~ HEAD~ %s expected a json url link followed by rel=describedby in response header" % (uri))
                 log.assertion_log('line', rf_utility.json_string(headers))
