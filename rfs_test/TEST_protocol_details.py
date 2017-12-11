@@ -1386,11 +1386,11 @@ def Assertion_6_4_21(self, log) : #POST
                     if assertion_status_ != log.PASS:                 
                         continue      
                     else:
-                        #check if resource remain unchanged using etag and If-None-Match header
+                        # check if resource remain unchanged using etag and If-None-Match header (this is a SHOULD, so only warn if it fails)
                         rq_headers = self.request_headers()
                         rq_headers['If-None-Match'] = etag
                         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTMODIFIED)      
+                        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTMODIFIED, warn_only=True)
                         # manage assertion status
                         assertion_status = log.status_fixup(assertion_status,assertion_status_)
                         if assertion_status_ != log.PASS:                 
