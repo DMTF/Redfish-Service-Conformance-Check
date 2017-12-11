@@ -644,7 +644,7 @@ class SUT():
     def response_status_check(self, resource_uri, response_status, log, expected_status = None, request_type = 'GET', warn_only=False):
         assertion_status = log.PASS
         if warn_only:
-            # for SHOULD cases where you only only to WARN, not FAIL
+            # for SHOULD cases where you only want to WARN, not FAIL
             fail_status = log.WARN
             fail_text = "warning"
         else:
