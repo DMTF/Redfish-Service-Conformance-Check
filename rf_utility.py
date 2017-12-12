@@ -51,6 +51,9 @@ import gzip
 from xml.etree import ElementTree as ET
 import os
 import zipfile
+import io
+import requests
+import tempfile
 
 
 ###################################################################################################
@@ -737,3 +740,90 @@ def get_resource_json_metadata(namespace, json_directory):
         return None, None
 
 
+def extract_schema_files(schema_url, zip_file, temp_dir_name, schema_path, file_ext, schema_type):
+    """
+    Extract schema files of the given extension into a temp dir and then move them to the target dir
+    :param schema_url: the URL of the zip file holding the schemas
+    :param zip_file: the ZipFile object
+    :param temp_dir_name: the name of the temp dir to extract into
+    :param schema_path: target dir to move the schema files into
+    :param file_ext: the file extension of the schemas to extract
+    :param schema_type: a description string for the type of schemas to be extracted
+    :return: True on success, False otherwise
+    """
+    if os.listdir(schema_path):
+        print('{} schema dir {} not empty; assuming schemas are already downloaded'.format(schema_type, schema_path))
+    else:
+        try:
+            members = [file for file in zip_file.namelist() if file.endswith(file_ext)]
+            for member in members:
+                file = zip_file.extract(member=member, path=temp_dir_name)
+                os.rename(file, os.path.join(schema_path, os.path.basename(file)))
+            print('Downloaded {} schema files into directory {}'.format(schema_type, schema_path))
+        except Exception as e:
+            print('Unable to extract {} schema files from zip {}. Exception is "{}"'
+                  .format(schema_type, schema_url, e), file=sys.stderr)
+            return False
+    return True
+
+
+def download_schemas():
+    """
+    Download schema files into sub-dirs redfish-1.0.0/json-schema/ and redfish-1.0.0/metadata/ if those directories
+    are empty or do not exist.
+    :return: True on success, False otherwise
+    """
+    schema_url = 'http://redfish.dmtf.org/schemas/DSP8010_2017.2.zip'
+    json_path = os.path.normpath(os.path.join(os.getcwd(), 'redfish-1.0.0', 'json-schema'))
+    csdl_path = os.path.normpath(os.path.join(os.getcwd(), 'redfish-1.0.0', 'metadata'))
+
+    # Create dirs if needed
+    try:
+        if not os.path.isdir(json_path):
+            os.makedirs(json_path)
+        if not os.path.isdir(csdl_path):
+            os.makedirs(csdl_path)
+    except OSError as e:
+        print('Error creating target subdirectories {} and/or {}. Exception is "{}"'
+              .format(json_path, csdl_path, e), file=sys.stderr)
+        return False
+
+    # Fetch schemas zip file if needed
+    z = temp_dir = temp_dir_name = None
+    if not os.listdir(json_path) or not os.listdir(csdl_path):
+        # create temp dir to hold extracted zip files
+        try:
+            temp_dir = tempfile.TemporaryDirectory(dir=os.getcwd())
+            temp_dir_name = temp_dir.name
+        except Exception as e:
+            print('Unable to create temp dir for schema extraction. Exception is "{}"'.format(e), file=sys.stderr)
+            if temp_dir is not None:
+                temp_dir.cleanup()
+            return False
+        # fetch the remote zip file
+        try:
+            r = requests.get(schema_url, stream=True)
+            if r.status_code != requests.codes.ok:
+                print('Unable to retrieve schemas zip at {}, status code = {}'
+                      .format(schema_url, r.status_code), file=sys.stderr)
+                if temp_dir is not None:
+                    temp_dir.cleanup()
+                return False
+            z = zipfile.ZipFile(io.BytesIO(r.content), mode='r')
+        except Exception as e:
+            print('Unable to read schemas zip at {}. Exception is "{}"'.format(schema_url, e), file=sys.stderr)
+            if temp_dir is not None:
+                temp_dir.cleanup()
+            return False
+
+    # Extract JSON schemas if needed
+    rc = extract_schema_files(schema_url, z, temp_dir_name, json_path, '.json', 'JSON')
+
+    # Extract CSDL schemas if needed
+    if rc:
+        rc = extract_schema_files(schema_url, z, temp_dir_name, csdl_path, '.xml', 'CSDL')
+
+    if temp_dir is not None:
+        temp_dir.cleanup()
+
+    return rc

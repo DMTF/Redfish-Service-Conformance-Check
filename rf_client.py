@@ -764,7 +764,12 @@ def setup_tool(sut_prop):
 # Start up function. Invokes appropriate setup functions to run Redfish Service Check Tool
 ###############################################################################################
 def main():
-     #  step through the json server configuration file, checking the assertions against each server/SUT...
+    if not rf_utility.download_schemas():
+        print('Error downloading Redfish schemas. Correct the error reported above or')
+        print('manually add the JSON and CSDL schemas to the redfish-1.0.0/json-schema/')
+        print('and redfish-1.0.0/metadata/ sub-directories respectively and try again.')
+        exit(1)
+    # step through the json server configuration file, checking the assertions against each server/SUT...
     SUTs = get_sut_prop()
     for sut_prop in SUTs:
         if sut_prop:
