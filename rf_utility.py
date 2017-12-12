@@ -364,7 +364,11 @@ def http__req_common(sut_prop, http_req, resource_uri, rq_headers, rq_body, auth
             # convert the keys to lowercase so that string searches can be made w/o concern for case..    
             r_headers = dict()
             for key, value in r_response.getheaders():
-                r_headers[key.lower()] = value
+                key = key.lower()
+                if key in r_headers:
+                    r_headers[key] += ',' + value
+                else:
+                    r_headers[key] = value
 
             #handle any http redirect... recursive call here...  
             if ("location" in r_headers.keys()) and (r_headers['location'] != resource_uri and r_response.status>= 300 and r_response.status < 400):
