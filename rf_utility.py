@@ -26,6 +26,7 @@ if (sys.version_info < (3, 0)):
     # Python 2
     Python3 = False
     from urlparse import urlparse
+    from urlparse import urljoin
     from StringIO import StringIO
     from httplib import HTTPSConnection, HTTPConnection, responses
     import urllib2
@@ -35,6 +36,7 @@ else:
     # Python 3
     Python3 = True
     from urllib.parse import urlparse
+    from urllib.parse import urljoin
     from io import StringIO, BytesIO
     from http.client import HTTPSConnection, HTTPConnection, responses
     import urllib.request
@@ -51,9 +53,10 @@ import gzip
 from xml.etree import ElementTree as ET
 import os
 import zipfile
-import io
+import re
 import requests
-import tempfile
+from bs4 import BeautifulSoup
+
 
 
 ###################################################################################################
@@ -740,30 +743,27 @@ def get_resource_json_metadata(namespace, json_directory):
         return None, None
 
 
-def extract_schema_files(schema_url, zip_file, temp_dir_name, schema_path, file_ext, schema_type):
+def download_single_schema(base_url, href, path):
     """
-    Extract schema files of the given extension into a temp dir and then move them to the target dir
-    :param schema_url: the URL of the zip file holding the schemas
-    :param zip_file: the ZipFile object
-    :param temp_dir_name: the name of the temp dir to extract into
-    :param schema_path: target dir to move the schema files into
-    :param file_ext: the file extension of the schemas to extract
-    :param schema_type: a description string for the type of schemas to be extracted
+    Download a single schema file to the directory specified in the path parameter.
+    :param base_url: base URL of the schemas repository
+    :param href: name of the individual schema file
+    :param path: local directory to store the schema
     :return: True on success, False otherwise
     """
-    if os.listdir(schema_path):
-        print('{} schema dir {} not empty; assuming schemas are already downloaded'.format(schema_type, schema_path))
-    else:
-        try:
-            members = [file for file in zip_file.namelist() if file.endswith(file_ext)]
-            for member in members:
-                file = zip_file.extract(member=member, path=temp_dir_name)
-                os.rename(file, os.path.join(schema_path, os.path.basename(file)))
-            print('Downloaded {} schema files into directory {}'.format(schema_type, schema_path))
-        except Exception as e:
-            print('Unable to extract {} schema files from zip {}. Exception is "{}"'
-                  .format(schema_type, schema_url, e), file=sys.stderr)
+    try:
+        url = urljoin(base_url, href)
+        r = requests.get(url, stream=True)
+        if r.status_code != requests.codes.ok:
+            print('Unable to retrieve schema at {}, status code = {}'
+                  .format(url, r.status_code), file=sys.stderr)
             return False
+        with open(os.path.join(path, href), 'wb') as f:
+            f.write(r.content)
+    except Exception as e:
+        print('Unable to copy schema {} from base url {} to dir {}. Exception is "{}"'
+              .format(href, base_url, path, e), file=sys.stderr)
+        return False
     return True
 
 
@@ -773,7 +773,7 @@ def download_schemas():
     are empty or do not exist.
     :return: True on success, False otherwise
     """
-    schema_url = 'http://redfish.dmtf.org/schemas/DSP8010_2017.2.zip'
+    schema_url = 'http://redfish.dmtf.org/schemas/v1/'
     json_path = os.path.normpath(os.path.join(os.getcwd(), 'redfish-1.0.0', 'json-schema'))
     csdl_path = os.path.normpath(os.path.join(os.getcwd(), 'redfish-1.0.0', 'metadata'))
 
@@ -788,42 +788,40 @@ def download_schemas():
               .format(json_path, csdl_path, e), file=sys.stderr)
         return False
 
-    # Fetch schemas zip file if needed
-    z = temp_dir = temp_dir_name = None
+    # Open URL and scrape it for the schemas if the local schema dirs are empty
     if not os.listdir(json_path) or not os.listdir(csdl_path):
-        # create temp dir to hold extracted zip files
+        print('Downloading latest schema files from {}...'.format(schema_url))
         try:
-            temp_dir = tempfile.TemporaryDirectory(dir=os.getcwd())
-            temp_dir_name = temp_dir.name
-        except Exception as e:
-            print('Unable to create temp dir for schema extraction. Exception is "{}"'.format(e), file=sys.stderr)
-            if temp_dir is not None:
-                temp_dir.cleanup()
-            return False
-        # fetch the remote zip file
-        try:
-            r = requests.get(schema_url, stream=True)
+            r = requests.get(schema_url)
             if r.status_code != requests.codes.ok:
-                print('Unable to retrieve schemas zip at {}, status code = {}'
+                print('Unable to retrieve schemas index at {}, status code = {}'
                       .format(schema_url, r.status_code), file=sys.stderr)
-                if temp_dir is not None:
-                    temp_dir.cleanup()
                 return False
-            z = zipfile.ZipFile(io.BytesIO(r.content), mode='r')
         except Exception as e:
-            print('Unable to read schemas zip at {}. Exception is "{}"'.format(schema_url, e), file=sys.stderr)
-            if temp_dir is not None:
-                temp_dir.cleanup()
+            print('Unable to retrieve schemas index at {}. Exception is "{}"'.format(schema_url, e), file=sys.stderr)
             return False
+        try:
+            soup = BeautifulSoup(r.content, 'html.parser')
+            json_refs = csdl_refs = []
+            # only download if the dir is empty
+            if not os.listdir(json_path):
+                json_refs = soup.find_all('a', href=re.compile("\.json$"))
+            if not os.listdir(csdl_path):
+                csdl_refs = soup.find_all('a', href=re.compile("\.xml$"))
+            for ref in json_refs:
+                rc = download_single_schema(schema_url, ref['href'], json_path)
+                if not rc:
+                    return False
+            for ref in csdl_refs:
+                rc = download_single_schema(schema_url, ref['href'], csdl_path)
+                if not rc:
+                    return False
+        except Exception as e:
+            print('Unable to retrieve schemas from {}. Exception is "{}"'.format(schema_url, e), file=sys.stderr)
+            return False
+        print('Download complete.')
+    else:
+        print('Schema dirs {} and {} not empty; assuming schemas are already downloaded.'
+              .format(os.path.join('redfish-1.0.0', 'json-schema'), os.path.join('redfish-1.0.0', 'json-schema')))
 
-    # Extract JSON schemas if needed
-    rc = extract_schema_files(schema_url, z, temp_dir_name, json_path, '.json', 'JSON')
-
-    # Extract CSDL schemas if needed
-    if rc:
-        rc = extract_schema_files(schema_url, z, temp_dir_name, csdl_path, '.xml', 'CSDL')
-
-    if temp_dir is not None:
-        temp_dir.cleanup()
-
-    return rc
+    return True
