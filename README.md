@@ -5,9 +5,9 @@ This tool checks an operational Redfish Service to see that it conforms to the n
 This program has been tested with Python 2.7.10 and 3.4.3.
 ## Installation and Invocation ##
 1. Install one of the python revisions noted as 'verified' (any 2.7+ or 3.4+ "should" work... but the current release was checked only with the 'Verified/operational' ones)
-2. This tool imports openpyxl. openpyxl is not a default install for python - you will need to install it using 'pip'. Execute the following command:
+2. This tool imports `openpyxl`, `requests` and `beautifulsoup4`, which are not installed by default in python. You will need to install them using 'pip'. Execute the following command:
 
-    C:\your_python>  pip --proxy <hostname>:<port> install openpyxl
+    `pip install -r requirements.txt`
 3. Copy the 'files included in this test package' into the python.exe installation directory (or put python.exe in your PATH)
 4. Edit `properties.json`
     - Set the login and location parameters for your Redfish Service System Under Test (SUT) in the `properties.json` file.
