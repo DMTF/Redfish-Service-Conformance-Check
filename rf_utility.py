@@ -753,7 +753,7 @@ def download_single_schema(base_url, href, path):
     """
     try:
         url = urljoin(base_url, href)
-        r = requests.get(url, stream=True)
+        r = requests.get(url)
         if r.status_code != requests.codes.ok:
             print('Unable to retrieve schema at {}, status code = {}'
                   .format(url, r.status_code), file=sys.stderr)
