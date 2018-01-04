@@ -576,12 +576,12 @@ def Assertion_6_1_12(self,log) :
 #####################################################################################################
 # Name: Assertion_6_1_14(self, log)                                               
 # Description:     
-#  ETah headers:  For certain requests and responses implementation shall support returning ETag headers               
+#  ETag headers:  For certain requests and responses implementation shall support returning ETag headers
 #####################################################################################################
 def Assertion_6_1_14(self, log) :
  
     log.AssertionID = '6.1.14'
-    assertion_status =  log.PASS
+    assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
     # get SUTs relative uris dictionary
@@ -592,26 +592,26 @@ def Assertion_6_1_14(self, log) :
     # loop for each uri in relative uris dict
     for relative_uri in relative_uris:
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        #primitive_types = ['Edm.Boolean', 'Edm.DateTimeOffset', 'Edm.Decimal', 'Edm.Double', 'Edm.Guid', 'Edm.Int64', 'Edm.String']
-        #print('The headers is %s' %headers)
-        try:
-            etag_ = headers['etag']
-            if etag_ in headers['etag']:
-                print('The ETag is present in %s' %relative_uri)
-                print ('The etag is %s' %etag_)
-                assertion_status= log.PASS
-                continue
-        except:
-            print('ETag header not found in %s' %relative_uri)
-            assertion_status= log.WARN
-            continue
-
-    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)             
-        # manage assertion status
-    assertion_status = log.status_fixup(assertion_status,assertion_status_)
+        if status == rf_utility.HTTP_OK:
+            if 'etag' in headers:
+                print('ETag header is present in {}'.format(relative_uris[relative_uri]))
+                print('The ETag is {}'.format(headers.get('etag')))
+                assertion_status_ = log.PASS
+            else:
+                typename = None
+                if json_payload is not None and '@odata.type' in json_payload:
+                    namespace, typename = rf_utility.parse_odata_type(json_payload.get('@odata.type'))
+                if typename == 'ManagerAccount':
+                    assertion_status_ = log.FAIL
+                    log.assertion_log('line', '~ ETag header missing in response from {}; required for {} resources'
+                                      .format(relative_uris[relative_uri], typename))
+                else:
+                    assertion_status_ = log.WARN
+                    print('ETag header missing in response from {}'.format(relative_uris[relative_uri]))
+            assertion_status = log.status_fixup(assertion_status, assertion_status_)
 
     log.assertion_log(assertion_status, None)
-    return (assertion_status)
+    return assertion_status
 #
 ## end Assertion 6.1.14
 
