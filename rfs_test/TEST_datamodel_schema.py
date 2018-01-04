@@ -880,7 +880,7 @@ def check_property_in_payload(property, json_payload):
     for key in json_payload:
         if key == property.Name:
             #value cant be null
-            if not json_payload[key]:
+            if json_payload[key] is None:
                 return False
     return True
 
@@ -931,8 +931,8 @@ def Assertion_7_5_13_xml(self, log):
                             #check if the payload contains the key and its value
                             if not check_property_in_payload(navproperty, json_payload):
                                 assertion_status = log.FAIL
-                                log.assertion_log('line', "Resource %s contains a Navigation Property: %s which has Annotation 'Nullable' set to 'false' but property's value is null in its resource urls payload %s" % (typename.Name, property.Name, relative_uris[relative_uri]))
-                                
+                                log.assertion_log('line', "Resource %s contains a Navigation Property: %s which has Annotation 'Nullable' set to 'false' but property's value is null in its resource urls payload %s" % (typename.Name, navproperty.Name, relative_uris[relative_uri]))
+
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 
