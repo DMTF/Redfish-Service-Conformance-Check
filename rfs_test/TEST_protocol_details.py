@@ -2865,7 +2865,7 @@ def Assertion_6_5_6_6(self, log) :
 ###################################################################################################
 # Name: Assertion_6_5_6_8(self, log)                                               
 # Description:     
-# Method: POST ~ 304 Not Modified
+# Method: conditional GET ~ 304 Not Modified
 ###################################################################################################		                                                        
 
 def Assertion_6_5_6_8(self, log) :
@@ -2905,11 +2905,6 @@ def Assertion_6_5_6_8(self, log) :
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
                 if assertion_status_ != log.PASS: 
                     pass
-                    # check if intended method is an allowable method for resource  
-                elif not (self.allowable_method('POST', headers)):
-                    assertion_status = log.FAIL
-                    log.assertion_log('line', "~ note: the header returned from GET %s do not indicate support for POST" % acc_collection)
-                    log.assertion_log('line', rf_utility.json_string(headers))
                 else:
                     members = self.get_resource_members(acc_collection)
                     for json_payload, headers in members:
@@ -2922,14 +2917,15 @@ def Assertion_6_5_6_8(self, log) :
                             rq_headers = self.request_headers()
                             rq_headers['If-None-Match'] = etag
                             json_payload_, headers_, status_ = self.http_GET(json_payload['@odata.id'], rq_headers, authorization)
-                            assertion_status_ = self.response_status_check(json_payload['@odata.id'], status_, log, rf_utility.HTTP_NOTMODIFIED)      
+                            assertion_status_ = self.response_status_check(json_payload['@odata.id'], status_, log,
+                                                                           rf_utility.HTTP_NOTMODIFIED, warn_only=True)
                             # manage assertion status
                             assertion_status = log.status_fixup(assertion_status,assertion_status_)
                             if assertion_status_ != log.PASS: 
                                 log.assertion_log('XL_COMMENT', ('Checked if resource is modified using If-None-Match header and etag' ))
                                 continue
                             else:
-                                log.assertion_log('XL_COMMENT', "~ POST : status code %s as expected" % (status) )   
+                                log.assertion_log('XL_COMMENT', "~ conditional GET : status code %s as expected" % (status) )
                                 log.assertion_log('XL_COMMENT', ('Checked if resource is modified using If-None-Match header and etag' ))
 
     else:
