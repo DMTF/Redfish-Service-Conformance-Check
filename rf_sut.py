@@ -611,8 +611,9 @@ class SUT():
     ###############################################################################################
     def get_resource_members(self, uri = None, rq_headers = None, json_payload = None):
         authorization = 'on'
-        if uri != None:
-            if rq_headers == None:
+        status = rf_utility.HTTP_OK
+        if uri is not None:
+            if rq_headers is None:
                 rq_headers = self.request_headers()
             #get a response json_payload from GET on the link for a response header, then iterate through the json_payload for member uris 
             json_payload, headers, status = self.http_GET(uri, rq_headers, authorization)
@@ -620,19 +621,20 @@ class SUT():
                 yield None, None
             elif (status != rf_utility.HTTP_OK):
                 print("- GET member resource %s : FAIL (HTTP status: %s)" % (uri, status) )
-            elif json_payload:
-                #property name = 'Members' as mapped out by Redfish 1.01  
-                if 'Members' in json_payload:
-                    # iterate 
-                    for member in json_payload['Members']:
-                        mem_payload, headers, status = self.http_GET(member['@odata.id'], rq_headers, authorization)
-                        if not (mem_payload and headers and status):
-                            continue
-                        elif (status != rf_utility.HTTP_OK):
-                            continue
-                            #print( "- GET %s : FAIL (HTTP status: %s)" % (member['@odata.id'], status) )                        
-                        else:
-                            yield mem_payload, headers
+
+        if json_payload is not None and status == rf_utility.HTTP_OK:
+            #property name = 'Members' as mapped out by Redfish 1.01
+            if 'Members' in json_payload:
+                # iterate
+                for member in json_payload['Members']:
+                    mem_payload, headers, status = self.http_GET(member['@odata.id'], rq_headers, authorization)
+                    if not (mem_payload and headers and status):
+                        continue
+                    elif (status != rf_utility.HTTP_OK):
+                        continue
+                        #print( "- GET %s : FAIL (HTTP status: %s)" % (member['@odata.id'], status) )
+                    else:
+                        yield mem_payload, headers
 
 
     #####################################################################################################
