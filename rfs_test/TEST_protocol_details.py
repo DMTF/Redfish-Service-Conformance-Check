@@ -2950,32 +2950,117 @@ def Assertion_6_5_6_8(self, log) :
 # (such as validation error on a field, a missing required value, and so on).
 # An extended error shall be returned in the response body, as defined in section Extended Error Handling.                                                 
 ###################################################################################################
-def Assertion_6_5_6_9(self, log) :
+def Assertion_6_5_6_9(self, log):
 
     log.AssertionID = '6.5.6.9'
-    assertion_status =  log.PASS
+    assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'off' # this prevents the http__GET() from setting an authorization header and overwriting the 'wrongid' one set below
-    relative_uris = self.relative_uris
+
+    authorization = 'on'
     rq_headers = self.request_headers()
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        query_url = json_payload['@odata.id'][:-1]
-        json_payload, headers, status = self.http_GET(query_url, rq_headers, authorization)
-        assertion_status_ = self.response_status_check(query_url, status, log, rf_utility.HTTP_NOT_FOUND)          
+
+    root_link_key = 'SessionService'
+
+    if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers,
+                                                      authorization)
+        assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)
         # manage assertion status
-        assertion_status = log.status_fixup(assertion_status,assertion_status_)
-        print('Got a 404 status for a bad request for the url %s' %query_url)
-        log.assertion_log(assertion_status, None)
-        return assertion_status
+        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+        if assertion_status_ != log.PASS:
+            pass
+        elif not json_payload:
+            assertion_status_ = log.WARN
+            # manage assertion status
+            assertion_status = log.status_fixup(assertion_status, assertion_status_)
+            log.assertion_log('line',
+                              'No response body for resource %s. Assertion for the resource could not be completed' % (
+                                self.sut_toplevel_uris[root_link_key]['url']))
+        else:
+            # get sessions
+            if 'Sessions' not in json_payload:
+                assertion_status = log.FAIL
+                log.assertion_log('line', "~ Sessions expected in the response payload of %s ~ not found" % (
+                    self.sut_toplevel_uris[root_link_key]['url']))
+            else:
+                try:
+                    sessions_url = json_payload['Sessions']['@odata.id']
+                except:
+                    assertion_status = log.FAIL
+                    log.assertion_log('line', "~ Sessions expected in the response payload of %s ~ not found" % (
+                        self.sut_toplevel_uris[root_link_key]['url']))
+                else:
+                    json_payload, headers, status = self.http_GET(sessions_url, rq_headers, authorization)
+                    assertion_status_ = self.response_status_check(sessions_url, status, log)
+                    # manage assertion status
+                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                    if assertion_status_ != log.PASS:
+                        pass
+                    else:
+                        rq_headers = self.request_headers()
+                        # send this bogus request body to trigger a 400 Bad Request
+                        rq_body = {'Foo': 1, 'Bar': 2}
+                        rq_headers['Content-Type'] = 'application/json'
+                        log.assertion_log('TX_COMMENT', 'Requesting POST for resource %s with request body %s' % (
+                            sessions_url, rq_body))
+                        json_payload, headers, status = self.http_POST(sessions_url, rq_headers, rq_body, authorization)
+                        # Spec doesn't mandate this particular case shall get a 400, so just warn on the status check
+                        assertion_status_ = self.response_status_check(sessions_url, status, log,
+                                                                       rf_utility.HTTP_BADREQUEST, request_type='POST',
+                                                                       warn_only=True)
+                        # manage assertion status
+                        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                        if assertion_status_ != log.PASS:
+                            log.assertion_log('line',
+                                              "~ note: Expected status 400, but received status %s" % status)
+                            pass
+                        else:
+                            # got a 400 response; check for extended error in body
+                            log.assertion_log('line', 'Status: %s; Message body: %s' % (status, json_payload))
+                            found_extended_error = False
+                            if isinstance(json_payload, dict):
+                                if 'error' in json_payload:
+                                    error = json_payload.get('error')
+                                    if all(k in error for k in ('code', 'message', '@Message.ExtendedInfo')):
+                                        extended_arr = error.get('@Message.ExtendedInfo')
+                                        if isinstance(extended_arr, list) and len(extended_arr) > 0:
+                                            extended_elem = extended_arr[0]
+                                            if 'MessageId' in extended_elem:
+                                                found_extended_error = True
+                                            else:
+                                                log.assertion_log('line',
+                                                                  '~ note: "MessageId" not found in message object')
+                                        else:
+                                            log.assertion_log('line',
+                                                              '~ note: message object array empty')
+                                    else:
+                                        log.assertion_log('line',
+                                                          '~ note: error property did not contain expected properties' +
+                                                          ' "code", "message", and "@Message.ExtendedInfo"')
+                                else:
+                                    log.assertion_log('line',
+                                                      '~ note: "error" property not found in response body')
+                            else:
+                                log.assertion_log('line',
+                                                  '~ note: no JSON payload found in response body')
+                            if not found_extended_error:
+                                # Spec mandates a 400 response shall include an extended error, so fail if not found
+                                assertion_status = log.FAIL
+                                log.assertion_log('line',
+                                                  '~ note: 400 response did not include extended error in the body')
+
+    else:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ Uri to %s resource not found in redfish top level links: %s" % (
+            root_link_key, self.sut_toplevel_uris))
 
     log.assertion_log(assertion_status, None)
-    return (assertion_status)
+    return assertion_status
+
 #
 ## end Assertion 6.5.6.9
-###################################################################################################
 
+###################################################################################################
 # Name: Assertion_6_5_6_10(self, log)                                               
 # Description:                                                  
 # 	401 Unauthorized 
