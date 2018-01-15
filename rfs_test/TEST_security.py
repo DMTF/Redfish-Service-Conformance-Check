@@ -533,7 +533,7 @@ def Assertion_9_3_2_1(self, log) :
                                     # check if intended method is an allowable method for resource
                                     if (self.allowable_method('DELETE', headers)):         
                                         json_payload_, headers_, status_ = self.http_DELETE(json_payload['@odata.id'], rq_headers, authorization)
-                                        assertion_status_ = self.response_status_check(json_payload['@odata.id'], status_, log)      
+                                        assertion_status_ = self.response_status_check(json_payload['@odata.id'], status_, log, request_type='DELETE')
                                         # manage assertion status
                                         assertion_status = log.status_fixup(assertion_status,assertion_status_)
                                         if assertion_status_ != log.PASS: 
@@ -788,7 +788,7 @@ def Assertion_9_3_2_2(self, log) :
                                         authorization = 'on' 
                                         rq_headers = self.request_headers()
                                         auth_payload, headers, status = self.http_PATCH(account_url, rq_headers, rq_body, authorization)
-                                        assertion_status_ = self.response_status_check(account_url, status, log)      
+                                        assertion_status_ = self.response_status_check(account_url, status, log, request_type='PATCH')
                                         # manage assertion status
                                         assertion_status = log.status_fixup(assertion_status,assertion_status_)
                                          

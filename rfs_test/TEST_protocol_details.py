@@ -1774,7 +1774,7 @@ def Assertion_6_4_26(self, log) :
                                     rq_headers['content-type'] = 'application/json'
                                     rq_headers['odata-version'] = '4.0'
                                     json_payload, headers, status = self.http_POST(each_member, rq_headers, rq_body, authorization)
-                                    assertion_status = self.response_status_check(each_member, status, log)
+                                    assertion_status = self.response_status_check(each_member, status, log, request_type='POST')
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -1814,7 +1814,7 @@ def Assertion_6_4_27(self, log) :
         else:
             if not (self.allowable_method('POST', headers)):
                 json_payload, headers, status = self.http_POST(relative_uris[relative_uri], rq_headers, rq_body, authorization)
-                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'DELETE')       
+                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'POST')
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
                 if assertion_status_ != log.PASS:                 
@@ -2714,7 +2714,7 @@ def Assertion_6_5_3(self, log) :
                     log.assertion_log('line', rf_utility.json_string(headers))
 
         json_payload, headers, status = self.http_HEAD(uri, rq_headers, authorization)
-        assertion_status_ = self.response_status_check(uri, status, log)
+        assertion_status_ = self.response_status_check(uri, status, log, request_type='HEAD')
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
         if assertion_status_ != log.PASS: 

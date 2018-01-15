@@ -641,7 +641,7 @@ class SUT():
     # Name: response_status_check(resource_uri, response_status, log, expected_status = None, request_type = 'GET')
     #   Takes resource uri, response status, log instance and optionally an expected status and a 
     #   request stype string (GET, POST etc) and verifies response status against that. 
-    #   By default it checks against HTTP OK or NO CONTENT status and default request type is 'GET'
+    #   The default expected statuses are defined in success_map and the default request type is 'GET'
     #####################################################################################################
     def response_status_check(self, resource_uri, response_status, log, expected_status = None, request_type = 'GET', warn_only=False):
         assertion_status = log.PASS
@@ -653,33 +653,47 @@ class SUT():
             fail_status = log.FAIL
             fail_text = "failed"
 
+        success_map = {
+            'GET': [rf_utility.HTTP_OK],
+            'HEAD': [rf_utility.HTTP_OK],
+            'POST': [rf_utility.HTTP_OK, rf_utility.HTTP_CREATED, rf_utility.HTTP_ACCEPTED, rf_utility.HTTP_NO_CONTENT],
+            'PUT': [rf_utility.HTTP_OK, rf_utility.HTTP_CREATED, rf_utility.HTTP_ACCEPTED, rf_utility.HTTP_NO_CONTENT],
+            'PATCH': [rf_utility.HTTP_OK, rf_utility.HTTP_CREATED, rf_utility.HTTP_ACCEPTED, rf_utility.HTTP_NO_CONTENT],
+            'DELETE': [rf_utility.HTTP_OK, rf_utility.HTTP_ACCEPTED, rf_utility.HTTP_NO_CONTENT]
+        }
+
+        if expected_status is not None:
+            if not isinstance(expected_status, list):
+                expected_status = [expected_status]
+        else:
+            expected_status = success_map.get(request_type)
+            if expected_status is None:
+                log.assertion_log('line', 'Unexpected request_type %s provided. Assuming request_type of GET'
+                                  % request_type)
+                expected_status = success_map.get('GET')
+
         if not response_status:
             assertion_status = log.WARN
+            log.assertion_log('line', 'Response status not specified; unable to check against expected status code.')
         else:
-            if expected_status:
-                # explicit expected_status and not_found are acceptable status in most cases, anything else is an error
-                if response_status != expected_status and response_status != rf_utility.HTTP_NOT_FOUND:
-                    assertion_status = fail_status
-                    try:
-                        log.assertion_log('line', "~ %s:%s %s : HTTP status %s:%s, Expected status %s:%s" % (request_type, resource_uri, fail_text, response_status, rf_utility.HTTP_status_string(response_status), expected_status, rf_utility.HTTP_status_string(expected_status)))
-                    except:
-                        log.assertion_log('line', "~ %s:%s %s : HTTP status %s, Expected status %s" % (request_type, resource_uri, fail_text, response_status, expected_status))
-            elif response_status != rf_utility.HTTP_OK and response_status != rf_utility.HTTP_NO_CONTENT and response_status != rf_utility.HTTP_NOT_FOUND:
-                # http_ok, no_content, and not_found are acceptable status in most cases, anything else is an error
+            if response_status not in expected_status and response_status != rf_utility.HTTP_NOT_FOUND:
                 assertion_status = fail_status
                 try:
-                    log.assertion_log('line', "~ %s:%s %s : HTTP status %s:%s, Expected status %s:%s" % (request_type, resource_uri, fail_text, response_status, rf_utility.HTTP_status_string(response_status), rf_utility.HTTP_OK, rf_utility.HTTP_status_string(rf_utility.HTTP_OK)))
+                    log.assertion_log('line', "~ %s:%s %s : HTTP status %s:%s, Expected statuses: %s" % (
+                        request_type, resource_uri, fail_text, response_status,
+                        rf_utility.HTTP_status_string(response_status), expected_status))
                 except:
-                    log.assertion_log('line', "~ %s:%s %s : HTTP status %s, Expected status %s" % (request_type, resource_uri, fail_text, response_status, rf_utility.HTTP_OK))
-            # if the url is not found, then log it as a subtle warning (if an assertion passes as the result of all urls not found, there should be atleast some info)
+                    log.assertion_log('line', "~ %s:%s %s : HTTP status %s, Expected statuses: %s" % (
+                        request_type, resource_uri, fail_text, response_status, expected_status))
+
+            # if the url is not found, then log it as 'incomplete'
             # TODO add a diff log status for such case or do a sanity check for all urls at the start of the tool before running assertions)
             if response_status == rf_utility.HTTP_NOT_FOUND:
                 assertion_status = log.INCOMPLETE
-                log.assertion_log('TX_COMMENT',"WARN: %s:%s failed : HTTP status %s:%s" % (request_type , resource_uri, response_status, rf_utility.HTTP_status_string(response_status)) )
+                log.assertion_log('TX_COMMENT', "WARN: %s:%s incomplete: HTTP status %s:%s" % (
+                    request_type, resource_uri, response_status, rf_utility.HTTP_status_string(response_status)))
         
         return assertion_status
-    
-
 
     
     ###############################################################################################
