@@ -611,8 +611,9 @@ class SUT():
     ###############################################################################################
     def get_resource_members(self, uri = None, rq_headers = None, json_payload = None):
         authorization = 'on'
-        if uri != None:
-            if rq_headers == None:
+        status = rf_utility.HTTP_OK
+        if uri is not None:
+            if rq_headers is None:
                 rq_headers = self.request_headers()
             #get a response json_payload from GET on the link for a response header, then iterate through the json_payload for member uris 
             json_payload, headers, status = self.http_GET(uri, rq_headers, authorization)
@@ -620,26 +621,27 @@ class SUT():
                 yield None, None
             elif (status != rf_utility.HTTP_OK):
                 print("- GET member resource %s : FAIL (HTTP status: %s)" % (uri, status) )
-            elif json_payload:
-                #property name = 'Members' as mapped out by Redfish 1.01  
-                if 'Members' in json_payload:
-                    # iterate 
-                    for member in json_payload['Members']:
-                        mem_payload, headers, status = self.http_GET(member['@odata.id'], rq_headers, authorization)
-                        if not (mem_payload and headers and status):
-                            continue
-                        elif (status != rf_utility.HTTP_OK):
-                            continue
-                            #print( "- GET %s : FAIL (HTTP status: %s)" % (member['@odata.id'], status) )                        
-                        else:
-                            yield mem_payload, headers
+
+        if json_payload is not None and status == rf_utility.HTTP_OK:
+            #property name = 'Members' as mapped out by Redfish 1.01
+            if 'Members' in json_payload:
+                # iterate
+                for member in json_payload['Members']:
+                    mem_payload, headers, status = self.http_GET(member['@odata.id'], rq_headers, authorization)
+                    if not (mem_payload and headers and status):
+                        continue
+                    elif (status != rf_utility.HTTP_OK):
+                        continue
+                        #print( "- GET %s : FAIL (HTTP status: %s)" % (member['@odata.id'], status) )
+                    else:
+                        yield mem_payload, headers
 
 
     #####################################################################################################
     # Name: response_status_check(resource_uri, response_status, log, expected_status = None, request_type = 'GET')
     #   Takes resource uri, response status, log instance and optionally an expected status and a 
     #   request stype string (GET, POST etc) and verifies response status against that. 
-    #   By default it checks against HTTP OK status and default request type is 'GET'  
+    #   The default expected statuses are defined in success_map and the default request type is 'GET'
     #####################################################################################################
     def response_status_check(self, resource_uri, response_status, log, expected_status = None, request_type = 'GET', warn_only=False):
         assertion_status = log.PASS
@@ -651,32 +653,47 @@ class SUT():
             fail_status = log.FAIL
             fail_text = "failed"
 
-        if not response_status:
-            asseertion_status = log.WARN
+        success_map = {
+            'GET': [rf_utility.HTTP_OK],
+            'HEAD': [rf_utility.HTTP_OK],
+            'POST': [rf_utility.HTTP_OK, rf_utility.HTTP_CREATED, rf_utility.HTTP_ACCEPTED, rf_utility.HTTP_NO_CONTENT],
+            'PUT': [rf_utility.HTTP_OK, rf_utility.HTTP_CREATED, rf_utility.HTTP_ACCEPTED, rf_utility.HTTP_NO_CONTENT],
+            'PATCH': [rf_utility.HTTP_OK, rf_utility.HTTP_CREATED, rf_utility.HTTP_ACCEPTED, rf_utility.HTTP_NO_CONTENT],
+            'DELETE': [rf_utility.HTTP_OK, rf_utility.HTTP_ACCEPTED, rf_utility.HTTP_NO_CONTENT]
+        }
+
+        if expected_status is not None:
+            if not isinstance(expected_status, list):
+                expected_status = [expected_status]
         else:
-            if expected_status:
-           # http_ok and not found are acceptable status in most cases, anything else is generally a warning unless handled in individiual assertion as a failure
-                if (response_status != expected_status and response_status != rf_utility.HTTP_NOT_FOUND) :
-                    assertion_status = fail_status
-                    try:
-                        log.assertion_log('line', "~ %s:%s %s : HTTP status %s:%s, Expected status %s:%s" % (request_type, resource_uri, fail_text, response_status, rf_utility.HTTP_status_string(response_status), expected_status, rf_utility.HTTP_status_string(expected_status)))
-                    except:
-                        log.assertion_log('line', "~ %s:%s %s : HTTP status %s, Expected status %s" % (request_type, resource_uri, fail_text, response_status, expected_status))
-            elif (response_status != rf_utility.HTTP_OK and response_status != rf_utility.HTTP_NOT_FOUND) :
-                    assertion_status = fail_status
-                    try:
-                        log.assertion_log('line', "~ %s:%s %s : HTTP status %s:%s, Expected status %s:%s" % (request_type, resource_uri, fail_text, response_status, rf_utility.HTTP_status_string(response_status), rf_utility.HTTP_OK, rf_utility.HTTP_status_string(rf_utility.HTTP_OK)))
-                    except:
-                        log.assertion_log('line', "~ %s:%s %s : HTTP status %s, Expected status %s" % (request_type, resource_uri, fail_text, response_status, rf_utility.HTTP_OK))
-                    # if the url is not found, then log it as a subtle warning (if an assertion passes as the result of all urls not found, there should be atleast some info) 
-                    #TODO add a diff log status for such case or do a sanity check for all urls at the start of the tool before running assertions)
+            expected_status = success_map.get(request_type)
+            if expected_status is None:
+                log.assertion_log('line', 'Unexpected request_type %s provided. Assuming request_type of GET'
+                                  % request_type)
+                expected_status = success_map.get('GET')
+
+        if not response_status:
+            assertion_status = log.WARN
+            log.assertion_log('line', 'Response status not specified; unable to check against expected status code.')
+        else:
+            if response_status not in expected_status and response_status != rf_utility.HTTP_NOT_FOUND:
+                assertion_status = fail_status
+                try:
+                    log.assertion_log('line', "~ %s:%s %s : HTTP status %s:%s, Expected statuses: %s" % (
+                        request_type, resource_uri, fail_text, response_status,
+                        rf_utility.HTTP_status_string(response_status), expected_status))
+                except:
+                    log.assertion_log('line', "~ %s:%s %s : HTTP status %s, Expected statuses: %s" % (
+                        request_type, resource_uri, fail_text, response_status, expected_status))
+
+            # if the url is not found, then log it as 'incomplete'
+            # TODO add a diff log status for such case or do a sanity check for all urls at the start of the tool before running assertions)
             if response_status == rf_utility.HTTP_NOT_FOUND:
                 assertion_status = log.INCOMPLETE
-                log.assertion_log('TX_COMMENT',"WARN: %s:%s failed : HTTP status %s:%s" % (request_type , resource_uri, response_status, rf_utility.HTTP_status_string(response_status)) )
+                log.assertion_log('TX_COMMENT', "WARN: %s:%s incomplete: HTTP status %s:%s" % (
+                    request_type, resource_uri, response_status, rf_utility.HTTP_status_string(response_status)))
         
         return assertion_status
-    
-
 
     
     ###############################################################################################

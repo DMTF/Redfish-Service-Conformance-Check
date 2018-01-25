@@ -1149,18 +1149,19 @@ def Assertion_6_4_13(self, log) :
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
         else:
             if '@odata.type' in json_payload:
-                if 'Collection' in json_payload['@odata.type']:                  
+                if 'Collection' in json_payload['@odata.type']:
+                    if '@odata.id' not in json_payload:
+                        assertion_status_ = log.FAIL
+                        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                        log.assertion_log('line', "~ @odata.id not found in redfish resource %s" % (
+                            relative_uris[relative_uri]))
+                        continue
                     query_url = json_payload['@odata.id'][:-1] + query_param
                     json_payload, headers, status = self.http_GET(query_url , rq_headers, authorization)
                     print('Status is %s' %status)
                     assertion_status_ = self.response_status_check(query_url, status, log, rf_utility.HTTP_NOTIMPLEMENTED)      
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                    if status == 501 :
-                        assertion_status = log.PASS
-                        print('The status is %s for the query %s in the resource %s' %(status,query_param,relative_uri))
-                        log.assertion_log(assertion_status, None)
-                        return (assertion_status)
             else:      
                 assertion_status = log.WARN
                 log.assertion_log('line', "~ @odata.type (resource identifier property) not found in redfish resource %s" % (relative_uris[relative_uri]))
@@ -1773,7 +1774,7 @@ def Assertion_6_4_26(self, log) :
                                     rq_headers['content-type'] = 'application/json'
                                     rq_headers['odata-version'] = '4.0'
                                     json_payload, headers, status = self.http_POST(each_member, rq_headers, rq_body, authorization)
-                                    assertion_status = self.response_status_check(each_member, status, log)
+                                    assertion_status = self.response_status_check(each_member, status, log, request_type='POST')
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -1813,7 +1814,7 @@ def Assertion_6_4_27(self, log) :
         else:
             if not (self.allowable_method('POST', headers)):
                 json_payload, headers, status = self.http_POST(relative_uris[relative_uri], rq_headers, rq_body, authorization)
-                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'DELETE')       
+                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'POST')
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
                 if assertion_status_ != log.PASS:                 
@@ -2713,7 +2714,7 @@ def Assertion_6_5_3(self, log) :
                     log.assertion_log('line', rf_utility.json_string(headers))
 
         json_payload, headers, status = self.http_HEAD(uri, rq_headers, authorization)
-        assertion_status_ = self.response_status_check(uri, status, log)
+        assertion_status_ = self.response_status_check(uri, status, log, request_type='HEAD')
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
         if assertion_status_ != log.PASS: 
@@ -2865,7 +2866,7 @@ def Assertion_6_5_6_6(self, log) :
 ###################################################################################################
 # Name: Assertion_6_5_6_8(self, log)                                               
 # Description:     
-# Method: POST ~ 304 Not Modified
+# Method: conditional GET ~ 304 Not Modified
 ###################################################################################################		                                                        
 
 def Assertion_6_5_6_8(self, log) :
@@ -2905,11 +2906,6 @@ def Assertion_6_5_6_8(self, log) :
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
                 if assertion_status_ != log.PASS: 
                     pass
-                    # check if intended method is an allowable method for resource  
-                elif not (self.allowable_method('POST', headers)):
-                    assertion_status = log.FAIL
-                    log.assertion_log('line', "~ note: the header returned from GET %s do not indicate support for POST" % acc_collection)
-                    log.assertion_log('line', rf_utility.json_string(headers))
                 else:
                     members = self.get_resource_members(acc_collection)
                     for json_payload, headers in members:
@@ -2922,14 +2918,15 @@ def Assertion_6_5_6_8(self, log) :
                             rq_headers = self.request_headers()
                             rq_headers['If-None-Match'] = etag
                             json_payload_, headers_, status_ = self.http_GET(json_payload['@odata.id'], rq_headers, authorization)
-                            assertion_status_ = self.response_status_check(json_payload['@odata.id'], status_, log, rf_utility.HTTP_NOTMODIFIED)      
+                            assertion_status_ = self.response_status_check(json_payload['@odata.id'], status_, log,
+                                                                           rf_utility.HTTP_NOTMODIFIED, warn_only=True)
                             # manage assertion status
                             assertion_status = log.status_fixup(assertion_status,assertion_status_)
                             if assertion_status_ != log.PASS: 
                                 log.assertion_log('XL_COMMENT', ('Checked if resource is modified using If-None-Match header and etag' ))
                                 continue
                             else:
-                                log.assertion_log('XL_COMMENT', "~ POST : status code %s as expected" % (status) )   
+                                log.assertion_log('XL_COMMENT', "~ conditional GET : status code %s as expected" % (status) )
                                 log.assertion_log('XL_COMMENT', ('Checked if resource is modified using If-None-Match header and etag' ))
 
     else:
@@ -3407,15 +3404,27 @@ def verify_singleton_urlcxt(json_payload, assertion_status, self, log):
     key = '@odata.context'
     if key not in json_payload:
         assertion_status = log.FAIL
-        log.assertion_log('line', "Expected property %s for resource %s " % (key, json_payload['@odata.id']) )
+        if '@odata.id' in json_payload:
+            res = json_payload['@odata.id']
+        else:
+            res = ''
+        log.assertion_log('line', "Expected property %s for resource %s" % (key, res))
     else:
         #verify singleton context url format
         metadata_url = "/redfish/v1/$metadata#"
         resource_type = rf_utility.parse_unversioned_odata_type(json_payload['@odata.type'])
         resource_path = None
+        if '@odata.id' not in json_payload:
+            assertion_status = log.FAIL
+            log.assertion_log('line', "~ @odata.id not found in redfish resource with context %s" % json_payload[key])
+            return assertion_status
+        if '/v1/' not in json_payload['@odata.id']:
+            assertion_status = log.FAIL
+            log.assertion_log('line', "~ @odata.id did not contain expected '/v1/' in redfish resource %s" % json_payload['@odata.id'])
+            return assertion_status
         odata_id = (json_payload['@odata.id']).rsplit('/v1/', 1)[1]
         if odata_id:
-           # odata_id = odata_id[:-1]
+            # odata_id = odata_id[:-1]
             resource_path = odata_id
 
         selectlist = '' # list of properties - Todo
@@ -3452,7 +3461,7 @@ def verify_singleton_urlcxt_new(json_payload, assertion_status, self, log):
                                     assertion_status= log.FAIL
                                 elif isinstance(json_payload[property.Name],dict) :
                                     assertion_status= log.FAIL
-                                    log.assertion_log('line', "The required property is a complex type" % (key, json_payload[property.Name]) )
+                                    log.assertion_log('line', "The property %s is a complex type" % property.Name)
                         
     return assertion_status     
        
@@ -3490,13 +3499,13 @@ def Assertion_6_5_14(self, log):
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
         else:
             if '@odata.type' in json_payload:
-                if 'Collection' in json_payload['@odata.type']:  
+                if 'Collection' in json_payload['@odata.type']:
                     assertion_status = verify_collection_urlcxt(json_payload, assertion_status, self, log)
                     #check members of collection context url
                     members = self.get_resource_members(json_payload = json_payload)     
                     for json_payload, headers in members:
                         assertion_status = verify_singleton_urlcxt(json_payload, assertion_status, self, log)                                               
-                else:   
+                else:
                     #check singleton context url                 
                     assertion_status = verify_singleton_urlcxt_new(json_payload, assertion_status,self,log)
                                              
