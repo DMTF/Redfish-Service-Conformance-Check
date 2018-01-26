@@ -1,5 +1,7 @@
-
 # Change Log
+
+## [1.0.0] - 2018-01-26
+- Various bug fixes; getting into standard release cadence
 
 ## [2016.09] - 2016-09-22
 - Initial Release to public
@@ -17,14 +19,14 @@
 
 ## [2016.04] - 2016-04-12
 - Added utility class/function support:
-  	- properties.json controls added: download schema files from dmtf URI/location
+    - properties.json controls added: download schema files from dmtf URI/location
     - utilty functions added to exaustively parse/scan schema/metadata files
 - Added Assertion coverage for section 7 (Data Model & Schema)
-               	3. 
+
 ## [2016.03] - 2016-03-21
 - This tool revision has been run on a second OEM production level Service
-	- Code changes were made to the HTTP connection functions
-    - Assertions were 'normalized' based on the 2 Service interpretations of the Redfish spec 
+- Code changes were made to the HTTP connection functions
+- Assertions were 'normalized' based on the 2 Service interpretations of the Redfish spec 
 - Increased assertion coverage for Sections 6, 8 and 9
 - Utility fuction support for section 7: map schema namespace to URI for related json payload
 
@@ -38,14 +40,7 @@
 - Add user config. parameters for Event Service subscription and Test Event to properties.json
 - Add user config. parameters for Metadata file location to properties.json
 - Support for python 3.4.2 has been added/verified
+
 ## [2016.01] - 2016-01-15
 - Initial push to the DMTF/SPMF repository https://github.com/DMTF/spmf.git. 
 - This tool revision has been verified against only one Redfish Service 1.0 enabled production server (the only one available in Q4'15). 
-
-
-
-
-
-
-
-
