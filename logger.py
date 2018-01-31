@@ -246,7 +246,7 @@ class Log:
     #   else 0                
     ###############################################################################################
     def assertion_id_row(self, assertion_id):
-
+        
         asx_handle = self.XlAssertionSheet
 
         #find the assertion id in the xls file...

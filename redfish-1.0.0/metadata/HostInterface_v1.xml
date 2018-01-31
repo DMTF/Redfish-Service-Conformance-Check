@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!---->
 <!--################################################################################       -->
-<!--# Redfish Schema:  HostInterface  v1.0.0-->
+<!--# Redfish Schema:  HostInterface  v1.1.1-->
 <!--#                                                                                      -->
 <!--# For a detailed change log, see the README file contained in the DSP8010 bundle,      -->
 <!--# available at http://www.dmtf.org/standards/redfish                                   -->
-<!--# Copyright 2014-2016 Distributed Management Task Force, Inc. (DMTF).                  -->
+<!--# Copyright 2014-2017 Distributed Management Task Force, Inc. (DMTF).                  -->
 <!--# For the full DMTF copyright policy, see http://www.dmtf.org/about/policies/copyright -->
 <!--################################################################################       -->
 <!---->
@@ -16,9 +16,6 @@
   </edmx:Reference>
   <edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata03/csd01/complete/vocabularies/Org.OData.Capabilities.V1.xml">
     <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/RedfishExtensions_v1.xml">
-    <edmx:Include Namespace="RedfishExtensions.v1_0_0" Alias="Redfish"/>
   </edmx:Reference>
   <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/Resource_v1.xml">
     <edmx:Include Namespace="Resource"/>
@@ -45,7 +42,7 @@
     <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="HostInterface">
 
       <EntityType Name="HostInterface" BaseType="Resource.v1_0_0.Resource" Abstract="true">
-        <Annotation Term="OData.Description" String="Contains the properties needed to describe and configure a single, Host Interface."/>
+        <Annotation Term="OData.Description" String="A HostInterface contains the properties needed to describe and configure a single Host Interface."/>
         <Annotation Term="OData.LongDescription" String="This resource shall be used to represent Host Interface resources as part of the Redfish specification."/>
         <Annotation Term="Capabilities.InsertRestrictions">
           <Record>
@@ -70,7 +67,7 @@
     <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="HostInterface.v1_0_0">
 
       <EntityType Name="HostInterface" BaseType="HostInterface.HostInterface">
-        <Annotation Term="OData.Description" String="This schema defines a Host Interface resource."/>
+        <Annotation Term="OData.Description" String="The HostInterface schema represetns a single host interface."/>
         <Annotation Term="OData.LongDescription" String="This resource shall be used to represent Host Interface resources as part of the Redfish specification."/>
         <Property Name="HostInterfaceType" Type="HostInterface.v1_0_0.HostInterfaceType">
           <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
@@ -161,7 +158,9 @@
       </EnumType>
 
       <ComplexType Name="Links" BaseType="Resource.Links">
-        <NavigationProperty Name="ComputerSystems" Type="Collection(ComputerSystem.ComputerSystem)" Nullable="false">
+        <Annotation Term="OData.Description" String="Contains references to other resources that are related to this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type, as described by the Redfish Specification, shall contain references to resources that are related to, but not contained by (subordinate to), this resource."/>
+        <NavigationProperty Name="ComputerSystems" Type="Collection(ComputerSystem.ComputerSystem)">
           <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
           <Annotation Term="OData.Description" String="An array of references to the Computer Systems connected to this Host Interface."/>
           <Annotation Term="OData.LongDescription" String="The value of this property shall be an array of references to resources of type ComputerSystem that are connected to this HostInterface."/>
@@ -181,6 +180,38 @@
         </NavigationProperty>
       </ComplexType>
 
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="HostInterface.v1_0_1">
+      <Annotation Term="OData.Description" String="This version was created to remove the Nullable facet on NavigationProperties of type Collection."/>
+      <EntityType Name="HostInterface" BaseType="HostInterface.v1_0_0.HostInterface"/>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="HostInterface.v1_1_0">
+      <EntityType Name="HostInterface" BaseType="HostInterface.v1_0_1.HostInterface">
+        <Property Name="Actions" Type="HostInterface.v1_1_0.Actions" Nullable="false">
+          <Annotation Term="OData.Description" String="The available actions for this resource."/>
+          <Annotation Term="OData.LongDescription" String="The Actions property shall contain the available actions for this resource."/>
+        </Property>
+      </EntityType>
+
+      <ComplexType Name="Actions">
+        <Annotation Term="OData.AdditionalProperties" Bool="false"/>
+        <Annotation Term="OData.Description" String="The available actions for this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type shall contain the available actions for this resource."/>
+        <Property Name="Oem" Type="HostInterface.v1_1_0.OemActions" Nullable="false"/>
+      </ComplexType>
+
+      <ComplexType Name="OemActions">
+        <Annotation Term="OData.AdditionalProperties" Bool="true"/>
+        <Annotation Term="OData.Description" String="The available OEM specific actions for this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type shall contain any additional OEM actions for this resource."/>
+      </ComplexType>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="HostInterface.v1_1_1">
+      <Annotation Term="OData.Description" String="This version was created to perform editoral updates of descriptions defined in this schema."/>
+      <EntityType Name="HostInterface" BaseType="HostInterface.v1_1_0.HostInterface"/>
     </Schema>
 
   </edmx:DataServices>

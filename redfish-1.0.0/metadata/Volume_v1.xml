@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!---->
 <!--############################################################################## -->
-<!--# Redfish Schema:  Volume  v1.0.2-->
+<!--# Redfish Schema:  Volume  v1.0.3-->
 <!--#                                                                                      -->
 <!--# For a detailed change log, see the README file contained in the DSP8010 bundle,      -->
 <!--# available at http://www.dmtf.org/standards/redfish                                   -->
-<!--# Copyright 2014-2016 Distributed Management Task Force, Inc. (DMTF).                  -->
+<!--# Copyright 2014-2017 Distributed Management Task Force, Inc. (DMTF).                  -->
 <!--# For the full DMTF copyright policy, see http://www.dmtf.org/about/policies/copyright -->
 <!--################################################################################       -->
 <!---->
@@ -19,9 +19,6 @@
   </edmx:Reference>
   <edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata03/csd01/complete/vocabularies/Org.OData.Measures.V1.xml">
     <edmx:Include Namespace="Org.OData.Measures.V1" Alias="Measures"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/RedfishExtensions_v1.xml">
-    <edmx:Include Namespace="RedfishExtensions.v1_0_0" Alias="Redfish"/>
   </edmx:Reference>
   <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/Resource_v1.xml">
     <edmx:Include Namespace="Resource"/>
@@ -117,7 +114,7 @@
           <Annotation Term="OData.Description" String="The Durable names for the volume."/>
           <Annotation Term="OData.LongDescription" String="This property shall contain a list of all known durable names for the associated volume."/>
         </Property>
-        <Property Name="BlockSizeBytes" Type="Edm.Int32">
+        <Property Name="BlockSizeBytes" Type="Edm.Int64">
           <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
           <Annotation Term="OData.Description" String="The size of the smallest addressible unit (Block) of this volume in bytes."/>
           <Annotation Term="OData.LongDescription" String="This property shall contain size of the smallest addressible unit of the associated volume."/>
@@ -127,7 +124,7 @@
           <Annotation Term="OData.Description" String="The operations currently running on the Volume."/>
           <Annotation Term="OData.LongDescription" String="This property shall contain a list of all currently running on the Volume."/>
         </Property>
-        <Property Name="OptimumIOSizeBytes" Type="Edm.Int32">
+        <Property Name="OptimumIOSizeBytes" Type="Edm.Int64">
           <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
           <Annotation Term="OData.Description" String="The size in bytes of this Volume's optimum IO size."/>
           <Annotation Term="OData.LongDescription" String="This property shall contain the optimum IO size to use when performing IO on this volume. For logical disks, this is the stripe size. For physical disks, this describes the physical sector size."/>
@@ -144,7 +141,9 @@
       </EntityType>
 
       <ComplexType Name="Links" BaseType="Resource.Links">
-        <NavigationProperty Name="Drives" Type="Collection(Drive.Drive)" Nullable="false">
+        <Annotation Term="OData.Description" String="Contains references to other resources that are related to this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type, as described by the Redfish Specification, shall contain references to resources that are related to, but not contained by (subordinate to), this resource."/>
+        <NavigationProperty Name="Drives" Type="Collection(Drive.Drive)">
           <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
           <Annotation Term="OData.Description" String="An array of references to the drives which contain this volume. This will reference Drives that either wholly or only partly contain this volume."/>
           <Annotation Term="OData.LongDescription" String="The value of this property shall be a reference to the resources that this volume is associated with and shall reference resources of type Drive. This property shall only contain references to Drive entities which are currently members of the Volume, not hot spare Drives which are not currently a member of the volume."/>
@@ -154,19 +153,25 @@
 
       <ComplexType Name="Actions">
         <Annotation Term="OData.AdditionalProperties" Bool="false"/>
+        <Annotation Term="OData.Description" String="The available actions for this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type shall contain the available actions for this resource."/>
         <Property Name="Oem" Type="Volume.v1_0_0.OemActions" Nullable="false"/>
       </ComplexType>
 
       <ComplexType Name="OemActions">
+        <Annotation Term="OData.Description" String="The available OEM specific actions for this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type shall contain any additional OEM actions for this resource."/>
         <Annotation Term="OData.AdditionalProperties" Bool="true"/>
       </ComplexType>
 
       <ComplexType Name="Operations">
+        <Annotation Term="OData.Description" String="An operation currently running on this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type shall describe a currently running operation on the resource."/>
         <Property Name="OperationName" Type="Edm.String">
           <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
           <Annotation Term="OData.Description" String="The name of the operation."/>
         </Property>
-        <Property Name="PercentageComplete" Type="Edm.Int32">
+        <Property Name="PercentageComplete" Type="Edm.Int64">
           <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
           <Annotation Term="OData.Description" String="The percentage of the operation that has been completed."/>
         </Property>
@@ -219,6 +224,11 @@
     <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="Volume.v1_0_2">
       <Annotation Term="OData.Description" String="This version was created to add explicit Permissions annotations to all properties for clarity."/>
       <EntityType Name="Volume" BaseType="Volume.v1_0_1.Volume"/>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="Volume.v1_0_3">
+      <Annotation Term="OData.Description" String="This version was created to fix supported types and remove the Nullable facet on NavigationProperties of type Collection."/>
+      <EntityType Name="Volume" BaseType="Volume.v1_0_2.Volume"/>
     </Schema>
 
   </edmx:DataServices>

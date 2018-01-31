@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!---->
 <!--################################################################################       -->
-<!--# Redfish Schema:  SecureBoot v1.0.1-->
+<!--# Redfish Schema:  SecureBoot v1.0.3-->
 <!--#                                                                                      -->
 <!--# For a detailed change log, see the README file contained in the DSP8010 bundle,      -->
 <!--# available at http://www.dmtf.org/standards/redfish                                   -->
-<!--# Copyright 2014-2016 Distributed Management Task Force, Inc. (DMTF).                  -->
+<!--# Copyright 2014-2017 Distributed Management Task Force, Inc. (DMTF).                  -->
 <!--# For the full DMTF copyright policy, see http://www.dmtf.org/about/policies/copyright -->
 <!--################################################################################       -->
 <!---->
@@ -17,15 +17,7 @@
   <edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata03/csd01/complete/vocabularies/Org.OData.Capabilities.V1.xml">
     <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/>
   </edmx:Reference>
-  <edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata03/csd01/complete/vocabularies/Org.OData.Measures.V1.xml">
-    <edmx:Include Namespace="Org.OData.Measures.V1" Alias="Measures"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/RedfishExtensions_v1.xml">
-    <edmx:Include Namespace="RedfishExtensions.v1_0_0" Alias="Redfish"/>
-    <edmx:Include Namespace="Validation.v1_0_0" Alias="Validation"/>
-  </edmx:Reference>
   <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/Resource_v1.xml">
-    <edmx:Include Namespace="Resource"/>
     <edmx:Include Namespace="Resource.v1_0_0"/>
   </edmx:Reference>
 
@@ -56,9 +48,9 @@
 
       <Action Name="ResetKeys" IsBound="true">
         <Parameter Name="SecureBoot" Type="SecureBoot.v1_0_0.Actions"/>
-        <Parameter Name="ResetKeysType" Type="SecureBoot.v1_0_0.ResetKeysType">
-          <Annotation Term="OData.Description" String="The type of reset to be performed."/>
-          <Annotation Term="OData.LongDescription" String="This defines the property name for the action."/>
+        <Parameter Name="ResetKeysType" Type="SecureBoot.v1_0_0.ResetKeysType" Nullable="false">
+          <Annotation Term="OData.Description" String="The type of keys to reset or delete."/>
+          <Annotation Term="OData.LongDescription" String="This parameter shall specify the type of keys to reset or delete."/>
         </Parameter>
         <Annotation Term="OData.Description" String="This action is used to reset the Secure Boot keys."/>
         <Annotation Term="OData.LongDescription" String="This action shall perform a reset of the Secure Boot key databases. The ResetAllKeysToDefault value shall reset the UEFI Secure Boot key databases to their default values. The DeleteAllKeys value shall delete the content of the UEFI Secure Boot key databases. The DeletePK value shall delete the content of the PK Secure boot key."/>
@@ -128,11 +120,15 @@
 
       <ComplexType Name="Actions">
         <Annotation Term="OData.AdditionalProperties" Bool="false"/>
+        <Annotation Term="OData.Description" String="The available actions for this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type shall contain the available actions for this resource."/>
         <Property Name="Oem" Type="SecureBoot.v1_0_0.OemActions" Nullable="false"/>
       </ComplexType>
 
       <ComplexType Name="OemActions">
         <Annotation Term="OData.AdditionalProperties" Bool="true"/>
+        <Annotation Term="OData.Description" String="The available OEM specific actions for this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type shall contain any additional OEM actions for this resource."/>
       </ComplexType>
 
     </Schema>
@@ -140,6 +136,16 @@
     <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="SecureBoot.v1_0_1">
       <Annotation Term="OData.Description" String="This version was created to show annotations in previous namespaces were updated."/>
       <EntityType Name="SecureBoot" BaseType="SecureBoot.v1_0_0.SecureBoot"/>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="SecureBoot.v1_0_2">
+      <Annotation Term="OData.Description" String="This version was created to show annotations in previous namespaces were updated."/>
+      <EntityType Name="SecureBoot" BaseType="SecureBoot.v1_0_1.SecureBoot"/>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="SecureBoot.v1_0_3">
+      <Annotation Term="OData.Description" String="This version was created to add requirements on the action parameters to show they are mandatory via Nullable=false.  It was also created to correct the Descriptions and LongDescriptions used in the defined Actions."/>
+      <EntityType Name="SecureBoot" BaseType="SecureBoot.v1_0_2.SecureBoot"/>
     </Schema>
 
   </edmx:DataServices>

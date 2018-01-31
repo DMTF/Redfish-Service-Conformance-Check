@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!---->
 <!--################################################################################       -->
-<!--# Redfish Schema:  MessageRegistry  v1.0.3-->
+<!--# Redfish Schema:  MessageRegistry  v1.1.0-->
 <!--#                                                                                      -->
 <!--# For a detailed change log, see the README file contained in the DSP8010 bundle,      -->
 <!--# available at http://www.dmtf.org/standards/redfish                                   -->
-<!--# Copyright 2014-2016 Distributed Management Task Force, Inc. (DMTF).                  -->
+<!--# Copyright 2014-2017 Distributed Management Task Force, Inc. (DMTF).                  -->
 <!--# For the full DMTF copyright policy, see http://www.dmtf.org/about/policies/copyright -->
 <!--################################################################################       -->
 <!---->
@@ -88,6 +88,8 @@
 
       <ComplexType Name="MessageProperty" OpenType="true">
         <Annotation Term="OData.AdditionalProperties" Bool="false"/>
+        <Annotation Term="OData.Description" String="The pattern type indicates that a free-form string is the unique identifier for the message within the registry."/>
+        <Annotation Term="OData.LongDescription" String="The pattern type shall represent the suffix to be used in the MessageId and shall be unique within this message registry."/>
         <Annotation Term="Redfish.DynamicPropertyPatterns">
           <Collection>
             <Record>
@@ -100,6 +102,8 @@
 
       <ComplexType Name="Message">
         <Annotation Term="OData.AdditionalProperties" Bool="false"/>
+        <Annotation Term="OData.Description" String="This type shall reprensent how a message is defined within the registry."/>
+        <Annotation Term="OData.LongDescription" String="The type shall represent how a message is defined within within a message registry."/>
         <Property Name="Description" Type="Edm.String" Nullable="false">
           <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
           <Annotation Term="OData.Description" String="This is a short description of how and when this message is to be used."/>
@@ -143,8 +147,12 @@
       </ComplexType>
 
       <EnumType Name="ParamType">
-        <Member Name="string"/>
-        <Member Name="number"/>
+        <Member Name="string">
+          <Annotation Term="OData.Description" String="The parameter is a string."/>
+        </Member>
+        <Member Name="number">
+          <Annotation Term="OData.Description" String="The parameter is a number."/>
+        </Member>
       </EnumType>
 
     </Schema>
@@ -157,6 +165,43 @@
     <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="MessageRegistry.v1_0_3">
       <Annotation Term="OData.Description" String="This version was created to show annotations in previous namespaces were updated."/>
       <EntityType Name="MessageRegistry" BaseType="MessageRegistry.v1_0_2.MessageRegistry"/>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="MessageRegistry.v1_0_4">
+      <Annotation Term="OData.Description" String="This version was created to show annotations in previous namespaces were updated."/>
+      <EntityType Name="MessageRegistry" BaseType="MessageRegistry.v1_0_3.MessageRegistry"/>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="MessageRegistry.v1_0_5">
+      <Annotation Term="OData.Description" String="This version was created to add descriptions to various enum values."/>
+      <EntityType Name="MessageRegistry" BaseType="MessageRegistry.v1_0_4.MessageRegistry"/>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="MessageRegistry.v1_1_0">
+      <EntityType Name="MessageRegistry" BaseType="MessageRegistry.v1_0_4.MessageRegistry">
+        <Property Name="Actions" Type="MessageRegistry.v1_1_0.Actions" Nullable="false">
+          <Annotation Term="OData.Description" String="The available actions for this resource."/>
+          <Annotation Term="OData.LongDescription" String="The Actions property shall contain the available actions for this resource."/>
+        </Property>
+      </EntityType>
+
+      <ComplexType Name="Actions">
+        <Annotation Term="OData.AdditionalProperties" Bool="false"/>
+        <Annotation Term="OData.Description" String="The available actions for this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type shall contain the available actions for this resource."/>
+        <Property Name="Oem" Type="MessageRegistry.v1_1_0.OemActions" Nullable="false"/>
+      </ComplexType>
+
+      <ComplexType Name="OemActions">
+        <Annotation Term="OData.AdditionalProperties" Bool="true"/>
+        <Annotation Term="OData.Description" String="The available OEM specific actions for this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type shall contain any additional OEM actions for this resource."/>
+      </ComplexType>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="MessageRegistry.v1_1_1">
+      <Annotation Term="OData.Description" String="This version was created to add descriptions to various enum values."/>
+      <EntityType Name="MessageRegistry" BaseType="MessageRegistry.v1_1_0.MessageRegistry"/>
     </Schema>
 
   </edmx:DataServices>

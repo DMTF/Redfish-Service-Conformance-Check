@@ -28,7 +28,7 @@
         "Password": "",
         "LoginName": "",
         "AllowAction_LogServiceClearLog": "yes",
-        "DnsName": "",
+        "DnsName": "127.0.0.1:8000",
         "DisplayName": "",
         "RedfishVersion": "v1"
       }

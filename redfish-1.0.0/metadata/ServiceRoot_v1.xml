@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!---->
 <!--################################################################################       -->
-<!--# Redfish Schema:  ServiceRoot  v1.1.1-->
+<!--# Redfish Schema:  ServiceRoot  v1.3.0-->
 <!--#                                                                                      -->
 <!--# For a detailed change log, see the README file contained in the DSP8010 bundle,      -->
 <!--# available at http://www.dmtf.org/standards/redfish                                   -->
-<!--# Copyright 2014-2016 Distributed Management Task Force, Inc. (DMTF).                  -->
+<!--# Copyright 2014-2017 Distributed Management Task Force, Inc. (DMTF).                  -->
 <!--# For the full DMTF copyright policy, see http://www.dmtf.org/about/policies/copyright -->
 <!--################################################################################       -->
 <!---->
@@ -46,9 +46,6 @@
   <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/SessionService_v1.xml">
     <edmx:Include Namespace="SessionService"/>
   </edmx:Reference>
-  <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/Message_v1.xml">
-    <edmx:Include Namespace="Message"/>
-  </edmx:Reference>
   <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/JsonSchemaFileCollection_v1.xml">
     <edmx:Include Namespace="JsonSchemaFileCollection"/>
   </edmx:Reference>
@@ -69,6 +66,9 @@
   </edmx:Reference>
   <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/UpdateService_v1.xml">
     <edmx:Include Namespace="UpdateService"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="http://redfish.dmtf.org/schemas/v1/CompositionService_v1.xml">
+    <edmx:Include Namespace="CompositionService"/>
   </edmx:Reference>
 
   <edmx:DataServices>
@@ -189,6 +189,8 @@
       </EntityType>
 
       <ComplexType Name="Links" BaseType="Resource.Links">
+        <Annotation Term="OData.Description" String="Contains references to other resources that are related to this resource."/>
+        <Annotation Term="OData.LongDescription" String="This type, as described by the Redfish Specification, shall contain references to resources that are related to, but not contained by (subordinate to), this resource."/>
         <NavigationProperty Name="Sessions" Type="SessionCollection.SessionCollection" Nullable="false">
           <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
           <Annotation Term="OData.Description" String="Link to a collection of Sessions."/>
@@ -212,6 +214,11 @@
     <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="ServiceRoot.v1_0_4">
       <Annotation Term="OData.Description" String="This version was created to show annotations in previous namespaces were updated."/>
       <EntityType Name="ServiceRoot" BaseType="ServiceRoot.v1_0_3.ServiceRoot"/>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="ServiceRoot.v1_0_5">
+      <Annotation Term="OData.Description" String="This version was created to show annotations in previous namespaces were updated."/>
+      <EntityType Name="ServiceRoot" BaseType="ServiceRoot.v1_0_4.ServiceRoot"/>
     </Schema>
 
     <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="ServiceRoot.v1_1_0">
@@ -250,6 +257,95 @@
       </EntityContainer>
 
       <EntityType Name="ServiceRoot" BaseType="ServiceRoot.v1_1_0.ServiceRoot"/>
+
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="ServiceRoot.v1_1_2">
+      <Annotation Term="OData.Description" String="This version was created to show annotations in previous namespaces were updated."/>
+      <EntityType Name="ServiceRoot" BaseType="ServiceRoot.v1_1_1.ServiceRoot"/>
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="ServiceRoot.v1_2_0">
+
+      <EntityContainer Name="ServiceContainer" Extends="ServiceRoot.v1_1_1.ServiceContainer">
+        <Singleton Name="CompositionService" Type="CompositionService.CompositionService"/>
+      </EntityContainer>
+
+      <EntityType Name="ServiceRoot" BaseType="ServiceRoot.v1_1_2.ServiceRoot">
+        <NavigationProperty Name="CompositionService" Type="CompositionService.CompositionService" Nullable="false">
+          <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
+          <Annotation Term="OData.Description" String="This is a link to the CompositionService."/>
+          <Annotation Term="OData.LongDescription" String="The classes structure shall only contain a reference to a resource that complies to the CompositionService schema."/>
+          <Annotation Term="OData.AutoExpandReferences"/>
+        </NavigationProperty>
+      </EntityType>
+
+    </Schema>
+
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="ServiceRoot.v1_3_0">
+
+      <EntityType Name="ServiceRoot" BaseType="ServiceRoot.v1_2_0.ServiceRoot">
+        <Property Name="Product" Type="Edm.String" Nullable="false">
+          <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
+          <Annotation Term="OData.Description" String="The product associated with this Redfish service."/>
+          <Annotation Term="OData.LongDescription" String="The value of this string shall include the name of the product represented by this Redfish service."/>
+        </Property>
+        <Property Name="ProtocolFeaturesSupported" Type="ServiceRoot.v1_3_0.ProtocolFeaturesSupported" Nullable="false">
+          <Annotation Term="OData.Description" String="Contains information about protocol features supported by the service."/>
+          <Annotation Term="OData.LongDescription" String="This type contains information about protocol features supported by the service."/>
+        </Property>
+      </EntityType>
+
+      <ComplexType Name="ProtocolFeaturesSupported">
+        <Annotation Term="OData.Description" String="Contains information about protocol features supported by the service."/>
+        <Annotation Term="OData.LongDescription" String="This type contains information about protocol features supported by the service."/>
+        <Property Name="ExpandQuery" Type="ServiceRoot.v1_3_0.Expand" Nullable="false">
+          <Annotation Term="OData.Description" String="Contains information about the use of $expand in the service."/>
+          <Annotation Term="OData.LongDescription" String="This type, as described by the Redfish Specification, shall contain information about the support of the $expand query parameter by the service."/>
+        </Property>
+        <Property Name="FilterQuery" Type="Edm.Boolean" Nullable="false">
+          <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
+          <Annotation Term="OData.Description" String="This indicates whether the filter query parameter is supported."/>
+          <Annotation Term="OData.LongDescription" String="The value of this property shall be a boolean indicating whether this service supports the use of th filter query parameter as described by the specification."/>
+        </Property>
+        <Property Name="SelectQuery" Type="Edm.Boolean" Nullable="false">
+          <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
+          <Annotation Term="OData.Description" String="This indicates whether the select query parameter is supported."/>
+          <Annotation Term="OData.LongDescription" String="The value of this property shall be a boolean indicating whether this service supports the use of th select query parameter as described by the specification."/>
+        </Property>        
+      </ComplexType>
+
+      <ComplexType Name="Expand">
+        <Annotation Term="OData.Description" String="Contains information about the use of $expand in the service."/>
+        <Annotation Term="OData.LongDescription" String="This type, as described by the Redfish Specification, shall contain information about the support of the $expand query parameter by the service."/>
+        <Property Name="Links" Type="Edm.Boolean" Nullable="false">
+          <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
+          <Annotation Term="OData.Description" String="This indicates whether the expand support of tilde (expand only entries in the Links section) is supported."/>
+          <Annotation Term="OData.LongDescription" String="The value of this property shall be a boolean indicating whether this service supports the use of tilde (expand only entries in the Links section) as a value for the expand query parameter as described by the specification."/>
+        </Property>
+        <Property Name="NoLinks" Type="Edm.Boolean" Nullable="false">
+          <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
+          <Annotation Term="OData.Description" String="This indicates whether the expand support of period (expand only entries not in the Links section) is supported."/>
+          <Annotation Term="OData.LongDescription" String="The value of this property shall be a boolean indicating whether this service supports the use of period (expand only entries not in the Links section) as a value for the expand query parameter as described by the specification."/>
+        </Property>
+        <Property Name="ExpandAll" Type="Edm.Boolean" Nullable="false">
+          <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
+          <Annotation Term="OData.Description" String="This indicates whether the expand support of asterisk (expand all entries) is supported."/>
+          <Annotation Term="OData.LongDescription" String="The value of this property shall be a boolean indicating whether this service supports the use of asterisk (expand all entries) as a value for the expand query parameter as described by the specification."/>
+        </Property>
+        <Property Name="Levels" Type="Edm.Boolean" Nullable="false">
+          <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
+          <Annotation Term="OData.Description" String="This indicates whether the expand support of the $levels qualifier is supported by the service."/>
+          <Annotation Term="OData.LongDescription" String="The value of this property shall be a boolean indicating whether this service supports the use of $levels as a value for the expand query parameter as described by the specification."/>
+        </Property>
+        <Property Name="MaxLevels" Type="Edm.Int64" Nullable="false">
+          <Annotation Term="OData.Permissions" EnumMember="OData.Permission/Read"/>
+          <Annotation Term="OData.Description" String="This indicates the maximum number value of the $levels qualifier in expand operations."/>
+          <Annotation Term="OData.LongDescription" String="The value of this property shall be the maximum value of the $levels qualifier supported by the service and shall only be included if the value of the Levels property is true."/>
+          <Annotation Term="Validation.Minimum" Int="1"/>
+          <Annotation Term="Validation.Maximum" Int="6"/>
+        </Property>
+      </ComplexType>
 
     </Schema>
 
