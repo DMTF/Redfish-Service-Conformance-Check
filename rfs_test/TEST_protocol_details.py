@@ -416,69 +416,113 @@ def Assertion_6_1_8_3(self, log) :
     return assertion_status
 ## end Assertion 6.1.8.3
 
+
 #####################################################################################################
-# Name: Assertion_6_1_8_4(self, log)                                               
-# Description:     
-# Method: DELETE Object delete                  
+# Name: Assertion_6_1_8_4(self, log)
+# Description: Test DELETE method by creating a Session and then deleting it
+# Method: DELETE Object delete
 #####################################################################################################
-def Assertion_6_1_8_4(self, log) :
- 
+def Assertion_6_1_8_4(self, log):
     log.AssertionID = '6.1.8.4'
-    assertion_status =  log.PASS
+    assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
-
-    user_name = 'testuser'
     authorization = 'on'
-    rq_headers = self.request_headers() 
 
-    root_link_key = 'AccountService'
+    rq_headers = self.request_headers()
+    user_name = self.SUT_prop['LoginName']
+    password = self.SUT_prop['Password']
+    root_link_key = 'SessionService'
+
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        # GET user accounts
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
-        assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
-        # manage assertion status
-        assertion_status = log.status_fixup(assertion_status,assertion_status_)
-        if assertion_status_ != log.PASS:                 
+        # perform a GET on the SessionService
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers,
+                                                      authorization)
+        assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)
+        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+        if assertion_status_ != log.PASS:
             pass
-        elif not json_payload:  
+        elif not json_payload:
             assertion_status = log.WARN
-            log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (self.sut_toplevel_uris[root_link_key]['url']))
-        else:   ## get Accounts collection from payload
-            try :
-                key = 'Accounts'
-                acc_collection = (json_payload[key])['@odata.id']
-            except : # no user accounts?
+            log.assertion_log('line',
+                              'No response body returned for resource %s. This assertion could not be completed' %
+                              (self.sut_toplevel_uris[root_link_key]['url']))
+        else:
+            # get Sessions collection from payload
+            try:
+                key = 'Sessions'
+                session_collection = (json_payload[key])['@odata.id']
+            except:
                 assertion_status = log.WARN
-                log.assertion_log('line', "~ no accounts collection was returned from GET %s" % self.sut_toplevel_uris[root_link_key]['url'])
-            else:                 
-                #DELETE 
-                members = self.get_resource_members(acc_collection)
-                found  = False
-                for json_payload, headers in members:
-                    # check if intended method is an allowable method for resource   
-                    if (self.allowable_method('DELETE', headers) != True):      
-                            assertion_status = log.FAIL
-                            log.assertion_log('line', "~ note: the header returned from GET %s do not indicate support for DELETE" % json_payload['@odata.id'])
-                            log.assertion_log('line', rf_utility.json_string(headers))
-                    if json_payload['UserName'] == user_name:   
-                        found = True  
-                        if (self.allowable_method('DELETE', headers)):                    
-                            json_payload_, headers_, status_ = self.http_DELETE(json_payload['@odata.id'], rq_headers, authorization)
-                            assertion_status_ = self.response_status_check(json_payload['@odata.id'], status_, log, request_type = 'DELETE')      
-                            # manage assertion status
-                            assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                            break                  
-                if found == False:
+                log.assertion_log('line', "~ \'Sessions\' not found in the payload from GET %s" % (
+                    self.sut_toplevel_uris[root_link_key]['url']))
+            else:
+                # perform a GET on the Sessions collection
+                json_payload, headers, status = self.http_GET(session_collection, rq_headers, authorization)
+                assertion_status_ = self.response_status_check(session_collection, status, log)
+                assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                if assertion_status_ != log.PASS:
+                    pass
+                elif not headers:
                     assertion_status = log.WARN
-                    log.assertion_log('line', "~ note: DELETE could not be verified")
+                    log.assertion_log('line', "~ No headers returned with \'Sessions\' payload from GET %s" % (
+                        self.sut_toplevel_uris[root_link_key]['url']))
+                else:
+                    # check if intended POST method is an allowable method for resource
+                    if not self.allowable_method('POST', headers):
+                        assertion_status = log.FAIL
+                        log.assertion_log('line',
+                                          "~ note: the header returned from GET %s do not indicate support for POST" %
+                                          session_collection)
+                        log.assertion_log('line', rf_utility.json_string(headers))
+                    else:
+                        # Ok to create the session now
+                        rq_body = {'UserName': user_name, 'Password': password}
+                        post_rq_headers = self.request_headers()
+                        log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (
+                            session_collection, {'UserName': user_name, 'Password': '********'}))
+                        authorization = 'off'
+                        json_payload, headers, status = self.http_POST(session_collection, post_rq_headers,
+                                                                       rq_body, authorization)
+                        assertion_status_ = self.response_status_check(session_collection, status, log,
+                                                                       rf_utility.HTTP_CREATED, request_type='POST')
+                        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                        if assertion_status_ != log.PASS:
+                            if json_payload is not None:
+                                log.assertion_log('line', 'Response body from failed POST: {}'.format(json_payload))
+                        elif not headers or 'location' not in headers:
+                            assertion_status = log.WARN
+                            log.assertion_log('line', "~ No Location header returned from POST %s" % session_collection)
+                        else:
+                            session_location = headers.get('location')
+                            x_auth_token = headers.get('x-auth-token')
+                            log.assertion_log('line', 'DEBUG response headers: Location: {}; X-Auth-Token: {}'
+                                              .format(session_location, x_auth_token))
+                            delete_rq_headers = self.request_headers()
+                            if x_auth_token is not None:
+                                delete_rq_headers['X-Auth-Token'] = x_auth_token
+                            else:
+                                log.assertion_log('line',
+                                                  "~ No X-Auth-Token header returned from POST %s" % session_collection)
+                            authorization = 'off'
+                            json_payload, headers, status = self.http_DELETE(session_location, delete_rq_headers,
+                                                                             authorization)
+                            assertion_status_ = self.response_status_check(session_location, status, log,
+                                                                           request_type='DELETE')
+                            assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                            if assertion_status_ != log.PASS:
+                                if json_payload is not None:
+                                    log.assertion_log('line', 'Response body from failed DELETE: {}'.format(json_payload))
     else:
         assertion_status = log.WARN
-        log.assertion_log('line', "~ Uri to resource: %s not found in redfish top level links: %s" % (root_link_key, self.sut_toplevel_uris) )
-                        
+        log.assertion_log('line', "~ Uri to resource: %s not found in redfish top level links: %s" % (
+            root_link_key, self.sut_toplevel_uris))
+
+    log.AssertionID = '6.1.8.4'
     log.assertion_log(assertion_status, None)
     return assertion_status
 #
 ## end Assertion 6.1.8.4
+
 
 ###################################################################################################
 # Name: Assertion_6_1_9(self, log)                                               
