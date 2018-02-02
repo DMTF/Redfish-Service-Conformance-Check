@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.0.1] - 2018-02-02
+- Modified assertion 6.1.8.4 to perform create/delete testing on Sessions rather than Accounts
+
 ## [1.0.0] - 2018-01-26
 - Various bug fixes; getting into standard release cadence
 
