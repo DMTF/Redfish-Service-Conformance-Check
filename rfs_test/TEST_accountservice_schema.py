@@ -29,52 +29,6 @@ REDFISH_SPEC_VERSION = "Version 1.2.2"
 
 
 ###################################################################################################
-# Name: Assertion_ACCO100(self, log) :Account Service                                            
-# Assertion text: 
-# This resource shall be used to represent a management account service for a Redfish 
-# implementation.         
-###################################################################################################
-
-
-def Assertion_ACCO100(self, log): 
-    
-    log.AssertionID = 'ACCO100'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)    
-    
-    
-    if  status == 200:
-        
-        http = urllib3.PoolManager()
-        r = http.request('GET', 'http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService')
-        
-        global accSerData
-        
-        accSerData = json.loads(r.data.decode('utf8'))
-
-        assertion_status = log.PASS
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', "Assertion passed.")  
-        return assertion_status
-    
-    else:
-        
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
-
-## end Assertion_ACCO100
-
-###################################################################################################
 # Name: Assertion_ACCO101(self, log) :Account Service                                            
 # Assertion text: 
 #The value of this property shall be a boolean indicating whether this service is enabled.  If 
@@ -88,36 +42,64 @@ def Assertion_ACCO100(self, log):
 def Assertion_ACCO101(self, log):
 
     log.AssertionID = 'ACCO101'
-    
     assertion_status =  log.PASS 
-    
     log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
 
+    relative_uris = self.relative_uris
+    authorization = 'on' 
     rq_headers = self.request_headers()
 
     json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if accSerData.get('ServiceEnabled') == True or accSerData.get('ServiceEnabled') == False :
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property or non boolean property value type.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
+
+    try:
+        isEnabled = json_payload['ServiceEnabled']
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % ('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService'))
         return assertion_status
+    else:
+        try:
+            key = 'Accounts'
+            acc_collection = (json_payload[key])['@odata.id']
+        except:
+            assertion_status = log.WARN
+            log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % ('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService'))
+            return assertion_status
+        else:
+            if isEnabled:
+                rq_body = {'Name': 'Test'}
+                
+                json_payload, headers, status = self.http_PUT('http://' + self.SUT_prop.get('DnsName') + acc_collection + '/test', rq_headers, rq_body, authorization)
+                
+                if status == 201:
+                    assertion_status = log.FAIL
+                    log.assertion_log(assertion_status, None)
+                    log.assertion_log('line', "Assertion Failed")  
+                    return assertion_status
+
+                try:
+                    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + acc_collection, rq_headers, authorization)
+                    key = 'Members'
+                    members_collection = (json_payload[key])
+                except:
+                    assertion_status = log.WARN
+                    log.assertion_log('line', "~ \'Members\' not found in the payload from GET %s" % ('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService'))
+                    return assertion_status
+                else:
+                    for member in members_collection:
+                        key = '@odata.id'
+                        member_link = member[key]
+                        json_payload, headers, status = self.http_PUT('http://' + self.SUT_prop.get('DnsName') + member_link, rq_headers, rq_body, authorization)
+                        if status == 201:
+                            assertion_status = log.FAIL
+                            log.assertion_log(assertion_status, None)
+                            log.assertion_log('line', "Assertion Failed")  
+                            return assertion_status
+            
+    log.assertion_log(assertion_status, None)
+    log.assertion_log('line', "Assertion Passes") 
+
+    return assertion_status
     
 ## end Assertion_ACCO101
 
@@ -130,39 +112,7 @@ def Assertion_ACCO101(self, log):
 ###################################################################################################
 
 
-def Assertion_ACCO102(self, log):
-    
-    log.AssertionID = 'ACCO102'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
 
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if isinstance(accSerData.get('AuthFailureLoggingThreshold'), int):
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property or non number property value type.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
 
 ## end Assertion_ACCO102
 
@@ -173,40 +123,8 @@ def Assertion_ACCO102(self, log):
 # password to be set to.
 ###################################################################################################
 
-def Assertion_ACCO103(self, log):
     
-    log.AssertionID = 'ACCO103'
     
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if isinstance(accSerData.get('MinPasswordLength'), int):
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property or non number property value type.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
-
 ## end Assertion_ACCO103
 
 ###################################################################################################
@@ -216,39 +134,6 @@ def Assertion_ACCO103(self, log):
 # password to be set to.
 ###################################################################################################
 
-def Assertion_ACCO104(self, log):
-    
-    log.AssertionID = 'ACCO104'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if isinstance(accSerData.get('MaxPasswordLength'), int):
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property or non number property value type.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
 
 ## end Assertion_ACCO104
 
@@ -260,39 +145,6 @@ def Assertion_ACCO104(self, log):
 # account is locked.  If set to 0, no lockout shall ever occur.
 ###################################################################################################
 
-def Assertion_ACCO105(self, log):
-    
-    log.AssertionID = 'ACCO105'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if isinstance(accSerData.get('AccountLockoutThreshold'), int):
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property or non number property value type.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
 
 ## end Assertion_ACCO105
 
@@ -306,39 +158,6 @@ def Assertion_ACCO105(self, log):
 # occur.
 ###################################################################################################
 
-def Assertion_ACCO106(self, log):
-    
-    log.AssertionID = 'ACCO106'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if isinstance(accSerData.get('AccountLockoutDuration'), int) or accSerData.get('AccountLockoutDuration') == None:
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the a non number property value type.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
 
 ## end Assertion_ACCO106
 
@@ -352,39 +171,6 @@ def Assertion_ACCO106(self, log):
 # threshold counter also resets to zero after each successful login.
 ###################################################################################################
 
-def Assertion_ACCO107(self, log):
-    
-    log.AssertionID = 'ACCO107'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if isinstance(accSerData.get('AccountLockoutCounterResetAfter'), int):
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property or non number property value type.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
 
 ## end Assertion_ACCO107
 
@@ -393,59 +179,8 @@ def Assertion_ACCO107(self, log):
 # Assertion text: 
 # This property shall contain the link to a collection of type ManagerAccountCollection.
 ###################################################################################################
-
-def Assertion_ACCO108(self, log):
     
-    log.AssertionID = 'ACCO108'
     
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        path = accSerData.get('Accounts')
- 
-        if path != None:
-        
-            http = urllib3.PoolManager()
-            
-            r = http.request('GET', 'http://' + self.SUT_prop.get('DnsName') + accSerData.get('Accounts').get('@odata.id'))
-                    
-            acc = json.loads(r.data.decode('utf8'))
-            
-            if acc.get('@odata.type') == "#ManagerAccountCollection.ManagerAccountCollection":
-                
-                assertion_status = log.PASS
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', "Assertion passed.")  
-                return assertion_status
-            
-            else:
-                
-                assertion_status = log.FAIL
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', 'Assertion failed due to the absence of link to a collection of type ManagerAccountCollection.') 
-                return assertion_status
-        
-        else: 
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property Accounts.') 
-            return assertion_status
-            
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status 
-        
 ## end Assertion_ACCO108
 
 
@@ -454,58 +189,6 @@ def Assertion_ACCO108(self, log):
 # Assertion text: 
 # This property shall contain the link to a collection of type RoleCollection.
 ###################################################################################################
-
-def Assertion_ACCO109(self, log):
-    
-    log.AssertionID = 'ACCO109'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        path = accSerData.get('Roles')
- 
-        if path != None:
-        
-            http = urllib3.PoolManager()
-            
-            r = http.request('GET', 'http://' + self.SUT_prop.get('DnsName') + accSerData.get('Roles').get('@odata.id'))
-                    
-            acc = json.loads(r.data.decode('utf8'))
-            
-            if acc.get('@odata.type') == "#RoleCollection.RoleCollection":
-                
-                assertion_status = log.PASS
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', "Assertion passed.")  
-                return assertion_status
-            
-            else:
-                
-                assertion_status = log.FAIL
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', 'Assertion failed due to the absence of link to a collection of type RoleCollection.') 
-                return assertion_status
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property Roles.') 
-            return assertion_status 
-            
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status 
 
 ## end Assertion_ACCO109
 
@@ -517,57 +200,6 @@ def Assertion_ACCO109(self, log):
 # with this service.
 ###################################################################################################
 
-def Assertion_ACCO110(self, log):
-    
-    log.AssertionID = 'ACCO110'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        path = accSerData.get('PrivilegeMap')
- 
-        if path != None:
-            
-            http = urllib3.PoolManager()
-            
-            r = http.request('GET', 'http://' + self.SUT_prop.get('DnsName') + path.get('@odata.id'))
-                    
-            acc = json.loads(r.data.decode('utf8'))
-            
-            if acc.get('@odata.type') == "#PrivilegeMappoing.PrivilegeMappoing":
-                
-                assertion_status = log.PASS
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', "Assertion passed.")  
-                return assertion_status
-            
-            else:
-                
-                assertion_status = log.FAIL
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', 'Assertion failed due to the absence of link to a resource of type PrivilegeMappoing.') 
-                return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property PrivilegeMappoing.') 
-            return assertion_status 
-            
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status 
    
 ## end Assertion_ACCO110
 
@@ -579,39 +211,6 @@ def Assertion_ACCO110(self, log):
 # The Actions property shall contain the available actions for this resource.
 ###################################################################################################
 
-def Assertion_ACCO111(self, log):
-    
-    log.AssertionID = 'ACCO111'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if accSerData.get('Actions') != None:
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
 
 ## end Assertion_ACCO111
 
@@ -622,40 +221,7 @@ def Assertion_ACCO111(self, log):
 # Assertion text: 
 # The Actions property shall contain the available actions for this resource.
 ###################################################################################################
-    
-def Assertion_ACCO112(self, log):
-    
-    log.AssertionID = 'ACCO112'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
 
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if accSerData.get('Actions') != None:
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
     
 ## end Assertion_ACCO112
  
@@ -668,40 +234,6 @@ def Assertion_ACCO112(self, log):
 ###################################################################################################
 
 
-def Assertion_ACCO113(self, log):
-    
-    log.AssertionID = 'ACCO113'
-    
-    assertion_status =  log.PASS 
-    
-    log.assertion_log('BEGIN_ASSERTION', None)
-    
-    authorization = 'on' 
-
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
-    
-    if status == 200:
-        
-        if accSerData.get('OemActions') != None:
-            assertion_status = log.PASS
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion passed.")  
-            return assertion_status
-        
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', 'Assertion failed due to the absence of the property.') 
-            return assertion_status
-    
-    else:
-        assertion_status = log.FAIL
-        log.assertion_log(assertion_status, None)
-        log.assertion_log('line', 'Assertion failed due to the absence of the resource.') 
-        return assertion_status
-
 ## end Assertion_ACCO113
 
 
@@ -709,35 +241,8 @@ def Assertion_ACCO113(self, log):
 
 def run(self, log):
 
-    assertion_status = Assertion_ACCO100(self, log)
-    
     assertion_status = Assertion_ACCO101(self, log)
     
-    assertion_status = Assertion_ACCO102(self, log)
-    
-    assertion_status = Assertion_ACCO103(self, log)
-    
-    assertion_status = Assertion_ACCO104(self, log)
-    
-    assertion_status = Assertion_ACCO105(self, log)
-    
-    assertion_status = Assertion_ACCO106(self, log)
-    
-    assertion_status = Assertion_ACCO107(self, log)
-    
-    assertion_status = Assertion_ACCO108(self, log)
-
-    assertion_status = Assertion_ACCO109(self, log)
-    
-    assertion_status = Assertion_ACCO110(self, log)
-    
-    assertion_status = Assertion_ACCO111(self, log)
-    
-    assertion_status = Assertion_ACCO112(self, log)
-
-    assertion_status = Assertion_ACCO113(self, log)
-
-
 
     
     
