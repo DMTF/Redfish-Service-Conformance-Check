@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.0.2] - 2018-02-15
+- Modified tests for POST to a collection and DELETE from a collection to use the SessionService instead of AccountService
+
 ## [1.0.1] - 2018-02-02
 - Modified assertion 6.1.8.4 to perform create/delete testing on Sessions rather than Accounts
 
