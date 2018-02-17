@@ -66,7 +66,7 @@ def Assertion_ACCO101(self, log):
             log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % ('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService'))
             return assertion_status
         else:
-            if isEnabled:
+            if !isEnabled:
                 rq_body = {'Name': 'Test'}
                 
                 json_payload, headers, status = self.http_PUT('http://' + self.SUT_prop.get('DnsName') + acc_collection + '/test', rq_headers, rq_body, authorization)
@@ -111,9 +111,12 @@ def Assertion_ACCO101(self, log):
 #n represents the value of this property.
 ###################################################################################################
 
-
-
-
+'''
+Step 1: Simulate an autorisation failure by providing wrong credentails.
+Step 2: Check at which attempt that the autorization failure is logged.
+Step 3: Compare the value obtained form STEP 2 and compare it with the calue extracted from the key 
+"minimum" of the property AuthFailureLoggingThreshold in the JSON Schema file. 
+'''
 ## end Assertion_ACCO102
 
 ###################################################################################################
