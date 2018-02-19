@@ -4836,48 +4836,60 @@ def Assertion_6_5_40_old(self, log) :
 def Assertion_6_5_40(self, log) :
 
     log.AssertionID = '6.5.40'
-    assertion_status =  log.WARN
+    assertion_status = log.PASS
+    found_message_id = False
     log.assertion_log('BEGIN_ASSERTION', None)
     authorization = 'on'
-    #url = self.Redfish_URIs['Service_Odata_Doc']
+
     relative_uris = self.relative_uris
     rq_headers = self.request_headers()
     for relative_uri in relative_uris:
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        if (self.allowable_method('PATCH', headers)):
-            rq_body = {'Name' : 'New Name'}
-            json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers, rq_body, authorization)   
-
-            if 'error' in json_payload : 
+        if self.allowable_method('PATCH', headers):
+            rq_body = {'Name': 'New Name'}
+            json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers,
+                                                            rq_body, authorization)
+            if status >= 400 and isinstance(json_payload, dict) and 'error' in json_payload:
                 message_error = json_payload['error']
                 message_object = message_error['@Message.ExtendedInfo']
                 message_object = message_object[0]
-                print('Message object is %s' %message_object)
-                if 'Message' in message_object :
-                    if 'MessageId' in message_object:
-                        name = message_object['MessageId']
-                        if '_' in name:
-                            separator = '_'
-                        elif '.' in name:
-                            separator = '.'
-                        name_ = name.rsplit(separator,1)
-                        message_key = name_[1]
-                        name_= name_[0]                  
-                        r_name = name_.rsplit(separator,-1)
-                        registry_name = r_name[0]
-                        major_version = r_name[1]
-                        minor_version = r_name [2]
-                        print('The RegistryName is %s and MajorVersion is %s and MessageKey is %s' %(registry_name, major_version, message_key))
-                        status = camel(registry_name)
-                        status_1 = camel(message_key)
-                        print('%s %s' %(status, status_1))
-                        if ( status == True and status_1 == True):
-                            assertion_status = log.PASS
-                        else:
-                            assertion_status = log.FAIL
+                print('Message object is %s' % message_object)
+                if 'MessageId' in message_object:
+                    found_message_id = True
+                    name = message_object['MessageId']
+                    if '_' in name:
+                        separator = '_'
+                    elif '.' in name:
+                        separator = '.'
+                    name_ = name.rsplit(separator, 1)
+                    message_key = name_[1]
+                    name_= name_[0]
+                    r_name = name_.rsplit(separator, -1)
+                    registry_name = r_name[0]
+                    major_version = r_name[1]
+                    minor_version = r_name[2]
+                    print('The RegistryName is %s and MajorVersion, MinorVersion is %s, %s and MessageKey is %s' %
+                          (registry_name, major_version, minor_version, message_key))
+                    is_camel_reg = camel(registry_name)
+                    if not is_camel_reg:
+                        log.assertion_log('line', 'RegistryName {} is not Pascal-cased'.format(registry_name))
+                    is_camel_key = camel(message_key)
+                    if not is_camel_key:
+                        log.assertion_log('line', 'MessageKey {} is not Pascal-cased'.format(message_key))
+                    if is_camel_reg and is_camel_key:
+                        assertion_status_ = log.PASS
+                    else:
+                        assertion_status_ = log.FAIL
+                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
+
+    if not found_message_id:
+        assertion_status_ = log.WARN
+        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+        log.assertion_log('line',
+                          'Unable to verify assertion because no responses were received that contained a MessageId')
 
     log.assertion_log(assertion_status, None)
-    return (assertion_status)
+    return assertion_status
 #
 ## end Assertion 6.5.40
 
