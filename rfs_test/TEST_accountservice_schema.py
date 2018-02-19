@@ -49,13 +49,13 @@ def Assertion_ACCO101(self, log):
     authorization = 'on' 
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService', rq_headers, authorization)
+    json_payload, headers, status = self.http_GET('/redfish/v1/AccountService', rq_headers, authorization)
 
     try:
         isEnabled = json_payload['ServiceEnabled']
     except:
         assertion_status = log.WARN
-        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % ('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService'))
+        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
         return assertion_status
     else:
         try:
@@ -63,13 +63,13 @@ def Assertion_ACCO101(self, log):
             acc_collection = (json_payload[key])['@odata.id']
         except:
             assertion_status = log.WARN
-            log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % ('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService'))
+            log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
             return assertion_status
         else:
-            if !isEnabled:
+            if not isEnabled:
                 rq_body = {'Name': 'Test'}
                 
-                json_payload, headers, status = self.http_PUT('http://' + self.SUT_prop.get('DnsName') + acc_collection + '/test', rq_headers, rq_body, authorization)
+                json_payload, headers, status = self.http_PUT(acc_collection + '/test', rq_headers, rq_body, authorization)
                 
                 if status == 201:
                     assertion_status = log.FAIL
@@ -78,18 +78,18 @@ def Assertion_ACCO101(self, log):
                     return assertion_status
 
                 try:
-                    json_payload, headers, status = self.http_GET('http://' + self.SUT_prop.get('DnsName') + acc_collection, rq_headers, authorization)
+                    json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
                     key = 'Members'
                     members_collection = (json_payload[key])
                 except:
                     assertion_status = log.WARN
-                    log.assertion_log('line', "~ \'Members\' not found in the payload from GET %s" % ('http://' + self.SUT_prop.get('DnsName') + '/redfish/v1/AccountService'))
+                    log.assertion_log('line', "~ \'Members\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
                     return assertion_status
                 else:
                     for member in members_collection:
                         key = '@odata.id'
                         member_link = member[key]
-                        json_payload, headers, status = self.http_PUT('http://' + self.SUT_prop.get('DnsName') + member_link, rq_headers, rq_body, authorization)
+                        json_payload, headers, status = self.http_PUT(member_link, rq_headers, rq_body, authorization)
                         if status == 201:
                             assertion_status = log.FAIL
                             log.assertion_log(assertion_status, None)
@@ -112,10 +112,14 @@ def Assertion_ACCO101(self, log):
 ###################################################################################################
 
 '''
-Step 1: Simulate an autorisation failure by providing wrong credentails.
-Step 2: Check at which attempt that the autorization failure is logged.
-Step 3: Compare the value obtained form STEP 2 and compare it with the calue extracted from the key 
-"minimum" of the property AuthFailureLoggingThreshold in the JSON Schema file. 
+Step 1: Simulate an authorization failure by providing wrong credentials.
+Step 2: Check at which attempt the authorization failure is logged.
+Step 3: Compare the value obtained from STEP 2, with the value extracted from the key "minimum" of 
+the property AuthFailureLoggingThreshold in the JSON Schema file.
+Step 4: Fail the assertion if the values at STEP 3 does not match.
+
+Concerns: What if the value AuthFailureLoggingThreshold is very large, thus requiring a considerable 
+amount of time to test the assertion. 
 '''
 ## end Assertion_ACCO102
 
