@@ -433,7 +433,7 @@ class SUT():
             if '@odata.context' in json_payload:
                 odata_context = json_payload['@odata.context']
             else:
-                print('Warning: OData Service Spec object does not comply with the Specification. @odata.context expected but not found in %s json_payload' % (service_odata_uri))
+                print('Warning: OData Service Spec object does not conform to the Specification. @odata.context expected but not found in %s json_payload' % (service_odata_uri))
 
             try:
                 #following dictionary keys are traced out by Redfish specification
@@ -441,7 +441,7 @@ class SUT():
                     for resource in json_payload['value']:
                         values[resource['name']] = {'kind' : resource['kind'], 'url' : resource['url']} 
             except:
-                print('Warning: OData Service Spec object does not comply with the Specification')
+                print('Warning: OData Service Spec object does not conform to the Specification')
                 return None, None
                 
         return odata_context, values
