@@ -190,12 +190,6 @@ def Assertion_6_1_8_1(self, log) :
                 elif not headers:
                     assertion_status = log.WARN
                 else:
-                    # check if intended method is an allowable method for resource
-                    if (self.allowable_method('POST', headers) != True):      
-                        assertion_status = log.FAIL
-                        log.assertion_log('line', "~ note: the header returned from GET %s do not indicate support for POST" % session_collection)
-                        log.assertion_log('line', rf_utility.json_string(headers))
-
                     if (assertion_status == log.PASS): # Ok to create the session now                                   
                         rq_body = {'UserName': user_name, 'Password': password}
                         authorization = 'off'
@@ -362,42 +356,36 @@ def Assertion_6_1_8_3(self, log) :
                 for json_payload, headers in members:
                     if json_payload is None:
                         continue
-                    # check if intended method is an allowable method for resource
-                    if (self.allowable_method('PATCH', headers) != True): 
-                        assertion_status = log.WARN
-                        log.assertion_log('line', "~ note: the header returned from GET %s do not indicate support for PATCH" % json_payload['@odata.id'])
-                        log.assertion_log('line', rf_utility.json_string(headers))
                     if json_payload['UserName'] == user_name:  
-                        found = True                      
-                        if self.allowable_method('PATCH', headers):                        
-                            account_url = json_payload['@odata.id']
-                            patch_key = 'RoleId'   
-                            patch_value = 'Operator'
-                            rq_body = {'UserName': user_name, 'Password': '12345' , 'RoleId' : patch_value}
-                            rq_headers['Content-Type'] = rf_utility.content_type['json']
-                            json_payload_, headers_, status_ = self.http_PATCH(account_url, rq_headers, rq_body, authorization)
-                            assertion_status_ = self.response_status_check(account_url, status_, log, request_type = 'PATCH')      
+                        found = True
+                        account_url = json_payload['@odata.id']
+                        patch_key = 'RoleId'
+                        patch_value = 'Operator'
+                        rq_body = {'UserName': user_name, 'Password': '12345' , 'RoleId' : patch_value}
+                        rq_headers['Content-Type'] = rf_utility.content_type['json']
+                        json_payload_, headers_, status_ = self.http_PATCH(account_url, rq_headers, rq_body, authorization)
+                        assertion_status_ = self.response_status_check(account_url, status_, log, request_type = 'PATCH')
+                        # manage assertion status
+                        assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                        if assertion_status_ != log.PASS:
+                            break
+                        else:
+                            log.assertion_log('line', "~ note: PATCH %s PASS" % (account_url))
+                            #check if the patch succeeded:
+                            json_payload, json_headers, status = self.http_GET(account_url, rq_headers, authorization)
+                            assertion_status_ = self.response_status_check(account_url, status, log)
                             # manage assertion status
                             assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                            if assertion_status_ != log.PASS:                 
+                            if assertion_status_ != log.PASS:
+                                log.assertion_log('line', "~ note: Unable to verify if PATCH succeeded, status %s" % status)
                                 break
-                            else:
-                                log.assertion_log('line', "~ note: PATCH %s PASS" % (account_url))
-                                #check if the patch succeeded:
-                                json_payload, json_headers, status = self.http_GET(account_url, rq_headers, authorization)
-                                assertion_status_ = self.response_status_check(account_url, status, log)      
-                                # manage assertion status
-                                assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                                if assertion_status_ != log.PASS:                 
-                                    log.assertion_log('line', "~ note: Unable to verify if PATCH succeeded, status %s" % status)
-                                    break                                     
-                                elif json_payload:                             
-                                    #if patch_value not in json_payload, FAIL
-                                    if 'RoleId' in json_payload:
-                                        if patch_value not in json_payload['RoleId']:
-                                            assertion_status = log.FAIL
-                                            log.assertion_log('line', "~ note : Expected value of patched %s : %s found %s" % (patch_key, patch_value, json_payload[patch_key]) )
-                                            break                                                    
+                            elif json_payload:
+                                #if patch_value not in json_payload, FAIL
+                                if 'RoleId' in json_payload:
+                                    if patch_value not in json_payload['RoleId']:
+                                        assertion_status = log.FAIL
+                                        log.assertion_log('line', "~ note : Expected value of patched %s : %s found %s" % (patch_key, patch_value, json_payload[patch_key]) )
+                                        break
 
                 if found == False:
                     assertion_status = log.WARN
@@ -462,51 +450,43 @@ def Assertion_6_1_8_4(self, log):
                     log.assertion_log('line', "~ No headers returned with \'Sessions\' payload from GET %s" % (
                         self.sut_toplevel_uris[root_link_key]['url']))
                 else:
-                    # check if intended POST method is an allowable method for resource
-                    if not self.allowable_method('POST', headers):
-                        assertion_status = log.FAIL
-                        log.assertion_log('line',
-                                          "~ note: the header returned from GET %s do not indicate support for POST" %
-                                          session_collection)
-                        log.assertion_log('line', rf_utility.json_string(headers))
+                    # Ok to create the session now
+                    rq_body = {'UserName': user_name, 'Password': password}
+                    post_rq_headers = self.request_headers()
+                    log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (
+                        session_collection, {'UserName': user_name, 'Password': '********'}))
+                    authorization = 'off'
+                    json_payload, headers, status = self.http_POST(session_collection, post_rq_headers,
+                                                                   rq_body, authorization)
+                    assertion_status_ = self.response_status_check(session_collection, status, log,
+                                                                   rf_utility.HTTP_CREATED, request_type='POST')
+                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                    if assertion_status_ != log.PASS:
+                        if json_payload is not None:
+                            log.assertion_log('line', 'Response body from failed POST: {}'.format(json_payload))
+                    elif not headers or 'location' not in headers:
+                        assertion_status = log.WARN
+                        log.assertion_log('line', "~ No Location header returned from POST %s" % session_collection)
                     else:
-                        # Ok to create the session now
-                        rq_body = {'UserName': user_name, 'Password': password}
-                        post_rq_headers = self.request_headers()
-                        log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (
-                            session_collection, {'UserName': user_name, 'Password': '********'}))
+                        session_location = headers.get('location')
+                        x_auth_token = headers.get('x-auth-token')
+                        log.assertion_log('line', 'DEBUG response headers: Location: {}; X-Auth-Token: {}'
+                                          .format(session_location, x_auth_token))
+                        delete_rq_headers = self.request_headers()
+                        if x_auth_token is not None:
+                            delete_rq_headers['X-Auth-Token'] = x_auth_token
+                        else:
+                            log.assertion_log('line',
+                                              "~ No X-Auth-Token header returned from POST %s" % session_collection)
                         authorization = 'off'
-                        json_payload, headers, status = self.http_POST(session_collection, post_rq_headers,
-                                                                       rq_body, authorization)
-                        assertion_status_ = self.response_status_check(session_collection, status, log,
-                                                                       rf_utility.HTTP_CREATED, request_type='POST')
+                        json_payload, headers, status = self.http_DELETE(session_location, delete_rq_headers,
+                                                                         authorization)
+                        assertion_status_ = self.response_status_check(session_location, status, log,
+                                                                       request_type='DELETE')
                         assertion_status = log.status_fixup(assertion_status, assertion_status_)
                         if assertion_status_ != log.PASS:
                             if json_payload is not None:
-                                log.assertion_log('line', 'Response body from failed POST: {}'.format(json_payload))
-                        elif not headers or 'location' not in headers:
-                            assertion_status = log.WARN
-                            log.assertion_log('line', "~ No Location header returned from POST %s" % session_collection)
-                        else:
-                            session_location = headers.get('location')
-                            x_auth_token = headers.get('x-auth-token')
-                            log.assertion_log('line', 'DEBUG response headers: Location: {}; X-Auth-Token: {}'
-                                              .format(session_location, x_auth_token))
-                            delete_rq_headers = self.request_headers()
-                            if x_auth_token is not None:
-                                delete_rq_headers['X-Auth-Token'] = x_auth_token
-                            else:
-                                log.assertion_log('line',
-                                                  "~ No X-Auth-Token header returned from POST %s" % session_collection)
-                            authorization = 'off'
-                            json_payload, headers, status = self.http_DELETE(session_location, delete_rq_headers,
-                                                                             authorization)
-                            assertion_status_ = self.response_status_check(session_location, status, log,
-                                                                           request_type='DELETE')
-                            assertion_status = log.status_fixup(assertion_status, assertion_status_)
-                            if assertion_status_ != log.PASS:
-                                if json_payload is not None:
-                                    log.assertion_log('line', 'Response body from failed DELETE: {}'.format(json_payload))
+                                log.assertion_log('line', 'Response body from failed DELETE: {}'.format(json_payload))
     else:
         assertion_status = log.WARN
         log.assertion_log('line', "~ Uri to resource: %s not found in redfish top level links: %s" % (
@@ -1336,45 +1316,43 @@ def Assertion_6_4_18(self, log) :
         if assertion_status_ != log.PASS:                 
             continue
         else:
-            # check if intended method is an allowable method for resource
-            if (self.allowable_method('HEAD', headers)):
-                # method is allowed ~ the service must 1. NOT return a payload
-                authorization = 'on'
-                rq_headers = self.request_headers()
-                json_payload, headers, status = self.http_HEAD(relative_uris[relative_uri], rq_headers, authorization)
-                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, request_type = 'HEAD')      
-                # manage assertion status
-                assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                if assertion_status_ != log.PASS:                 
-                    continue
-                # should not contain response body
-                elif json_payload:
+            # the service must 1. NOT return a payload
+            authorization = 'on'
+            rq_headers = self.request_headers()
+            json_payload, headers, status = self.http_HEAD(relative_uris[relative_uri], rq_headers, authorization)
+            assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, request_type = 'HEAD')
+            # manage assertion status
+            assertion_status = log.status_fixup(assertion_status,assertion_status_)
+            if assertion_status_ != log.PASS:
+                continue
+            # should not contain response body
+            elif json_payload:
+                assertion_status = log.FAIL
+                log.assertion_log('line', "~ HEAD on %s resposne returned a payload: %s" % (relative_uris[relative_uri], rf_utility.json_string(json_payload)) )
+
+            # the service must 2. FAIL the request without authorization
+            authorization = 'off'
+            rq_headers = self.request_headers()
+            json_payload, headers, status = self.http_HEAD(relative_uris[relative_uri], rq_headers, authorization)
+            if "Root Service" == relative_uri:
+                # Root service URI needs to be handled differently as it is allowed to be
+                # retrieved without auth, so anything other than OK is a failure
+                if status == rf_utility.HTTP_NOT_FOUND:
+                    log.assertion_log('TX_COMMENT',"WARN: GET %s failed : HTTP status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
+                elif status != rf_utility.HTTP_OK:
                     assertion_status = log.FAIL
-                    log.assertion_log('line', "~ HEAD on %s resposne returned a payload: %s" % (relative_uris[relative_uri], rf_utility.json_string(json_payload)) )
+                    log.assertion_log('line', "~ HEAD on %s without authorization returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)))
+            else:
+                if (status == rf_utility.HTTP_OK) :
+                    assertion_status = log.FAIL
+                    log.assertion_log('line', "~ HEAD on %s without authorization returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)))
 
-                # method is allowed ~ the service must 2. FAIL the request without authorization
-                authorization = 'off'
-                rq_headers = self.request_headers()
-                json_payload, headers, status = self.http_HEAD(relative_uris[relative_uri], rq_headers, authorization)
-                if "Root Service" == relative_uri:
-                    # Root service URI needs to be handled differently as it is allowed to be
-                    # retrieved without auth, so anything other than OK is a failure
-                    if status == rf_utility.HTTP_NOT_FOUND:
-                        log.assertion_log('TX_COMMENT',"WARN: GET %s failed : HTTP status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
-                    elif status != rf_utility.HTTP_OK:
-                        assertion_status = log.FAIL
-                        log.assertion_log('line', "~ HEAD on %s without authorization returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)))
-                else:
-                    if (status == rf_utility.HTTP_OK) :
-                        assertion_status = log.FAIL
-                        log.assertion_log('line', "~ HEAD on %s without authorization returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)))
+                elif (status != rf_utility.HTTP_UNAUTHORIZED):
+                    assertion_status = log.WARN
+                    log.assertion_log('line', "~ HEAD on %s expected HTTP UNAUTHORIZED; returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
 
-                    elif (status != rf_utility.HTTP_UNAUTHORIZED):
-                        assertion_status = log.WARN
-                        log.assertion_log('line', "~ HEAD on %s expected HTTP UNAUTHORIZED; returned status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
-
-                    elif status == rf_utility.HTTP_NOT_FOUND:
-                        log.assertion_log('TX_COMMENT',"WARN: GET %s failed : HTTP status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
+                elif status == rf_utility.HTTP_NOT_FOUND:
+                    log.assertion_log('TX_COMMENT',"WARN: GET %s failed : HTTP status %s:%s" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
                          
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -1399,9 +1377,9 @@ def Assertion_6_4_21(self, log) : #POST
     authorization = 'on'
 
     relative_uris = self.relative_uris
-    rq_headers = self.request_headers()
 
     for relative_uri in relative_uris:
+        rq_headers = self.request_headers()
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1409,32 +1387,25 @@ def Assertion_6_4_21(self, log) : #POST
         if assertion_status_ != log.PASS:                 
             continue
         else:
-            # check if intended method is an allowable method for resource
-            if not (self.allowable_method('POST', headers)):
-                if 'etag' not in headers:
-                    assertion_status = log.WARN
-                    log.assertion_log('line', "~ note: Etag exepcted in headers of %s: %s ~ not found" %(relative_uris[relative_uri], rf_utility.json_string(headers))) 
-                    log.assertion_log('line', "~ note: Modifications to resource using If-None-Match header without Etag cannot be tested")
-                else:
-                    etag = headers['etag']
-                    rq_body = {'Name': 'New Name'}
-                    #log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (relative_uris[relative_uri], rq_body))  
-                    json_payload, headers, status = self.http_POST(relative_uris[relative_uri], rq_headers, rq_body, authorization)
-                    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'POST')         
+            if 'etag' not in headers:
+                assertion_status = log.WARN
+                log.assertion_log('line', "~ note: Etag exepcted in headers of %s: %s ~ not found" %(relative_uris[relative_uri], rf_utility.json_string(headers)))
+                log.assertion_log('line', "~ note: Modifications to resource using If-None-Match header without Etag cannot be tested")
+            else:
+                etag = headers['etag']
+                rq_body = {'Name': 'New Name'}
+                #log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (relative_uris[relative_uri], rq_body))
+                json_payload, headers, status = self.http_POST(relative_uris[relative_uri], rq_headers, rq_body, authorization)
+                if status == rf_utility.HTTP_METHODNOTALLOWED:
+                    # check if resource remain unchanged using etag and If-None-Match header (this is a SHOULD, so only warn if it fails)
+                    rq_headers = self.request_headers()
+                    rq_headers['If-None-Match'] = etag
+                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTMODIFIED, warn_only=True)
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                    if assertion_status_ != log.PASS:                 
-                        continue      
-                    else:
-                        # check if resource remain unchanged using etag and If-None-Match header (this is a SHOULD, so only warn if it fails)
-                        rq_headers = self.request_headers()
-                        rq_headers['If-None-Match'] = etag
-                        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTMODIFIED, warn_only=True)
-                        # manage assertion status
-                        assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                        if assertion_status_ != log.PASS:                 
-                            log.assertion_log('line', "~ POST %s : Resource might have updated unexpectedly" % (relative_uris[relative_uri]) )
+                    if assertion_status_ != log.PASS:
+                        log.assertion_log('line', "~ POST %s : Resource might have updated unexpectedly" % (relative_uris[relative_uri]) )
 
 
     log.assertion_log(assertion_status, None)
@@ -1468,30 +1439,23 @@ def Assertion_6_4_23(self, log) :
         if assertion_status_ != log.PASS:                 
             continue
         else:
-            # check if intended method is an allowable method for resource
-            if not (self.allowable_method('PATCH', headers)):
-                rq_body = {'Name' : "New Patch Name"}
-                json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers, rq_body, authorization)
-                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'PATCH')          
+            rq_body = {'Name' : "New Patch Name"}
+            json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers, rq_body, authorization)
+            if status == rf_utility.HTTP_METHODNOTALLOWED:
+                #check if resource remain unchanged
+                #TODO check if etags is in headers then use that method too
+                json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                if assertion_status_ != log.PASS:                 
+                if assertion_status_ != log.PASS:
+                    log.assertion_log('Unable to verify PATCH for resource %s readonly property' % (relative_uris[relative_uri]))
                     continue
-                else:
-                    #check if resource remain unchanged
-                    #TODO check if etags is in headers then use that method too
-                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)          
-                    # manage assertion status
-                    assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                    if assertion_status_ != log.PASS:                 
-                        log.assertion_log('Unable to verify PATCH for resource %s readonly property' % (relative_uris[relative_uri]))
-                        continue
-                    elif json_payload:
-                        if 'Name' in json_payload:
-                            if ("New Patch Name" in json_payload['Name']) :
-                                assertion_status = log.FAIL
-                                log.assertion_log('line', "~ PATCH %s : Resource might have been updated unexpectedly" % (relative_uris[relative_uri]) )           
+                elif json_payload:
+                    if 'Name' in json_payload:
+                        if ("New Patch Name" in json_payload['Name']) :
+                            assertion_status = log.FAIL
+                            log.assertion_log('line', "~ PATCH %s : Resource might have been updated unexpectedly" % (relative_uris[relative_uri]) )
              
     log.assertion_log(assertion_status, None)
 
@@ -1542,36 +1506,34 @@ def _Assertion_6_4_24(self, log) :
                         if permisssions:
                             if permisssions.AttrValue:
                                 if permisssions.AttrValue == 'OData.Permissions/Read':
-                                    # check if intended method is an allowable method for resource
-                                    if (self.allowable_method('PATCH', headers)):   
-                                        #check property name in json_payload..if available request patch on it       
-                                        if property.Name in json_payload.keys():                                                   
-                                            rq_body = {property.Name: 'PatchName'}		
-                                            json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers, rq_body, authorization)
-                                            assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, request_type = 'PATCH')      
+                                    #check property name in json_payload..if available request patch on it
+                                    if property.Name in json_payload.keys():
+                                        rq_body = {property.Name: 'PatchName'}
+                                        json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers, rq_body, authorization)
+                                        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, request_type = 'PATCH')
+                                        # manage assertion status
+                                        assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                                        if assertion_status_ != log.PASS:
+                                            log.assertion_log('line', "~ PATCH on Read-only property %s" % (property.Name) )
+                                            continue
+                                        else:
+                                            #TODO check extended error should have property name in msgargs annotation...
+                                            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                                            assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
                                             # manage assertion status
                                             assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                                            if assertion_status_ != log.PASS:                 
-                                                log.assertion_log('line', "~ PATCH on Read-only property %s" % (property.Name) )  
-                                                continue          
+                                            if assertion_status_ != log.PASS:
+                                                log.assertion_log('Unable to verify PATCH for resource %s read-only Property %s' & (relative_uris[relative_uri], property.Name))
+                                                continue
+                                            if not json_payload:
+                                                assertion_status = log.WARN
+                                                log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
                                             else:
-                                                #TODO check extended error should have property name in msgargs annotation...
-                                                json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                                                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
-                                                # manage assertion status
-                                                assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                                                if assertion_status_ != log.PASS:                 
-                                                    log.assertion_log('Unable to verify PATCH for resource %s read-only Property %s' & (relative_uris[relative_uri], property.Name))
-                                                    continue
-                                                if not json_payload:
-                                                    assertion_status = log.WARN
-                                                    log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
-                                                else:
-                                                    if property.Name in json_payload.keys():
-                                                        #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
-                                                        if (json_payload[property.Name] == 'PatchName'):
-                                                            assertion_status = log.FAIL
-                                                            log.assertion_log('line', "~ PATCH on Property %s of resource %s might have been updated unexpectedly" % (property.Name, relative_uris[relative_uri]) )                                                                                         
+                                                if property.Name in json_payload.keys():
+                                                    #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
+                                                    if (json_payload[property.Name] == 'PatchName'):
+                                                        assertion_status = log.FAIL
+                                                        log.assertion_log('line', "~ PATCH on Property %s of resource %s might have been updated unexpectedly" % (property.Name, relative_uris[relative_uri]) )
     log.assertion_log(assertion_status, None)
 
     return (assertion_status)
@@ -1635,48 +1597,46 @@ def Assertion_6_4_24(self, log) :
                                 for prop in json_metadata['definitions'][typename]['properties']:                                       
                                     if annotation_term in json_metadata['definitions'][typename]['properties'][prop]:
                                         if json_metadata['definitions'][typename]['properties'][prop][annotation_term]:
-                                            # if true. check if intended method is an allowable method for resource
-                                            if (self.allowable_method('PATCH', headers)):   
-                                                #check property name in json_payload..if available request patch on it       
-                                                if prop in json_payload.keys():                                                   
-                                                    rq_body = {prop: 'PatchName'}		
-                                                    json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers, rq_body, authorization)
-                                                    if status == rf_utility.HTTP_OK:
-                                                        # An OK status is only valid if there is also an annotation on the property
-                                                        # that states it is readonly. If we don't have an annotation fail, otherwise
-                                                        # check that the annotation is of the right type
-                                                        found_annotation = False
+                                            #check property name in json_payload..if available request patch on it
+                                            if prop in json_payload.keys():
+                                                rq_body = {prop: 'PatchName'}
+                                                json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers, rq_body, authorization)
+                                                if status == rf_utility.HTTP_OK:
+                                                    # An OK status is only valid if there is also an annotation on the property
+                                                    # that states it is readonly. If we don't have an annotation fail, otherwise
+                                                    # check that the annotation is of the right type
+                                                    found_annotation = False
 
-                                                        if prop + "@Message.ExtendedInfo" in json_payload:
-                                                            error_info = json_payload[prop + "@Message.ExtendedInfo"]
-                                                            for error_object in error_info:
-                                                                if "MessageId" in error_object:
-                                                                    if "PropertyNotWritable" in error_object["MessageId"]:
-                                                                        # We found the annotation and it was of the right type
-                                                                        found_annotation = True
-                                                                        break
-                                                        
-                                                        if not found_annotation:
-                                                            assertion_status = log.FAIL
-                                                            log.assertion_log('line', "~ PATCH passed on property %s with annotation term %s : %s (check document %s) which is an unexpected behavior" % (prop, annotation_term, json_metadata['definitions'][typename]['properties'][prop][annotation_term], schema_file))
-                                                            continue
+                                                    if prop + "@Message.ExtendedInfo" in json_payload:
+                                                        error_info = json_payload[prop + "@Message.ExtendedInfo"]
+                                                        for error_object in error_info:
+                                                            if "MessageId" in error_object:
+                                                                if "PropertyNotWritable" in error_object["MessageId"]:
+                                                                    # We found the annotation and it was of the right type
+                                                                    found_annotation = True
+                                                                    break
 
-                                                    # Regardless of status - go ahead and check that the property has not been updated
-                                                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                                                    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
-                                                    # manage assertion status
-                                                    assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                                                    if assertion_status_ != log.PASS:                 
+                                                    if not found_annotation:
+                                                        assertion_status = log.FAIL
+                                                        log.assertion_log('line', "~ PATCH passed on property %s with annotation term %s : %s (check document %s) which is an unexpected behavior" % (prop, annotation_term, json_metadata['definitions'][typename]['properties'][prop][annotation_term], schema_file))
                                                         continue
-                                                    if not json_payload:
-                                                        assertion_status = log.WARN
-                                                        log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
-                                                    else:
-                                                        if prop in json_payload.keys():
-                                                            #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
-                                                            if (json_payload[prop] == 'PatchName'):
-                                                                assertion_status = log.FAIL
-                                                                log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri]) )                                                                                         
+
+                                                # Regardless of status - go ahead and check that the property has not been updated
+                                                json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                                                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
+                                                # manage assertion status
+                                                assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                                                if assertion_status_ != log.PASS:
+                                                    continue
+                                                if not json_payload:
+                                                    assertion_status = log.WARN
+                                                    log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
+                                                else:
+                                                    if prop in json_payload.keys():
+                                                        #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
+                                                        if (json_payload[prop] == 'PatchName'):
+                                                            assertion_status = log.FAIL
+                                                            log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri]) )
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -1709,34 +1669,27 @@ def Assertion_6_4_25(self, log) :
         if assertion_status_ != log.PASS:                 
             continue
         else:
-            # check if intended method is an allowable method for resource
-            if not (self.allowable_method('PUT', headers)): 
-                if 'etag' not in headers:
-                    assertion_status = log.WARN
-                    log.assertion_log('TX_COMMENT', "~ note: Etag exepcted in headers of %s:%s ~ not found" %(relative_uris[relative_uri], rf_utility.json_string(headers))) 
-                    log.assertion_log('TX_COMMENT', "~ note: Modifications to resource using If-None-Match header without Etag cannot be tested")
-                else:
-                    etag = headers['etag']
-                    #updating with request body
-                    rq_body = {'Name': 'Put Name'}		
-                    json_payload, headers, status = self.http_PUT(relative_uris[relative_uri], rq_headers, rq_body, authorization)
-                    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'PUT')            
+            if 'etag' not in headers:
+                assertion_status = log.WARN
+                log.assertion_log('TX_COMMENT', "~ note: Etag exepcted in headers of %s:%s ~ not found" %(relative_uris[relative_uri], rf_utility.json_string(headers)))
+                log.assertion_log('TX_COMMENT', "~ note: Modifications to resource using If-None-Match header without Etag cannot be tested")
+            else:
+                etag = headers['etag']
+                #updating with request body
+                rq_body = {'Name': 'Put Name'}
+                json_payload, headers, status = self.http_PUT(relative_uris[relative_uri], rq_headers, rq_body, authorization)
+                if status == rf_utility.HTTP_METHODNOTALLOWED:
+                    #check if resource remain unchanged
+                    rq_headers = self.request_headers()
+                    rq_headers['If-None-Match'] = etag
+                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTMODIFIED)
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                    if assertion_status_ != log.PASS:                 
+                    if assertion_status_ != log.PASS:
+                        log.assertion_log('line', "~ GET %s with If-None-Match provided an etag returned status %s:%s which indicates that this resource which does not allow PUT method might have been updated unexpectedly as a result of requesting a PUT method on it previously" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
+                        log.assertion_log('XL_COMMENT', ('Checked if resource is modified using If-None-Match header and etag'))
                         continue
-                    elif etag:
-                        #check if resource remain unchanged
-                        rq_headers = self.request_headers()
-                        rq_headers['If-None-Match'] = etag
-                        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTMODIFIED)         
-                        # manage assertion status
-                        assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                        if assertion_status_ != log.PASS:                 
-                            log.assertion_log('line', "~ GET %s with If-None-Match provided an etag returned status %s:%s which indicates that this resource which does not allow PUT method might have been updated unexpectedly as a result of requesting a PUT method on it previously" % (relative_uris[relative_uri], status, rf_utility.HTTP_status_string(status)) )
-                            log.assertion_log('XL_COMMENT', ('Checked if resource is modified using If-None-Match header and etag'))
-                            continue
  
                
     log.assertion_log(assertion_status, None)
@@ -1792,20 +1745,14 @@ def Assertion_6_4_26(self, log) :
                 if assertion_status_ != log.PASS: 
                     pass
                 else:
-                    # check if intended method is an allowable method for resource
-                    if (self.allowable_method('POST', headers) != True):      
-                        assertion_status = log.FAIL
-                        log.assertion_log('line', "~ note: the header returned from GET %s do not indicate support for POST" % session_collection)
-                        log.assertion_log('line', rf_utility.json_string(headers))
-                    else:
-                        # do the post operation on /Members and check if it works
-                        rq_body = {'UserName': user_name, 'Password': password}
-                        rq_headers = self.request_headers()
-                        sep = '' if session_collection.endswith('/') else '/'
-                        uri = session_collection + sep + 'Members'
-                        json_payload, headers, status = self.http_POST(uri, rq_headers, rq_body, authorization)
-                        log.assertion_log('line', 'status from POST is {}'.format(status))
-                        assertion_status = self.response_status_check(uri, status, log, request_type='POST')
+                    # do the post operation on /Members and check if it works
+                    rq_body = {'UserName': user_name, 'Password': password}
+                    rq_headers = self.request_headers()
+                    sep = '' if session_collection.endswith('/') else '/'
+                    uri = session_collection + sep + 'Members'
+                    json_payload, headers, status = self.http_POST(uri, rq_headers, rq_body, authorization)
+                    log.assertion_log('line', 'status from POST is {}'.format(status))
+                    assertion_status = self.response_status_check(uri, status, log, request_type='POST')
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -1843,13 +1790,12 @@ def Assertion_6_4_27(self, log) :
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
         else:
-            if not (self.allowable_method('POST', headers)):
-                json_payload, headers, status = self.http_POST(relative_uris[relative_uri], rq_headers, rq_body, authorization)
-                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'POST')
-                # manage assertion status
-                assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                if assertion_status_ != log.PASS:                 
-                    continue           
+            json_payload, headers, status = self.http_POST(relative_uris[relative_uri], rq_headers, rq_body, authorization)
+            if status == rf_utility.HTTP_METHODNOTALLOWED:
+                assertion_status_ = log.PASS
+                assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                log.assertion_log('line', '{} does not support creating resources. Received status {} from POST'
+                                  .format(relative_uris[relative_uri], status))
                                            
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -1886,23 +1832,22 @@ def Assertion_6_4_30(self, log) :
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
         else:
             # check if intended method is an allowable method for resource
+            # Since DELETE can be destructive, don't issue the DELETE to resources that advertise it as an
+            # allowable method (to reduce the risk of harm).
             if not (self.allowable_method('DELETE', headers)):
                 json_payload, headers, status = self.http_DELETE(relative_uris[relative_uri], rq_headers, authorization)
-                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'DELETE')       
-                # manage assertion status
-                assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                if assertion_status_ != log.PASS:                 
-                    continue           
-                else:
-                    #check if the url still exists and returns status 200 on GET
+                if status == rf_utility.HTTP_METHODNOTALLOWED:
+                    # check if the url still exists and returns status 200 on GET
                     # could also check via etag
-                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
+                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers,
+                                                                  authorization)
+                    assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
                     # manage assertion status
-                    assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                    if assertion_status_ != log.PASS:                 
-                        log.assertion_log('line', "~ Resource %s might have been deleted unexpectedly" % (relative_uris[relative_uri]) )
-                        continue                   
+                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                    if assertion_status_ != log.PASS:
+                        log.assertion_log('line', "~ Resource %s might have been deleted unexpectedly" % (
+                        relative_uris[relative_uri]))
+                        continue
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -2178,35 +2123,28 @@ def Assertion_6_4_2_2(self, log) :
                 if assertion_status_ != log.PASS: 
                     pass
                 else:
-                    # check if intended method is an allowable method for resource
-                    if (self.allowable_method('POST', headers) != True):      
+                    # 1. try POST without Content-Type, should FAIL
+                    rq_body = {'UserName': user_name, 'Password': password}
+                    rq_headers = self.request_headers()
+                    rq_headers.pop('Content-Type', None)  # remove Content-Type header
+                    authorization = 'off'
+                    log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s and wihtout content type in request headers' % (session_collection, rq_body))
+                    json_payload, headers, status = self.http_POST(session_collection, rq_headers, rq_body, authorization)
+                    log.assertion_log('line', '1st POST returned status {}'.format(status))
+                    if (status == rf_utility.HTTP_CREATED):
                         assertion_status = log.FAIL
-                        log.assertion_log('line', "~ note: the header returned from GET %s do not indicate support for POST" % session_collection)
-                        log.assertion_log('line', rf_utility.json_string(headers))
+                        log.assertion_log('line', "POST (%s) with headers %s WITHOUT the required header %s : %s" % (rf_utility.HTTP_status_string(status), rq_headers ,header_name, rf_utility.content_type['utf8']))
 
-                    if (assertion_status == log.PASS) : # Ok to create the session now
-                        # 1. try POST without Content-Type, should FAIL
-                        rq_body = {'UserName': user_name, 'Password': password}
-                        rq_headers = self.request_headers()
-                        rq_headers.pop('Content-Type', None)  # remove Content-Type header
-                        authorization = 'off'
-                        log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s and wihtout content type in request headers' % (session_collection, rq_body))
-                        json_payload, headers, status = self.http_POST(session_collection, rq_headers, rq_body, authorization)
-                        log.assertion_log('line', '1st POST returned status {}'.format(status))
-                        if (status == rf_utility.HTTP_CREATED):
-                            assertion_status = log.FAIL
-                            log.assertion_log('line', "POST (%s) with headers %s WITHOUT the required header %s : %s" % (rf_utility.HTTP_status_string(status), rq_headers ,header_name, rf_utility.content_type['utf8']))
-
-                        # 2. try POST with Content-Type of rf_utility.content_type['utf8'], should PASS
-                        rq_headers = self.request_headers()
-                        rq_headers['Content-Type'] = rf_utility.content_type['utf8']
-                        authorization = 'off'
-                        log.assertion_log('line', "Requesting POST (%s) WITH the required header %s : %s and request body %s" % (session_collection, header_name, rf_utility.content_type['utf8'], rq_body))
-                        json_payload, headers, status = self.http_POST(session_collection, rq_headers, rq_body, authorization)
-                        log.assertion_log('line', '2nd POST returned status {}'.format(status))
-                        assertion_status_ = self.response_status_check(session_collection, status, log, rf_utility.HTTP_CREATED, 'POST')
-                        # manage assertion status
-                        assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                    # 2. try POST with Content-Type of rf_utility.content_type['utf8'], should PASS
+                    rq_headers = self.request_headers()
+                    rq_headers['Content-Type'] = rf_utility.content_type['utf8']
+                    authorization = 'off'
+                    log.assertion_log('line', "Requesting POST (%s) WITH the required header %s : %s and request body %s" % (session_collection, header_name, rf_utility.content_type['utf8'], rq_body))
+                    json_payload, headers, status = self.http_POST(session_collection, rq_headers, rq_body, authorization)
+                    log.assertion_log('line', '2nd POST returned status {}'.format(status))
+                    assertion_status_ = self.response_status_check(session_collection, status, log, rf_utility.HTTP_CREATED, 'POST')
+                    # manage assertion status
+                    assertion_status = log.status_fixup(assertion_status,assertion_status_)
                                                                                                  
     else:
         assertion_status = log.WARN
@@ -2538,28 +2476,21 @@ def Assertion_6_5_2_6(self, log):
                 if assertion_status_ != log.PASS: 
                     pass     
                 else:
-                    # check if intended method is an allowable method for resource
-                    if (self.allowable_method('POST', headers) != True):      
-                        assertion_status = log.FAIL
-                        log.assertion_log('line', "~ note: the header returned from GET %s do not indicate support for POST" % session_collection)
-                        log.assertion_log('line', rf_utility.json_string(headers))
-
-                    if assertion_status == log.PASS:  # Ok to create the session now
-                        rq_headers = self.request_headers()
-                        authorization = 'off'
-                        rq_body = {'UserName': user_name, 'Password': password}
-                        log.assertion_log('TX_COMMENT', 'Requesting POST for resource %s with request body %s' % (session_collection, rq_body))
-                        json_payload, headers, status = self.http_POST(session_collection, rq_headers, rq_body, authorization)
-                        assertion_status_ = self.response_status_check(session_collection, status, log, rf_utility.HTTP_CREATED , request_type = 'POST')
-                        # manage assertion status
-                        assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                        if assertion_status_ != log.PASS:                           
-                            log.assertion_log('line', "~ note: %s in headers for POST for resource %s could not be verified" % (response_key, session_collection))
-                        else:
-                            response_key = 'location'
-                            if response_key not in headers:
-                                assertion_status = log.FAIL
-                                log.assertion_log('line', "~ note: Post for object creation for resource %s : %s expected %s in headers ~ not found" % (user_name, session_collection, response_key))
+                    rq_headers = self.request_headers()
+                    authorization = 'off'
+                    rq_body = {'UserName': user_name, 'Password': password}
+                    log.assertion_log('TX_COMMENT', 'Requesting POST for resource %s with request body %s' % (session_collection, rq_body))
+                    json_payload, headers, status = self.http_POST(session_collection, rq_headers, rq_body, authorization)
+                    assertion_status_ = self.response_status_check(session_collection, status, log, rf_utility.HTTP_CREATED , request_type = 'POST')
+                    # manage assertion status
+                    assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                    if assertion_status_ != log.PASS:
+                        log.assertion_log('line', "~ note: %s in headers for POST for resource %s could not be verified" % (response_key, session_collection))
+                    else:
+                        response_key = 'location'
+                        if response_key not in headers:
+                            assertion_status = log.FAIL
+                            log.assertion_log('line', "~ note: Post for object creation for resource %s : %s expected %s in headers ~ not found" % (user_name, session_collection, response_key))
     else:
         assertion_status = log.WARN
         log.assertion_log('line', "~ Uri to resource: %s not found in redfish top level links: %s" % (root_link_key, self.sut_toplevel_uris) )
