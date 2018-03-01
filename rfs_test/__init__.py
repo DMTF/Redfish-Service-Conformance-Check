@@ -42,7 +42,7 @@ def run(sut):
         TEST_accountservice_schema.run(sut, log)
         #TEST_actioninfo_schema.run(sut, log)
         #TEST_assembly_schema.run(sut, log)
-        #TEST_attributeregistery_schema.run(sut, log)
+        #TEST_attributeregistry_schema.run(sut, log)
         #TEST_service_details.run(sut, log)
         #TEST_security.run(sut, log)
         ## end: assertion verification
