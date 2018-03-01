@@ -24,13 +24,14 @@
   },
   "RedfishServiceCheckTool_SUTConfiguration": {
     "SUTs": [
-      {
+     {
         "Password": "",
         "LoginName": "",
         "AllowAction_LogServiceClearLog": "yes",
-        "DnsName": "",
-        "DisplayName": "",
-        "RedfishVersion": "v1"
+        "DnsName": "127.0.0.1:8000",
+        "DisplayName": "my-mockup-server",
+        "RedfishVersion": "v1",
+        "UseHttp": "yes"
       }
     ],
     "Description": "setup your server (SUT) location/authorization information here:  AllowAction_LogServiceClearLog = yes will allow this Action during test"
