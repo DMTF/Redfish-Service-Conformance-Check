@@ -3,7 +3,7 @@
 # License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/LICENSE.md
 
 #####################################################################################################
-# File: rfs_check.py
+# File: TEST_accountservice_schema.py
 # Description: Redfish service conformance check tool. This module contains implemented assertions for
 #   SUT.These assertions are based on operational checks on Redfish Service to verify that it conforms
 #   to the normative statements from the Redfish specification.
@@ -53,48 +53,53 @@ def Assertion_ACCO101(self, log):
 
     try:
         isEnabled = json_payload['ServiceEnabled']
+
+        if isEnabled:
+            patch_key = 'ServiceEnabled'   
+            patch_value = False
+            rq_body = {patch_key : patch_value}
+            self.http_PATCH('/redfish/v1/AccountService', rq_headers, rq_body, authorization)
+
     except:
         assertion_status = log.WARN
         log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
         return assertion_status
     else:
         try:
-            key = 'Accounts'
-            acc_collection = (json_payload[key])['@odata.id']
+            acc_collection = (json_payload['Accounts'])['@odata.id']
         except:
             assertion_status = log.WARN
             log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
             return assertion_status
         else:
-            if not isEnabled:
-                rq_body = {'Name': 'Test'}
-                
-                json_payload, headers, status = self.http_PUT(acc_collection + '/test', rq_headers, rq_body, authorization)
-                
-                if status == 201:
-                    assertion_status = log.FAIL
-                    log.assertion_log(assertion_status, None)
-                    log.assertion_log('line', "Assertion Failed")  
-                    return assertion_status
 
-                try:
-                    json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
-                    key = 'Members'
-                    members_collection = (json_payload[key])
-                except:
-                    assertion_status = log.WARN
-                    log.assertion_log('line', "~ \'Members\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
-                    return assertion_status
-                else:
-                    for member in members_collection:
-                        key = '@odata.id'
-                        member_link = member[key]
-                        json_payload, headers, status = self.http_PUT(member_link, rq_headers, rq_body, authorization)
-                        if status == 201:
-                            assertion_status = log.FAIL
-                            log.assertion_log(assertion_status, None)
-                            log.assertion_log('line', "Assertion Failed")  
-                            return assertion_status
+            rq_body = {'Name': 'Test'}
+            
+            json_payload, headers, status = self.http_POST(acc_collection + '/test', rq_headers, rq_body, authorization)
+            
+            if status == 201:
+                assertion_status = log.FAIL
+                log.assertion_log(assertion_status, None)
+                log.assertion_log('line', "Assertion Failed")  
+                return assertion_status
+
+            try:
+                json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
+                members_collection = (json_payload['Members'])
+            except:
+                assertion_status = log.WARN
+                log.assertion_log('line', "~ \'Members\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
+                return assertion_status
+            else:
+                for member in members_collection:
+                    key = '@odata.id'
+                    member_link = member[key]
+                    json_payload, headers, status = self.http_PUT(member_link, rq_headers, rq_body, authorization)
+                    if status == 201:
+                        assertion_status = log.FAIL
+                        log.assertion_log(assertion_status, None)
+                        log.assertion_log('line', "Assertion Failed")  
+                        return assertion_status
             
     log.assertion_log(assertion_status, None)
     log.assertion_log('line', "Assertion Passes") 
@@ -130,7 +135,13 @@ amount of time to test the assertion.
 # password to be set to.
 ###################################################################################################
 
-    
+'''
+Step 1: Try creating an account with the password length less than the property MinPasswordLength.
+Step 2: If the value at MinPasswordLength is 0, then the assertion should automatically be passed or
+else proceed to STEP 3. 
+Step 3: Check for an error message as part of the HTTP request. 
+Step 4: Fail the assertion if an account was created sucessfully. 
+'''
     
 ## end Assertion_ACCO103
 
@@ -141,6 +152,12 @@ amount of time to test the assertion.
 # password to be set to.
 ###################################################################################################
 
+'''
+NOTE: This assertion can be combined with the Assertion_ACCO103
+Step 1: Try creating an account with the password length more than the property MaxPasswordLength.
+Step 2: Check for an error message as part of the HTTP request. 
+Step 3: Fail the assertion if an account was created sucessfully. 
+'''
 
 ## end Assertion_ACCO104
 
@@ -152,6 +169,12 @@ amount of time to test the assertion.
 # account is locked.  If set to 0, no lockout shall ever occur.
 ###################################################################################################
 
+'''
+Step 1: Simulate an failed login attempt by providing wrong credentials.
+Step 2: Check if the account is locaked after repeating Step 1 for threshold number of times. 
+Step 3: Fail the assertion if an account was not locked. 
+
+'''
 
 ## end Assertion_ACCO105
 
@@ -165,6 +188,13 @@ amount of time to test the assertion.
 # occur.
 ###################################################################################################
 
+'''
+Step 1: Run Assertion_ACCO105
+Step 2: If Step 1 passes, start a timer. 
+Step 3: Check if the value obtained at Step 2 is the same as AccountLockoutCounterResetAfter when 
+the account is unlocked. 
+Step 4: Pass the assertion if Step 3 returns true. 
+'''
 
 ## end Assertion_ACCO106
 
@@ -178,9 +208,16 @@ amount of time to test the assertion.
 # threshold counter also resets to zero after each successful login.
 ###################################################################################################
 
+'''
+Step 1: Simulate failed login attempts preiodically with a time interval more that of
+AccountLockoutCounterResetAfter value. 
+Step 2: Chek if AccountLockoutThreshold counter is reset to 0. 
+Step 3: Pass the assertion if Step 2 returns true. 
+'''
 
 ## end Assertion_ACCO107
 
+# NOT NECESSARY  
 ###################################################################################################
 # Name: Assertion_ACCO108(self, log) :Account Service                                            
 # Assertion text: 
@@ -190,7 +227,7 @@ amount of time to test the assertion.
     
 ## end Assertion_ACCO108
 
-
+# NOT NECESSARY  
 ###################################################################################################
 # Name: Assertion_ACCO109(self, log) :Account Service                                            
 # Assertion text: 
@@ -199,6 +236,7 @@ amount of time to test the assertion.
 
 ## end Assertion_ACCO109
 
+# NOT NECESSARY  
 ###################################################################################################
 # Name: Assertion_ACCO110(self, log) :Account Service                                            
 # Assertion text: 
@@ -210,7 +248,7 @@ amount of time to test the assertion.
    
 ## end Assertion_ACCO110
 
-#Needs further development. 
+# NOT NECESSARY  
 
 ###################################################################################################
 # Name: Assertion_ACCO111(self, log) :Account Service                                            
@@ -221,7 +259,7 @@ amount of time to test the assertion.
 
 ## end Assertion_ACCO111
 
-#Needs further development. 
+# NOT NECESSARY  
 
 ###################################################################################################
 # Name: Assertion_ACCO112(self, log) :Account Service                                            
@@ -232,7 +270,7 @@ amount of time to test the assertion.
     
 ## end Assertion_ACCO112
  
-#Needs further development. 
+# NOT NECESSARY  
 
 ###################################################################################################
 # Name: Assertion_ACCO113(self, log) :Account Service                                            
