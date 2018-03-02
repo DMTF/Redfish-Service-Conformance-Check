@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.0.3] - 2018-03-02
+- Corrected the enforcement of the Allow header on GET requests
+- Hardened the validation of error responses
+- Added initial test cases for validating normative language in the AccountService schema
+
 ## [1.0.2] - 2018-02-15
 - Modified tests for POST to a collection and DELETE from a collection to use the SessionService instead of AccountService
 
