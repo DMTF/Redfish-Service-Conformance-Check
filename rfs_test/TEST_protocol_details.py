@@ -3755,74 +3755,76 @@ def Assertion_6_5_20(self, log):
     #find alias in Include first?
     for relative_uri in relative_uris:
         if 'Root Service' in relative_uri:
-                rq_headers['Accept'] = rf_utility.accept_type['json']
-                json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
-                # manage assertion status
+            rq_headers['Accept'] = rf_utility.accept_type['json']
+            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+            assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
+            # manage assertion status
+            assertion_status = log.status_fixup(assertion_status,assertion_status_)
+            if assertion_status_ != log.PASS:
+                continue
+            elif not json_payload:
+                assertion_status_ = log.WARN
+                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                if assertion_status_ != log.PASS:
-                    continue
-                elif not json_payload:
-                    assertion_status_ = log.WARN
-                     # manage assertion status
-                    assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                    log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
-                else:
-                    if '@odata.context' in json_payload:
-                        resource = json_payload['@odata.context']
-                        #r = requests.get(resource)
-                        #print('The response is %s' %r)
-                        rq_headers['Accept'] = rf_utility.accept_type['xml']
-                        response,headers,status = self.http_GET(resource,rq_headers,None)
-                        if status == rf_utility.HTTP_NOT_FOUND:
-                            print('Resource {} not found'.format(resource))
-                            continue
-                        if status != rf_utility.HTTP_OK:
-                            print('Unexpected status {} for resource {}'.format(status, resource))
-                            print('Response is {}'.format(response))
-                            continue
-                        response = response.decode('utf-8').strip('\x00')
-                        try:
-                            doc = minidom.parseString(response)
-                        except Exception as e:
-                            print('The response is %s' % response)
-                            print('Exception received when parsing response from resource {}; exception is "{}"'
-                                  .format(resource, e))
-                            continue
-                        dataServices = doc.getElementsByTagName('edmx:Reference')
-                        file_ = json.loads(primitive_types)
-                        for d in dataServices:
-                            uris = d.getAttribute('Uri')
-                            print('The uri is %s' %uris)
-                            if uris.startswith('/'):
-                                # relative URI case
-                                rq_headers['Accept'] = rf_utility.accept_type['xml']
-                                myfile, headers, status = self.http_GET(uris, rq_headers, None)
-                                if status == rf_utility.HTTP_NOT_FOUND:
-                                    print('Resource {} not found'.format(uris))
-                                    continue
-                                if status != rf_utility.HTTP_OK:
-                                    print('Unexpected status {} for resource {}'.format(status, uris))
-                                    print('Response is {}'.format(myfile))
-                                    continue
-                                myfile = myfile.decode('utf-8').strip('\x00')
-                            else:
-                                # full URL case
-                                try:
-                                    f = urlopen(uris)
-                                    myfile = f.read()
-                                except Exception as e:
-                                    print('Exception received while reading uri {}. The exception is {}'.format(uris, e))
-                                    continue
-                            count = count + 1
-                            #myfile = myfile.decode('utf-8')
-                            # print(myfile)
-                            if count < 40:
-                                doc = minidom.parseString(myfile)
-                                entity = doc.getElementsByTagName('Property')
-                                for e in entity:
-                                    name = e.getAttribute('Name')
-                                    type_ = e.getAttribute('Type')
+                log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
+            else:
+                if '@odata.context' in json_payload:
+                    resource = json_payload['@odata.context']
+                    #r = requests.get(resource)
+                    #print('The response is %s' %r)
+                    rq_headers['Accept'] = rf_utility.accept_type['xml']
+                    response,headers,status = self.http_GET(resource,rq_headers,None)
+                    if status == rf_utility.HTTP_NOT_FOUND:
+                        print('Resource {} not found'.format(resource))
+                        continue
+                    if status != rf_utility.HTTP_OK:
+                        print('Unexpected status {} for resource {}'.format(status, resource))
+                        print('Response is {}'.format(response))
+                        continue
+                    response = response.decode('utf-8').strip('\x00')
+                    try:
+                        doc = minidom.parseString(response)
+                    except Exception as e:
+                        print('The response is %s' % response)
+                        print('Exception received when parsing response from resource {}; exception is "{}"'
+                              .format(resource, e))
+                        continue
+                    dataServices = doc.getElementsByTagName('edmx:Reference')
+                    file_ = json.loads(primitive_types)
+                    for d in dataServices:
+                        uris = d.getAttribute('Uri')
+                        print('The uri is %s' %uris)
+                        if uris.startswith('/'):
+                            # relative URI case
+                            rq_headers['Accept'] = rf_utility.accept_type['xml']
+                            myfile, headers, status = self.http_GET(uris, rq_headers, None)
+                            if status == rf_utility.HTTP_NOT_FOUND:
+                                print('Resource {} not found'.format(uris))
+                                continue
+                            if status != rf_utility.HTTP_OK:
+                                print('Unexpected status {} for resource {}'.format(status, uris))
+                                print('Response is {}'.format(myfile))
+                                continue
+                            myfile = myfile.decode('utf-8').strip('\x00')
+                        else:
+                            # full URL case
+                            try:
+                                f = urlopen(uris)
+                                myfile = f.read()
+                            except Exception as e:
+                                print('Exception received while reading uri {}. The exception is {}'.format(uris, e))
+                                continue
+                        count = count + 1
+                        #myfile = myfile.decode('utf-8')
+                        # print(myfile)
+                        if count < 40:
+                            doc = minidom.parseString(myfile)
+                            entities = doc.getElementsByTagName('EntityType')
+                            for e in entities:
+                                properties = e.getElementsByTagName('Property')
+                                for p in properties:
+                                    name = p.getAttribute('Name')
+                                    type_ = p.getAttribute('Type')
 
                                     print('The name & type is %s %s' %(name,type_))
                                     if type_ in primitive_types:
@@ -3843,8 +3845,8 @@ def Assertion_6_5_20(self, log):
 
                                     else:
                                         continue
-                            else:
-                                break
+                        else:
+                            break
                                                                                                                     
     log.assertion_log(assertion_status, None)
     return (assertion_status)
