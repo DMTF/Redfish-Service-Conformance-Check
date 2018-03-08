@@ -4040,42 +4040,52 @@ def Assertion_6_5_23_1(self, log) :
 
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
-    count = 0
     for relative_uri in relative_uris:
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
-        # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
         if assertion_status_ != log.PASS: 
             continue
         elif not json_payload:
             assertion_status_ = log.WARN
-             # manage assertion status
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
         else:
             if '@odata.type' in json_payload:
-                if 'Collection' in json_payload['@odata.type']:
-                    # WIP check member count and check len(Members) if len members < count, nextlink must be present..
-                    # Added a code to count 'odata.count' and the length of members and calculated if it's <= with the count- Priyanka
+                if 'Collection' in json_payload['@odata.type'] and 'Members@odata.count' in json_payload and 'Members' in json_payload:
                     member_count = json_payload['Members@odata.count']
-                    for member in json_payload :
-                        if 'Members' in json_payload :
-                            member_array = json_payload['Members']
-                            for m in member_array:
-                                count = count+1
-                    if count<=member_count: 
-                        nextlink = 'Members@odata.nextLink'
+                    count = len(json_payload['Members'])
+                    nextlink = 'Members@odata.nextLink'
+                    if count < member_count:
+                        # must have a Members@odata.nextLink
                         if nextlink in json_payload:
                             if json_payload[nextlink] is None:
-                                assertion_status = log.FAIL
-                                log.assertion_log('line','property %s should have a value, found %s' %(nextlink, json_payload[nextlink]))
+                                assertion_status_ = log.FAIL
+                                assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                                log.assertion_log('line', '{}: Members@odata.count = {}, members returned = {}'
+                                                  .format(relative_uris[relative_uri], member_count, count))
+                                log.assertion_log('line', 'property {} should have a value, found {}'
+                                                  .format(nextlink, json_payload[nextlink]))
                         else:
-                            assertion_status = log.FAIL
-                            log.assertion_log('line', 'property %s should be present in the resource %s' %(nextlink,relative_uri))
+                            assertion_status_ = log.FAIL
+                            assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                            log.assertion_log('line', '{}: Members@odata.count = {}, members returned = {}'
+                                              .format(relative_uris[relative_uri], member_count, count))
+                            log.assertion_log('line', 'property {} should be present in the resource {}'
+                                              .format(nextlink, relative_uris[relative_uri]))
+                    else:
+                        # must NOT have a Members@odata.nextLink
+                        if nextlink in json_payload:
+                            assertion_status_ = log.FAIL
+                            assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                            log.assertion_log('line', '{}: Members@odata.count = {}, members returned = {}'
+                                              .format(relative_uris[relative_uri], member_count, count))
+                            log.assertion_log('line', 'property {} should NOT be present in the resource {}'
+                                              .format(nextlink, relative_uris[relative_uri]))
 
             else:      
-                assertion_status = log.WARN
+                assertion_status_ = log.WARN
+                assertion_status = log.status_fixup(assertion_status, assertion_status_)
                 log.assertion_log('line', "~ @odata.type (resource identifier property) not found in redfish resource %s" % (relative_uris[relative_uri]))
                               
     log.assertion_log(assertion_status, None)
