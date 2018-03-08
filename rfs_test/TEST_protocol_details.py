@@ -1927,7 +1927,7 @@ def Assertion_6_4_32(self, log) :
     authorization = 'on'
 
     rq_headers = self.request_headers()
-    rq_body = {'ResetType': 'ForceOff'}
+    rq_body = {'ResetType': 'On'}
     root_link_key = 'Systems'
     
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
@@ -1935,19 +1935,26 @@ def Assertion_6_4_32(self, log) :
         for json_payload, headers in members:
             if json_payload is None:
                 continue
-            # perform the POST ~ clear the system log..
-            if 'Actions' in json_payload:
-                log.assertion_log('line', 'Action %s found' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))
-                log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))  
-                json_payload_, headers_, status_ = self.http_POST(json_payload['Actions']['#ComputerSystem.Reset']['target'], rq_headers, rq_body, authorization)
-                assertion_status_ = self.response_status_check(json_payload['Actions']['#ComputerSystem.Reset']['target'], status_, log, request_type = 'POST')
-                print('The status of POST method is %s' %status_)
+            # perform the POST
+            if 'Actions' in json_payload and '#ComputerSystem.Reset' in json_payload['Actions']:
+                if 'target' in json_payload['Actions']['#ComputerSystem.Reset']:
+                    target = json_payload['Actions']['#ComputerSystem.Reset']['target']
+                    log.assertion_log('line', 'Action target %s found' % target)
+                else:
+                    target = json_payload.get('@odata.id').rstrip('/') + '/Actions/ComputerSystem.Reset'
+                    assertion_status_ = log.WARN
+                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                    log.assertion_log('line', 'Warning: Property "target" not found in Actions property, using %s' % target)
+                log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s' % target)
+                json_payload_, headers_, status_ = self.http_POST(target, rq_headers, rq_body, authorization)
+                # service could reasonably return errors for a number of reasons here, so only WARN on unexpected status
+                assertion_status_ = self.response_status_check(target, status_, log, request_type='POST', warn_only=True)
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
-                if assertion_status_ != log.PASS:                 
-                    print('JSON payload %s is failing' %json_payload_)
-                    print('Headers is %s' %headers_)
-                    log.assertion_log('line', 'POST on action url %s failed' % (json_payload['Actions']['#ComputerSystem.Reset']['target']))
+                if assertion_status_ != log.PASS:
+                    log.assertion_log('line', 'Response from POST: %s' % json_payload_)
+                    log.assertion_log('line', 'Response headers: %s' % headers_)
+                    log.assertion_log('line', 'Warning: POST on action uri %s returned status %s' % (target, status_))
                     continue
             else:
                 assertion_status_ = log.WARN
