@@ -1320,6 +1320,9 @@ def Assertion_6_4_18(self, log) :
             authorization = 'on'
             rq_headers = self.request_headers()
             json_payload, headers, status = self.http_HEAD(relative_uris[relative_uri], rq_headers, authorization)
+            if status == rf_utility.HTTP_METHODNOTALLOWED:
+                # services are not required to support HEAD
+                continue
             assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, request_type = 'HEAD')
             # manage assertion status
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1328,7 +1331,7 @@ def Assertion_6_4_18(self, log) :
             # should not contain response body
             elif json_payload:
                 assertion_status = log.FAIL
-                log.assertion_log('line', "~ HEAD on %s resposne returned a payload: %s" % (relative_uris[relative_uri], rf_utility.json_string(json_payload)) )
+                log.assertion_log('line', "~ HEAD on %s response returned a payload: %s" % (relative_uris[relative_uri], rf_utility.json_string(json_payload)) )
 
             # the service must 2. FAIL the request without authorization
             authorization = 'off'
