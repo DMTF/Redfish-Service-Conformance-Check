@@ -2361,7 +2361,8 @@ def Assertion_6_5_1(self, log) :
         if assertion_status_ != log.PASS: 
             continue                
         else:
-            assertion_status = response_header_check(headers, relative_uris[relative_uri], log)       
+            assertion_status_ = response_header_check(headers, relative_uris[relative_uri], log)
+            assertion_status = log.status_fixup(assertion_status, assertion_status_)
 
     if (assertion_status == log.WARN or assertion_status == log.FAIL):
         log.assertion_log('line', "~ One or more WARNings or FAILures has occured ~ check the %s file for details" % log.TextLogPath)
@@ -2382,9 +2383,9 @@ def Assertion_6_5_1(self, log) :
 #   header is not foundAdvisory WARN if any header not in the response header table in spec is found
 ###################################################################################################
 def response_header_check(headers, url, log):
-    required_headers = ['odata-version', 'content-type', 'server', 'link', 'cache-control', 'allow']
+    required_headers = ['odata-version', 'content-type', 'server', 'link', 'cache-control']
     conditional_headers = ['etag', 'location']
-    additional_headers = ['content-encoding', 'content-length', 'via', 'max-forwards']
+    additional_headers = ['content-encoding', 'content-length', 'via', 'max-forwards', 'retry-after']
     # what we think is required in context
     # example: http://pretty-rfcc.herokuapp.com/rfcC2617 : The 401 (Unauthorized) 
     # response message is used by an origin server to challenge the authorization of a user agent. 
@@ -2392,17 +2393,15 @@ def response_header_check(headers, url, log):
     # x-auth-token: if there is a session
     # access-control-allow-origin : Not so sure, found x-frame-options with origin response
     # Prevents or allows requests based on originating domain. Used to prevent CSrfc attacks.
-    contextual_headers = ['access-control-allow-origin', 'www-authenticate', 'x-auth-token']
+    contextual_headers = ['allow', 'access-control-allow-origin', 'www-authenticate', 'x-auth-token']
 
     assertion_status = log.PASS
-    assertion_status_1 = log.PASS
-    assertion_status_2 = log.PASS
 
     #check on root then check on top level links
     for req_header in required_headers:
         # normalize
         if req_header not in (h.lower() for h in headers):
-            assertion_status_1 = log.FAIL
+            assertion_status = log.FAIL
             #TX_COMMENT only gets written to the text log file..
             log.assertion_log('TX_COMMENT', "FAIL: Required header[%s] expected but not found in response header of resource %s" % (req_header, url))
     for cond_header in conditional_headers:
@@ -2415,12 +2414,10 @@ def response_header_check(headers, url, log):
         if cxt_header in headers:
             log.assertion_log('TX_COMMENT','Note: header[%s] found in response header of resource %s' %(cxt_header, url))
     for header in headers:
-        if header.lower() not in required_headers and header.lower() not in conditional_headers and header.lower() not in additional_headers:
-            assertion_status_2 = log.WARN
-            log.assertion_log('TX_COMMENT', "WARN: header[%s] not expected but found in response header of resource %s" % (header, url))
+        if (header.lower() not in required_headers and header.lower() not in conditional_headers
+                and header.lower() not in additional_headers and header.lower() not in contextual_headers):
+            log.assertion_log('TX_COMMENT', "Note: header[%s] not listed in Redfish spec but found in response header of resource %s" % (header, url))
 
-    #Check status, FAIL takes precedence, the WARN, then PASS
-    assertion_status = assertion_status_1 if (assertion_status_1 == log.FAIL or assertion_status_1 == log.WARN) else assertion_status_2 
     return assertion_status
 
 # End response_header_check
