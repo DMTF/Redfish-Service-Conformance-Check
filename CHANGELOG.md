@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.0.4] - 2018-03-09
+- Fixed bug it was not able to handle multiple properties of the same name in different objects in the same payload
+- Fixed bug where the members of a collection were not being handled properly when validating the usage of `@odata.nextLink`
+- Fixed test cases where it was validating the response of an Action, but not handling corner cases appropriately
+- Corrected check for the HEAD method; this is not required to be supported on a service
+- Corrected Allow header check; this is only mandatory when the HTTP status code is 405
+
 ## [1.0.3] - 2018-03-02
 - Corrected the enforcement of the Allow header on GET requests
 - Hardened the validation of error responses
