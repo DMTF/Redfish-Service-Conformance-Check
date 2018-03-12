@@ -2735,38 +2735,42 @@ def Assertion_6_5_6_5(self, log) :
 # Description:               
 # Status Code:  301 Moved Permanently The requested resource resides under a different URI
 ###################################################################################################
-def Assertion_6_5_6_6(self, log) :
+def Assertion_6_5_6_6(self, log):
 
     log.AssertionID = '6.5.6.6'
-    assertion_status =  log.PASS
+    assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
     authorization = 'on'
 
     rq_headers = self.request_headers()
 
     relative_uris = self.relative_uris
-    response = None
+    found_redirect = False
 
     for relative_uri in relative_uris:
-        url_redirect = relative_uris[relative_uri][:-1]                    
+        # try to trigger a redirect: change /redfish/v1/foo/ to /redfish/v1/foo or /redfish/v1/bar to /redfish/v1/bar/
+        if relative_uris[relative_uri].endswith('/'):
+            url_redirect = relative_uris[relative_uri].rstrip('/')
+        else:
+            url_redirect = relative_uris[relative_uri] + '/'
         response = rf_utility.http__req_resp(self.SUT_prop, 'GET', url_redirect, rq_headers, None, authorization)
         if not response:
             assertion_status_ = log.WARN
-            assertion_status = log.status_fixup(assertion_status,assertion_status_)
+            assertion_status = log.status_fixup(assertion_status, assertion_status_)
         else:
-            # check for redirect... 
-            assertion_status_ = self.response_status_check(url_redirect, response.status, log, rf_utility.HTTP_MOVEDPERMANENTLY)      
-            # manage assertion status
-            assertion_status = log.status_fixup(assertion_status,assertion_status_)
-            if assertion_status_ != log.PASS: 
-                continue 
-            else:
-                try:
-                    redirect_location = response.getheader('location')               
-                except:
-                    assertion_status = log.FAIL
-                    log.assertion_log('line', "~ Expected Location in the headers of GET: %s with status %s:%s, not found" %(url_redirect,response.status, rf_utility.HTTP_status_string(response.status)))
-                    log.assertion_log('line', rf_utility.json_string(rq_headers))
+            # check for redirect
+            if response.status == rf_utility.HTTP_MOVEDPERMANENTLY:
+                found_redirect = True
+                if response.getheader('location') is None:
+                    assertion_status_ = log.FAIL
+                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                    log.assertion_log('line', '~ Expected Location header not found in GET response: %s status %s:%s' %
+                                      (url_redirect, response.status, rf_utility.HTTP_status_string(response.status)))
+
+    if not found_redirect:
+        assertion_status_ = log.INCOMPLETE
+        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+        log.assertion_log('line', 'Unable to verify 301 Moved Permanently behavior. No 301 response status returned.')
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
