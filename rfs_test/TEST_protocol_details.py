@@ -4454,104 +4454,131 @@ def Assertion_6_5_31(self, log) :
 ## end Assertion 6.5.31
 
 
+def get_namespace(type_or_context):
+    """
+    Utility function to extract the namespace from a type (@odata.type) or context (@odata.context)
+    :param type_or_context: the type or context value
+    :type type_or_context: str
+    :return: the namespace
+    """
+    if '#' in type_or_context:
+        type_or_context = type_or_context.rsplit('#', 1)[1]
+    return type_or_context.rsplit('.', 1)[0]
+
+
+def get_annotation_namespace(annotation):
+    """
+    Utility function to extract the namespace from a payload annotation (e.g. @Message.ExtendedInfo)
+    :param annotation: the payload annotation
+    :type annotation: str
+    :return: the namespace
+    """
+    if '@' in annotation:
+        annotation = annotation.rsplit('@', 1)[1]
+    return annotation.rsplit('.', 1)[0]
+
+
+def get_metadata_namespaces(metadata):
+    """
+    Utility function to get all the namespaces from a metadata document and return them as a set()
+    :param metadata: the metadata document
+    :type metadata: schema.Edmx
+    :return: the namespace
+    """
+    metadata_namespaces = set()
+    for reference in metadata.References:
+        for include in reference.Includes:
+            metadata_namespaces.add(include.Namespace)
+    return metadata_namespaces
+
+
+def get_keys_substring(substring, val):
+    """
+    Generator function to recursively find all keys from a dict that containing the substring
+    :param substring: the substring to look for (e.g. '@Message.' to find @Message annotations)
+    :type substring: str
+    :param val: the dict to search
+    :type val: dict
+    :return: all matching keys
+    """
+    if hasattr(val, 'items'):
+        for k, v in val.items():
+            if substring in k:
+                yield k
+            if isinstance(v, dict):
+                for result in get_keys_substring(substring, v):
+                    yield result
+            elif isinstance(v, list):
+                for d in v:
+                    for result in get_keys_substring(substring, d):
+                        yield result
+
+
 ###################################################################################################
-# Name: Assertion_6_5_8(self, log)                                               
+# Name: Assertion_6_5_8(self, log)
 # Description:    Referencing Other Schemas
 # The service metadata shall include the namespaces for each of the Redfish resource types, along with
 # the "RedfishExtensions.v1_0_0" namespace.
 ###################################################################################################
-def Assertion_6_5_8(self, log) :
-
+def Assertion_6_5_8(self, log):
     log.AssertionID = '6.5.8'
-    assertion_status =  log.PASS
+    assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
     authorization = 'on'
 
     relative_uris = self.relative_uris
     rq_headers = self.request_headers()
-    direc = os.getcwd()+'/redfish-1.0.0/json-schema/'
-    ext = '.json'
-    file_dict = {} # Create an empty dict
-    
-    # Select only files with the ext extension
-    txt_files = [i for i in os.listdir(direc) if os.path.splitext(i)[1] == ext]
-    for i in range (0, len(txt_files)):
-        txt_files[i] = txt_files[i].split('.json')[0]
-        #txt_files[i]= txt_files[i][0]
-    # Iterate over your txt files
-    list1 = []
+
+    service_namespaces = set()
+    service_namespaces.add('RedfishExtensions.v1_0_0')
 
     for relative_uri in relative_uris:
-        rq_headers['Accept'] = rf_utility.accept_type['json']
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
-        # manage assertion status
+        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
-        if assertion_status_ != log.PASS: 
+        if assertion_status_ != log.PASS or not json_payload:
             continue
-        elif not json_payload:
+        if not isinstance(json_payload, dict):
             assertion_status_ = log.WARN
-             # manage assertion status
-            assertion_status = log.status_fixup(assertion_status,assertion_status_)
-            log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
+            assertion_status = log.status_fixup(assertion_status, assertion_status_)
+            log.assertion_log('line',
+                              '{}: Response body not parsed into JSON. Check the Content-Type in response headers: {}'
+                              .format(relative_uris[relative_uri], headers))
+            continue
+        # get @odata.type namespace
+        odata_type = json_payload.get('@odata.type')
+        if isinstance(odata_type, str) and len(odata_type) > 0:
+            service_namespaces.add(get_namespace(odata_type))
+        # get @odata.context namespace
+        odata_context = json_payload.get('@odata.context')
+        if isinstance(odata_context, str) and len(odata_context) > 0:
+            service_namespaces.add(get_namespace(odata_context))
+        # get @Message payload annotation namespaces
+        for key in get_keys_substring('@Message.', json_payload):
+            service_namespaces.add(get_namespace(get_annotation_namespace(key)))
+        # get @Privileges payload annotation namespaces
+        for key in get_keys_substring('@Privileges.', json_payload):
+            service_namespaces.add(get_namespace(get_annotation_namespace(key)))
+
+    if self.metadata_document_structure is None:
+        assertion_status_ = log.WARN
+        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+        log.assertion_log('line', 'Service $metadata document {} not found. Unable to verify assertion.'
+                          .format(self.Redfish_URIs['Service_Metadata_Doc']))
+    else:
+        metadata_namespaces = get_metadata_namespaces(self.metadata_document_structure)
+        if service_namespaces.issubset(metadata_namespaces):
+            assertion_status_ = log.PASS
+            assertion_status = log.status_fixup(assertion_status, assertion_status_)
         else:
-            if '@odata.context' in json_payload:
-                if not isinstance(json_payload, dict):
-                    assertion_status_ = log.WARN
-                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
-                    log.assertion_log('line',
-                                      'Response body for resource {} was not parsed into a JSON object. Check the Content-Type response header. Response headers: {}'
-                                      .format(relative_uris[relative_uri], headers))
-                    continue
-                resource = json_payload['@odata.context']
-                #r = requests.get(resource)
-                #print('The response is %s' %r)
-                rq_headers['Accept'] = rf_utility.accept_type['xml']
-                response,headers,status = self.http_GET(resource,rq_headers,None)
-                if status != 200:
-                    print('Unexpected status {} returned from resource {}'.format(status, resource))
-                    continue
-                response = response.decode('utf-8').strip('\x00')
-                try:
-                    doc = minidom.parseString(response)
-                except Exception as e:
-                    print('The response is %s' % response)
-                    print('Exception received when parsing response from resource {}; exception is "{}"'
-                          .format(resource, e))
-                    continue
-                dataServices = doc.getElementsByTagName('edmx:Reference')
-                extension = doc.getElementsByTagName('edmx:Include')
-                # print('The extension is %s' %extension)
-                for v in extension:                   
-                    a = v.getAttribute('Namespace')
-                    # print('The value is %s' %a)
-                    list1.append(a)
-                    if 'RedfishExtensions.v1_0_0' in a :
-                        print('RedfishExtensions.v1_0_0 is present in %s' %relative_uri)
-                    else:
-                        continue
-             
-                '''for ref in dataServices:                   
-                    namespace = ref.getElementsByTagName('edmx:Include')[0].getAttribute('Namespace')  
-                    if namespace not in list1:                                   
-                        list1.append(namespace)'''
-            else :
-                assertion_status = log.FAIL
-                log.assertion_log('line', 'No ~(@odata.context)found in payload for %s' %relative_uri)
+            assertion_status_ = log.FAIL
+            assertion_status = log.status_fixup(assertion_status, assertion_status_)
+            log.assertion_log('line',
+                              'Namespaces referenced by the service but not included in the metadata document: {}'
+                              .format(service_namespaces - metadata_namespaces))
 
-    if list1 in txt_files:
-         assertion_status = log.PASS
-         print('Pass: Metadata file list is %s and local file list is %s along with RedfishExtensions.v1_0_0 ' %(list1,txt_files)) 
-
-    else :
-        assertion_status = log.FAIL
-        print('Local file list is %s' %(txt_files))   
-
-    print('The list found in the metadata is %s' % list1)
-    diff = list(set(txt_files) - set(list1))
-    print('The files that are not found in metadata are %s' % diff)
     log.assertion_log(assertion_status, None)
-    return (assertion_status)  
+    return assertion_status
 #
 ## end Assertion 6.5.8
 
