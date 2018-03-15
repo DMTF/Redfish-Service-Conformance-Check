@@ -349,69 +349,6 @@ Step 3: Pass the assertion if Step 2 returns true.
 
 # end Assertion_ACCO107
 
-# NOT NECESSARY
-###################################################################################################
-# Name: Assertion_ACCO108(self, log) :Account Service
-# Assertion text:
-# This property shall contain the link to a collection of type ManagerAccountCollection.
-###################################################################################################
-
-
-# end Assertion_ACCO108
-
-# NOT NECESSARY
-###################################################################################################
-# Name: Assertion_ACCO109(self, log) :Account Service
-# Assertion text:
-# This property shall contain the link to a collection of type RoleCollection.
-###################################################################################################
-
-# end Assertion_ACCO109
-
-# NOT NECESSARY
-###################################################################################################
-# Name: Assertion_ACCO110(self, log) :Account Service
-# Assertion text:
-# The value of this property shall be a link to a resource of type PrivilegeMappoing that defines
-# the privileges a user context needs in order to perform a requested operation on a URI associated
-# with this service.
-###################################################################################################
-
-
-# end Assertion_ACCO110
-
-# NOT NECESSARY
-
-###################################################################################################
-# Name: Assertion_ACCO111(self, log) :Account Service
-# Assertion text:
-# The Actions property shall contain the available actions for this resource.
-###################################################################################################
-
-
-# end Assertion_ACCO111
-
-# NOT NECESSARY
-
-###################################################################################################
-# Name: Assertion_ACCO112(self, log) :Account Service
-# Assertion text:
-# The Actions property shall contain the available actions for this resource.
-###################################################################################################
-
-
-# end Assertion_ACCO112
-
-# NOT NECESSARY
-
-###################################################################################################
-# Name: Assertion_ACCO113(self, log) :Account Service
-# Assertion text:
-# This type shall contain any additional OEM actions for this resource.
-###################################################################################################
-
-
-# end Assertion_ACCO113
 
 
 # Testing
