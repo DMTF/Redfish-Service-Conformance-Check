@@ -427,7 +427,7 @@ def Assertion_ACCO106(self, log):
 '''
 Step 1: Simulate failed login attempts preiodically with a time interval more that of
 AccountLockoutCounterResetAfter value. 
-Step 2: Chek if AccountLockoutThreshold counter is reset to 0. 
+Step 2: Check if AccountLockoutThreshold counter is reset to 0. 
 Step 3: Pass the assertion if Step 2 returns true. 
 '''
 
@@ -445,8 +445,8 @@ def Assertion_ACCO107(self, log):
         '/redfish/v1/AccountService', rq_headers, authorization)
 
     try:
-        AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
         AccountLockoutCounterResetAfter = json_payload['AccountLockoutCounterResetAfter']
+        AccountLockoutCounter = json_payload['AccountLockoutCounter'] # Assumption: There exist an AccountLockoutCounter property. 
 
 
         for i in range(0, AccountLockoutThreshold):
@@ -454,13 +454,10 @@ def Assertion_ACCO107(self, log):
             '/redfish/v1/AccountService', rq_headers, authorization) # Needs to know the procedure for providing credentials to acess a Redfish server. 
 
         if authFailureisLogged:  # Needs to know where the log is located.
-            start = time.time()
 
-            while not isUnlocked: # Needs to know the procedure for finding if an account is unlocked.
+            while not time.time() == AccountLockoutCounterResetAfter: 
             
-            end = time.time()
-            
-            if end - start = AccountLockoutCounterResetAfter: 
+            if AccountLockoutCounter == 0: # Assumption: There exist an AccountLockoutCounter property. : 
                 log.assertion_log(assertion_status, None)
                 log.assertion_log('line', "Assertion Passes")
                 return assertion_status
