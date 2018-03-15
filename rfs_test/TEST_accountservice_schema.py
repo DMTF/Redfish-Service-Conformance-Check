@@ -22,6 +22,7 @@ import string
 import random
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+import time
 from time import gmtime, strftime
 
 accSerData = None
@@ -363,6 +364,54 @@ Step 3: Check if the value obtained at Step 2 is the same as AccountLockoutCount
 the account is unlocked. 
 Step 4: Pass the assertion if Step 3 returns true. 
 '''
+def Assertion_ACCO106(self, log):
+
+    log.AssertionID = 'ACCO106'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
+
+    json_payload, headers, status = self.http_GET(
+        '/redfish/v1/AccountService', rq_headers, authorization)
+
+    try:
+    AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
+    AccountLockoutCounterResetAfter = json_payload['AccountLockoutCounterResetAfter']
+
+
+    for i in range(0, AccountLockoutThreshold):
+        json_payload, headers, status = self.http_GET(
+        '/redfish/v1/AccountService', rq_headers, authorization) # Needs to know the procedure for providing credentials to acess a Redfish server. 
+
+    if authFailureisLogged:  # Needs to know where the log is located.
+        start = time.time()
+
+        while not isUnlocked: # Needs to know the procedure for finding if an account is unlocked.
+        
+        end = time.time()
+        
+        if end - start = AccountLockoutCounterResetAfter: 
+            log.assertion_log(assertion_status, None)
+            log.assertion_log('line', "Assertion Passes")
+            return assertion_status
+
+        else: 
+            assertion_status = log.FAIL
+            log.assertion_log('line', "Assertion Failed")
+            return assertion_status
+    else:
+        assertion_status = log.WARN
+        log.assertion_log('line', "Failure attempt was not logged in after failed login attempts reached the threshold referenced by AccountLockoutThreshold")
+        return assertion_status
+    
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % (
+            '/redfish/v1/AccountService'))
+        return assertion_status
 
 # end Assertion_ACCO106
 
