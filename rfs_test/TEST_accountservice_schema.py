@@ -138,16 +138,50 @@ amount of time to test the assertion.
 '''
 
 
-def Assertion_ACCO101(self, log):
+def Assertion_ACCO102(self, log):
 
+    log.AssertionID = 'ACCO102'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
+
+    json_payload, headers, status = self.http_GET(
+        '/redfish/v1/AccountService', rq_headers, authorization)
+
+    try:
+    authFailureThreshold = json_payload['AuthFailureLoggingThreshold']
+    attempt = 0
+
+    while(!authFailureisLogged)  # Needs to know where the log is located.
+        attempt += 1
+
+    if attempt == authFailureThreshold:
+        log.assertion_log(assertion_status, None)
+        log.assertion_log('line', "Assertion Passes")
+        return assertion_status
+    else:
+        assertion_status = log.FAIL
+        log.assertion_log('line', "Assertion Failed")
+
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % (
+            '/redfish/v1/AccountService'))
+        return assertion_status
     # end Assertion_ACCO102
 
-    ###################################################################################################
-    # Name: Assertion_ACCO103(self, log) :Account Service
-    # Assertion text:
-    # This property shall reference the minimum password length that the implementation will allow a
-    # password to be set to.
-    ###################################################################################################
+
+###################################################################################################
+# Name: Assertion_ACCO103(self, log) :Account Service
+# Assertion text:
+# This property shall reference the minimum password length that the implementation will allow a
+# password to be set to.
+###################################################################################################
+
+
 '''
 Step 1: Try creating an account with the password length less than the property MinPasswordLength.
 Step 2: If the value at MinPasswordLength is 0, then the assertion should automatically be passed or
