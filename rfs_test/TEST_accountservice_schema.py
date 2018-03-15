@@ -18,6 +18,8 @@
 
 import urllib3
 import json
+import string
+import random
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from time import gmtime, strftime
@@ -128,12 +130,12 @@ def Assertion_ACCO101(self, log):
 '''
 Step 1: Simulate an authorization failure by providing wrong credentials.
 Step 2: Check at which attempt the authorization failure is logged.
-Step 3: Compare the value obtained from STEP 2, with the value extracted from the key "minimum" of 
+Step 3: Compare the value obtained from STEP 2, with the value extracted from the key "minimum" of
 the property AuthFailureLoggingThreshold in the JSON Schema file.
 Step 4: Fail the assertion if the values at STEP 3 does not match.
 
-Concerns: What if the value AuthFailureLoggingThreshold is very large, thus requiring a considerable 
-amount of time to test the assertion. 
+Concerns: What if the value AuthFailureLoggingThreshold is very large, thus requiring a considerable
+amount of time to test the assertion.
 
 '''
 
@@ -156,6 +158,8 @@ def Assertion_ACCO102(self, log):
     attempt = 0
 
     while(!authFailureisLogged)  # Needs to know where the log is located.
+        json_payload, headers, status = self.http_GET(
+        '/redfish/v1/AccountService', rq_headers, authorization)
         attempt += 1
 
     if attempt == authFailureThreshold:
@@ -165,13 +169,15 @@ def Assertion_ACCO102(self, log):
     else:
         assertion_status = log.FAIL
         log.assertion_log('line', "Assertion Failed")
+        return assertion_status
 
     except:
         assertion_status = log.WARN
         log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % (
             '/redfish/v1/AccountService'))
         return assertion_status
-    # end Assertion_ACCO102
+
+# end Assertion_ACCO102
 
 
 ###################################################################################################
@@ -185,10 +191,50 @@ def Assertion_ACCO102(self, log):
 '''
 Step 1: Try creating an account with the password length less than the property MinPasswordLength.
 Step 2: If the value at MinPasswordLength is 0, then the assertion should automatically be passed or
-else proceed to STEP 3. 
-Step 3: Check for an error message as part of the HTTP request. 
-Step 4: Fail the assertion if an account was created sucessfully. 
+else proceed to STEP 3.
+Step 3: Check for an error message as part of the HTTP request.
+Step 4: Fail the assertion if an account was created sucessfully.
 '''
+
+
+def Assertion_ACCO103(self, log):
+
+    log.AssertionID = 'ACCO103'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
+
+    try:
+        json_payload, headers, status = self.http_GET(
+            '/redfish/v1/AccountService', rq_headers, authorization)
+
+        MinPasswordLength = json_payload['MinPasswordLength']
+
+        if MinPasswordLength != 0
+            rq_body = {'Name': 'Test',
+                        'Password': ''}
+
+            json_payload, headers, status = self.http_POST(
+            acc_collection + '/test', rq_headers, rq_body, authorization)
+    `
+            if status == 201:
+                assertion_status = log.FAIL
+                log.assertion_log('line', "Assertion Failed")
+                return assertion_status
+
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountsService\MinPasswordLength' not found in the payload from GET %s" % (
+            '/redfish/v1/AccountService'))
+        return assertion_status
+
+     log.assertion_log(assertion_status, None)
+        log.assertion_log('line', "Assertion Passes")
+        return assertion_status
+
 
 # end Assertion_ACCO103
 
@@ -205,6 +251,45 @@ Step 1: Try creating an account with the password length more than the property 
 Step 2: Check for an error message as part of the HTTP request. 
 Step 3: Fail the assertion if an account was created sucessfully. 
 '''
+
+def Assertion_ACCO104(self, log):
+
+    log.AssertionID = 'ACCO104'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
+
+    try:
+        json_payload, headers, status = self.http_GET(
+            '/redfish/v1/AccountService', rq_headers, authorization)
+
+        MaxPasswordLength = json_payload['MinPasswordLength']
+
+
+        rq_body = {'Name': 'Test',
+                    'Password': ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(MaxPasswordLength + 1))}
+
+        json_payload, headers, status = self.http_POST(
+        acc_collection + '/test', rq_headers, rq_body, authorization)
+`
+        if status == 201:
+            assertion_status = log.FAIL
+            log.assertion_log('line', "Assertion Failed")
+            return assertion_status
+
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountsService\MaxPasswordLength' not found in the payload from GET %s" % (
+            '/redfish/v1/AccountService'))
+        return assertion_status
+
+     log.assertion_log(assertion_status, None)
+        log.assertion_log('line', "Assertion Passes")
+        return assertion_status
+
 
 # end Assertion_ACCO104
 
