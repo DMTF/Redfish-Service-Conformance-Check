@@ -21,6 +21,7 @@
       "Description": "set the URL for your Client Event handler and related properties here. Properties set thru: http://redfish.dmtf.org/schemas/v1/EventDestination_v1.xml",
       "EventTypes": [ "StatusChange", "ResourceUpdated", "ResourceAdded", "ResourceRemoved", "Alert" ]
     }
+    
   },
   "RedfishServiceCheckTool_SUTConfiguration": {
     "SUTs": [
