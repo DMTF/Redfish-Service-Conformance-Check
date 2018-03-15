@@ -3759,30 +3759,25 @@ def Assertion_6_5_20(self, log):
 
     authorization = 'on'
     rq_headers = self.request_headers()
-    primitive_types = json.dumps({'Edm.Boolean':'boolean', 'Edm.DateTimeOffset':'datetime', 'Edm.Decimal':'decimal', 'Edm.Double':'double', 'Edm.Guid':'object', 'Edm.Int64':'int', 'Edm.String':'str'})
-    csdl_schema_model = self.csdl_schema_model
+    primitive_types = {'Edm.Boolean': bool, 'Edm.DateTimeOffset': str, 'Edm.Decimal': (int, float),
+                       'Edm.Double': (int, float), 'Edm.Guid': str, 'Edm.Int64': int, 'Edm.String': str}
     relative_uris = self.relative_uris
-    count = 0
     #find alias in Include first?
     for relative_uri in relative_uris:
         if 'Root Service' in relative_uri:
             rq_headers['Accept'] = rf_utility.accept_type['json']
             json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
             assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
-            # manage assertion status
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
             if assertion_status_ != log.PASS:
                 continue
             elif not json_payload:
                 assertion_status_ = log.WARN
-                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
                 log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
             else:
                 if '@odata.context' in json_payload:
                     resource = json_payload['@odata.context']
-                    #r = requests.get(resource)
-                    #print('The response is %s' %r)
                     rq_headers['Accept'] = rf_utility.accept_type['xml']
                     response,headers,status = self.http_GET(resource,rq_headers,None)
                     if status == rf_utility.HTTP_NOT_FOUND:
@@ -3801,7 +3796,7 @@ def Assertion_6_5_20(self, log):
                               .format(resource, e))
                         continue
                     dataServices = doc.getElementsByTagName('edmx:Reference')
-                    file_ = json.loads(primitive_types)
+                    count = 0
                     for d in dataServices:
                         uris = d.getAttribute('Uri')
                         print('The uri is %s' %uris)
@@ -3826,8 +3821,6 @@ def Assertion_6_5_20(self, log):
                                 print('Exception received while reading uri {}. The exception is {}'.format(uris, e))
                                 continue
                         count = count + 1
-                        #myfile = myfile.decode('utf-8')
-                        # print(myfile)
                         if count < 40:
                             doc = minidom.parseString(myfile)
                             entities = doc.getElementsByTagName('EntityType')
@@ -3835,22 +3828,20 @@ def Assertion_6_5_20(self, log):
                                 properties = e.getElementsByTagName('Property')
                                 for p in properties:
                                     name = p.getAttribute('Name')
-                                    type_ = p.getAttribute('Type')
-
-                                    print('The name & type is %s %s' %(name,type_))
-                                    if type_ in primitive_types:
-                                        print('This is primitive type')
+                                    type_attr = p.getAttribute('Type')
+                                    if type_attr in primitive_types:
+                                        print('Primitive property %s has type %s' % (name, type_attr))
                                         if name in json_payload:
-                                            print('The type is {}'.format(str(type(json_payload[name]))))
-                                            j = str(type(json_payload[name])).split('\'')
-                                            type_1 = j[1]
-                                            if(type_1 == file_[type_]):
-                                                assertion_status_ = log.PASS
+                                            type_found = str(type(json_payload[name])).split('\'')[1]
+                                            print('The type found is {}'.format(type_found))
+                                            if json_payload[name] is None or isinstance(json_payload[name], primitive_types[type_attr]):
+                                                continue
                                             else:
                                                 assertion_status_ = log.FAIL
                                                 assertion_status = log.status_fixup(assertion_status, assertion_status_)
+
                                                 log.assertion_log('line', 'Type for attribute %s was %s; expected type %s. Resource is %s.'
-                                                                  % (name, type_1, file_[type_], relative_uris[relative_uri]))
+                                                                  % (name, type_found, primitive_types[type_attr], relative_uris[relative_uri]))
                                         else:
                                             continue
 
