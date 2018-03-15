@@ -485,5 +485,13 @@ def Assertion_ACCO107(self, log):
 # Testing
 
 def run(self, log):
-
+    
+    '''
     assertion_status = Assertion_ACCO101(self, log)
+    assertion_status = Assertion_ACCO102(self, log)
+    assertion_status = Assertion_ACCO103(self, log)
+    assertion_status = Assertion_ACCO104(self, log)
+    assertion_status = Assertion_ACCO105(self, log)
+    assertion_status = Assertion_ACCO106(self, log)
+    assertion_status = Assertion_ACCO107(self, log)
+    '''
