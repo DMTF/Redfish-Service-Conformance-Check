@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.5] - 2018-03-16
+- Fixed test cases that validated redirect handling
+- Corrected primitive type checking done in schemas
+
 ## [1.0.4] - 2018-03-09
 - Fixed bug where it was not able to handle multiple properties of the same name in different objects in the same payload
 - Fixed bug where the members of a collection were not being handled properly when validating the usage of `@odata.nextLink`
