@@ -4492,6 +4492,21 @@ def get_metadata_namespaces(metadata):
     return metadata_namespaces
 
 
+def redfish_alias_missing(metadata):
+    """
+    Utility function to check if RedfishExtensions.v1_0_0 is present but missing the Redfish alias
+    :param metadata: the metadata document
+    :type metadata: schema.Edmx
+    :return: True if Redfish alias is missing from include for RedfishExtensions.v1_0_0, False otherwise
+    """
+    for reference in metadata.References:
+        for include in reference.Includes:
+            if include.Namespace == 'RedfishExtensions.v1_0_0':
+                if include.Alias != 'Redfish':
+                    return True
+    return False
+
+
 def get_keys_substring(substring, val):
     """
     Generator function to recursively find all keys from a dict that containing the substring
@@ -4532,40 +4547,45 @@ def Assertion_6_5_8(self, log):
     service_namespaces = set()
     service_namespaces.add('RedfishExtensions.v1_0_0')
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
-        assertion_status = log.status_fixup(assertion_status,assertion_status_)
-        if assertion_status_ != log.PASS or not json_payload:
-            continue
-        if not isinstance(json_payload, dict):
-            assertion_status_ = log.WARN
+    if self.metadata_document_structure is not None:
+        # gather all the namespace references from the service
+        for relative_uri in relative_uris:
+            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+            assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
+            assertion_status = log.status_fixup(assertion_status,assertion_status_)
+            if assertion_status_ != log.PASS or not json_payload:
+                continue
+            if not isinstance(json_payload, dict):
+                assertion_status_ = log.WARN
+                assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                log.assertion_log('line',
+                                  '{}: Response body not parsed into JSON. Check the Content-Type in response headers: {}'
+                                  .format(relative_uris[relative_uri], headers))
+                continue
+            # get @odata.type namespace
+            odata_type = json_payload.get('@odata.type')
+            if isinstance(odata_type, str) and len(odata_type) > 0:
+                service_namespaces.add(get_namespace(odata_type))
+            # get @odata.context namespace
+            odata_context = json_payload.get('@odata.context')
+            if isinstance(odata_context, str) and len(odata_context) > 0:
+                service_namespaces.add(get_namespace(odata_context))
+            # get @Message payload annotation namespaces
+            for key in get_keys_substring('@Message.', json_payload):
+                service_namespaces.add(get_namespace(get_annotation_namespace(key)))
+            # get @Privileges payload annotation namespaces
+            for key in get_keys_substring('@Privileges.', json_payload):
+                service_namespaces.add(get_namespace(get_annotation_namespace(key)))
+
+        # check the Redfish alias for RedfishExtensions.v1_0_0
+        if redfish_alias_missing(self.metadata_document_structure):
+            assertion_status_ = log.FAIL
             assertion_status = log.status_fixup(assertion_status, assertion_status_)
             log.assertion_log('line',
-                              '{}: Response body not parsed into JSON. Check the Content-Type in response headers: {}'
-                              .format(relative_uris[relative_uri], headers))
-            continue
-        # get @odata.type namespace
-        odata_type = json_payload.get('@odata.type')
-        if isinstance(odata_type, str) and len(odata_type) > 0:
-            service_namespaces.add(get_namespace(odata_type))
-        # get @odata.context namespace
-        odata_context = json_payload.get('@odata.context')
-        if isinstance(odata_context, str) and len(odata_context) > 0:
-            service_namespaces.add(get_namespace(odata_context))
-        # get @Message payload annotation namespaces
-        for key in get_keys_substring('@Message.', json_payload):
-            service_namespaces.add(get_namespace(get_annotation_namespace(key)))
-        # get @Privileges payload annotation namespaces
-        for key in get_keys_substring('@Privileges.', json_payload):
-            service_namespaces.add(get_namespace(get_annotation_namespace(key)))
+                              'In the metadadata document, included Namespace {} is missing the required Redfish Alias'
+                              .format('RedfishExtensions.v1_0_0'))
 
-    if self.metadata_document_structure is None:
-        assertion_status_ = log.WARN
-        assertion_status = log.status_fixup(assertion_status, assertion_status_)
-        log.assertion_log('line', 'Service $metadata document {} not found. Unable to verify assertion.'
-                          .format(self.Redfish_URIs['Service_Metadata_Doc']))
-    else:
+        # check that all namespaces referenced by the service are included in the metadata
         metadata_namespaces = get_metadata_namespaces(self.metadata_document_structure)
         if service_namespaces.issubset(metadata_namespaces):
             assertion_status_ = log.PASS
@@ -4576,6 +4596,11 @@ def Assertion_6_5_8(self, log):
             log.assertion_log('line',
                               'Namespaces referenced by the service but not included in the metadata document: {}'
                               .format(service_namespaces - metadata_namespaces))
+    else:
+        assertion_status_ = log.WARN
+        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+        log.assertion_log('line', 'Service $metadata document {} not found. Unable to verify assertion.'
+                          .format(self.Redfish_URIs['Service_Metadata_Doc']))
 
     log.assertion_log(assertion_status, None)
     return assertion_status
