@@ -34,4 +34,41 @@ Step 4: If STEP 3 replaces the binary image of the assembly, pass the assertion.
 
 '''
 
+def Assertion_ASSE114(self, log):
+
+    log.AssertionID = 'ASSE114'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
+
+    json_payload, headers, status = self.http_GET(
+        '/redfish/v1/Assembly', rq_headers, authorization)
+
+    try:
+        binaryDataURI = json_payload['BinaryDataURI']
+
+        json_payload, headers, status = self.http_GET(
+            binaryDataURI, rq_headers, authorization)
+
+        if headers['Content-Type'] == 'application/octet-stream': 
+            json_payload, headers, status = self.http_PUT(
+            binaryDataURI, rq_headers, authorization)
+
+
+        else:
+            assertion_status = log.FAIL
+            log.assertion_log(assertion_status, None)
+            log.assertion_log('line', "Assertion Failed")
+            return assertion_status
+
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'BinaryDataURI\' not found in the payload from GET %s" % (
+            '/redfish/v1/Assembly'))
+        return assertion_status
+
+
 ## end Assertion_ASSE114
