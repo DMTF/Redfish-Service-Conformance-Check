@@ -17,10 +17,47 @@
 #####################################################################################################
 
 ###################################################################################################
-# Name: Assertion_ATTR124(self, log) :Bios                                           
+# Name: Assertion_BIOS101(self, log) :Bios                                           
 # Assertion text: 
-#The value of this property shall be a boolean describing the read-only state of attribute. A 
-#read-only attribute cannot be modified, and should be grayed out in user interfaces. The 
-#read-only state of an attribute might be affected by the results of evaluating the 'Dependencies' 
-#array.
+# This action shall perform a reset of the BIOS attributes to their default values.
 ###################################################################################################
+
+log.AssertionID = 'BIOS101'
+assertion_status = log.PASS
+log.assertion_log('BEGIN_ASSERTION', None)
+
+relative_uris = self.relative_uris
+authorization = 'on'
+rq_headers = self.request_headers()
+
+# Request for an Action 
+rq_body = {'ResetType': 'On'}
+
+json_payload, headers, status = self.http_POST('/redfish/v1/Systems/1/Actions/Bios.ResetBios', 
+rq_headers, rq_body, authorization)
+
+
+## end Assertion_BIOS105
+
+###################################################################################################
+# Name: Assertion_BIOS105(self, log) :Bios                                           
+# Assertion text: 
+# This action shall perform a change of the selected BIOS password.
+###################################################################################################
+
+log.AssertionID = 'BIOS105'
+assertion_status = log.PASS
+log.assertion_log('BEGIN_ASSERTION', None)
+
+relative_uris = self.relative_uris
+authorization = 'on'
+rq_headers = self.request_headers()
+
+# Request for an Action 
+rq_body = {'ResetType': 'On'}
+
+json_payload, headers, status = self.http_POST('/redfish/v1/Systems/1/Actions/Bios.ResetBios', 
+rq_headers, rq_body, authorization)
+
+
+## end Assertion_BIOS101
