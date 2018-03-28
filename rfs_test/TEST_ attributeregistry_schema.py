@@ -75,7 +75,7 @@ assertion.
 ###################################################################################################
 
 '''
-Step 1: If the HiddenyOut property is set to true for an attribute proceed to Step 2 else WARN. 
+Step 1: If the HiddenOut property is set to true for an attribute proceed to Step 2 else WARN. 
 Step 2: If the attribute is hidden in the User Interface, pass the assertion, else fail the
 assertion. 
 '''
