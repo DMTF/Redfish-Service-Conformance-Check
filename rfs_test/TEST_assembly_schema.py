@@ -57,6 +57,17 @@ def Assertion_ASSE114(self, log):
             json_payload, headers, status = self.http_PUT(
             binaryDataURI, rq_headers, authorization)
 
+            if status == 405: 
+                assertion_status = log.WARN
+                log.assertion_log('line', "~ \'BinaryDataURI\'  HTTP PUT Request not supported %s" % (
+                '/redfish/v1/Assembly'))
+                return assertion_status
+            else:
+                # Check for binary image replacement unknown. 
+                assertion_status = log.PASS
+                log.assertion_log(assertion_status, None)
+                log.assertion_log('line', "Assertion Passed")
+                return assertion_status
 
         else:
             assertion_status = log.FAIL
