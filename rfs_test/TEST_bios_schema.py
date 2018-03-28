@@ -54,10 +54,10 @@ authorization = 'on'
 rq_headers = self.request_headers()
 
 # Request for an Action 
-rq_body = {'ResetType': 'On'}
+rq_body = {'OldPassword': 'admin', 'NewPassword': 'test', 'PasswordName': 'AdminPassword'}
 
-json_payload, headers, status = self.http_POST('/redfish/v1/Systems/1/Actions/Bios.ResetBios', 
+json_payload, headers, status = self.http_POST('/redfish/v1/Systems/1/Actions/Bios.ChangePassword', 
 rq_headers, rq_body, authorization)
 
 
-## end Assertion_BIOS101
+## end Assertion_BIOS105
