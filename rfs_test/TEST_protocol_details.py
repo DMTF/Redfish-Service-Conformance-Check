@@ -298,6 +298,13 @@ def verifyCreatedObject(object_payload, check_payload, log):
     ]
 
     assertion_status = log.PASS
+
+    if not isinstance(object_payload, dict):
+        assertion_status = log.FAIL
+        log.assertion_log('line', '~ The response body (type {}) returned from POST is not a JSON object, so cannot check it against the GET response'
+                          .format(type(object_payload)))
+        return assertion_status
+
     # check for mismatch...
     for key in check_payload.keys():
         if key in exclude_keys:
