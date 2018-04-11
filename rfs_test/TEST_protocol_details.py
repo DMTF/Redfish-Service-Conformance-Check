@@ -4569,7 +4569,9 @@ def Assertion_6_5_8(self, log):
             # get @odata.context namespace
             odata_context = json_payload.get('@odata.context')
             if isinstance(odata_context, str) and len(odata_context) > 0:
-                service_namespaces.add(get_namespace(odata_context))
+                ns = get_namespace(odata_context)
+                if '/' not in ns and not ns.endswith('$entity'):
+                    service_namespaces.add(ns)
             # get @Message payload annotation namespaces
             for key in get_keys_substring('@Message.', json_payload):
                 service_namespaces.add(get_namespace(get_annotation_namespace(key)))
