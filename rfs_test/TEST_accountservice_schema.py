@@ -38,7 +38,7 @@ REDFISH_SPEC_VERSION = "Version 1.2.2"
 # this is set to false, the AccountService is disabled.  This means no users can be created,
 # deleted or modified.  Any service attempting to access the Account Service, like the Session
 # Service, will fail accessing.  Thus new sessions cannot be started with the service disabled
-#(though established sessions may still continue operating).  Note: this does not affect Basic
+# (though established sessions may still continue operating).  Note: this does not affect Basic
 # AUTH connections.
 ###################################################################################################
 
@@ -147,30 +147,39 @@ def Assertion_ACCO102(self, log):
     assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
-    relative_uris = self.relative_uris
-    authorization = 'on'
-    rq_headers = self.request_headers()
-
-    json_payload, headers, status = self.http_GET(
-        '/redfish/v1/AccountService', rq_headers, authorization)
-
     try:
+        authorization = 'on'
+        json_payload, headers, status = self.http_GET('/redfish/v1/AccountService', rq_headers, authorization)
         authFailureThreshold = json_payload['AuthFailureLoggingThreshold']
         attempt = 0
+        authFailureisLogged = False; 
 
-        while(!authFailureisLogged)  # Needs to know where the log is located.
-            json_payload, headers, status = self.http_GET(
-            '/redfish/v1/AccountService', rq_headers, authorization)  # Need to know the proper procedure for providing credentials to acess a Redfish server.
+        while(!authFailureisLogged):
+            try: 
+                authorization = 'off'
+                json_payload, headers, status = self.http_GET('/redfish/v1/AccountService', rq_headers, authorization)
+            except:
+                print('Failed Authorization for testing');
+
+            // Test if log has been registerd. 
+            try: 
+                authorization = 'on'
+                json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+                log_collection = (json_payload['Members'])
+
+            except:     
+                print('Members\' not found in the payload from GET %s" % ('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/'));
+                return assertion_status
+         
             attempt += 1
 
-        if attempt == authFailureThreshold:
-            log.assertion_log(assertion_status, None)
-            log.assertion_log('line', "Assertion Passes")
-            return assertion_status
-        else:
-            assertion_status = log.FAIL
-            log.assertion_log('line', "Assertion Failed")
-            return assertion_status
+            if attempt > authFailureThreshold:
+                log.assertion_log('line', "Assertion Failed")
+                return assertion_status
+      
+        assertion_status = log.FAIL
+        log.assertion_log('line', "Assertion Failed")
+        return assertion_status
 
     except:
         assertion_status = log.WARN
@@ -249,9 +258,10 @@ def Assertion_ACCO103(self, log):
 '''
 NOTE: This assertion can be combined with the Assertion_ACCO103
 Step 1: Try creating an account with the password length more than the property MaxPasswordLength.
-Step 2: Check for an error message as part of the HTTP request. 
-Step 3: Fail the assertion if an account was created sucessfully. 
+Step 2: Check for an error message as part of the HTTP request.
+Step 3: Fail the assertion if an account was created sucessfully.
 '''
+
 
 def Assertion_ACCO104(self, log):
 
@@ -269,12 +279,13 @@ def Assertion_ACCO104(self, log):
 
         MaxPasswordLength = json_payload['MinPasswordLength']
 
-
         rq_body = {'Name': 'Test',
                     'Password': ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(MaxPasswordLength + 1))}
 
         json_payload, headers, status = self.http_POST(
         acc_collection + '/test', rq_headers, rq_body, authorization)
+
+
 `
         if status == 201:
             assertion_status = log.FAIL
