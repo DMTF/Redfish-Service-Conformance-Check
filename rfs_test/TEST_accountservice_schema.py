@@ -141,14 +141,13 @@ def Assertion_ACCO102(self, log):
         attempt = 0
         authFailureisLogged = False; 
 
-        while(!authFailureisLogged):
+        while(not authFailureisLogged):
             try: 
                 authorization = 'off'
                 json_payload, headers, status = self.http_GET('/redfish/v1/AccountService', rq_headers, authorization)
             except:
                   print("~ \'AccountsService\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
 
-            // Test if log has been registerd. 
             try: 
                 authorization = 'on'
                 json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
@@ -201,13 +200,13 @@ def Assertion_ACCO103(self, log):
 
         MinPasswordLength = json_payload['MinPasswordLength']
 
-        if MinPasswordLength != 0
+        if MinPasswordLength != 0:
             rq_body = {'Name': 'Test',
                         'Password': ''}
 
             json_payload, headers, status = self.http_POST(
             acc_collection + '/test', rq_headers, rq_body, authorization)
-    `
+    
             if status == 201:
                 assertion_status = log.FAIL
                 log.assertion_log('line', "Assertion Failed")
@@ -255,8 +254,6 @@ def Assertion_ACCO104(self, log):
         json_payload, headers, status = self.http_POST(
         acc_collection + '/test', rq_headers, rq_body, authorization)
 
-
-`
         if status == 201:
             assertion_status = log.FAIL
             log.assertion_log('line', "Assertion Failed")
@@ -373,7 +370,7 @@ def Assertion_ACCO106(self, log):
 
                 end = time.time()
                 
-                if end - start = AccountLockoutCounterResetAfter: 
+                if end - start == AccountLockoutCounterResetAfter: 
                     log.assertion_log(assertion_status, None)
                     log.assertion_log('line', "Assertion Passes")
                     return assertion_status
@@ -442,20 +439,21 @@ def Assertion_ACCO107(self, log):
 
             while not time.time() == AccountLockoutCounterResetAfter: 
             
-            if AccountLockoutCounter == 0: # Assumption: There exist an AccountLockoutCounter property. : 
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', "Assertion Passes")
-                return assertion_status
+                if AccountLockoutCounter == 0: # Assumption: There exist an AccountLockoutCounter property. : 
+                    log.assertion_log(assertion_status, None)
+                    log.assertion_log('line', "Assertion Passes")
+                    return assertion_status
 
-            else: 
-                assertion_status = log.FAIL
-                log.assertion_log('line', "Assertion Failed")
-                return assertion_status
-        else:
+                else: 
+                    assertion_status = log.FAIL
+                    log.assertion_log('line', "Assertion Failed")
+                    return assertion_status
+        except:
             assertion_status = log.WARN
-            log.assertion_log('line', "Failure attempt was not logged in after failed login attempts reached the threshold referenced by AccountLockoutThreshold")
+            log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % (
+                '/redfish/v1/AccountService'))
             return assertion_status
-        
+
     except:
         assertion_status = log.WARN
         log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % (
