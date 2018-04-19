@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.0.6] - 2018-04-13
+- Added type checking of responses to ensure they're JSON objects
+
 ## [1.0.5] - 2018-03-16
 - Fixed test cases that validated redirect handling
 - Corrected primitive type checking done in schemas
