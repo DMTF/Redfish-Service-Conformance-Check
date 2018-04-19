@@ -67,7 +67,7 @@ def Assertion_ACCO101(self, log):
 
     except:
         assertion_status = log.WARN
-        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % (
+        log.assertion_log('line', "~ \'ServiceEnabled\' not found in the payload from GET %s" % (
             '/redfish/v1/AccountService'))
         return assertion_status
     else:
