@@ -112,7 +112,7 @@ def Assertion_ACCO101(self, log):
                         log.assertion_log('line', "Assertion Failed")
                         return assertion_status
 
-    log.assertion_log(assertion_status, None)
+    log.assertion_log(assertion_status, log.PASS)
     log.assertion_log('line', "Assertion Passes")
 
     return assertion_status
@@ -126,19 +126,6 @@ def Assertion_ACCO101(self, log):
 # represents a modulo function value, thus the failure shall be logged every nth occurrence where
 # n represents the value of this property.
 ###################################################################################################
-
-
-'''
-Step 1: Simulate an authorization failure by providing wrong credentials.
-Step 2: Check at which attempt the authorization failure is logged.
-Step 3: Compare the value obtained from STEP 2, with the value extracted from the key "minimum" of
-the property AuthFailureLoggingThreshold in the JSON Schema file.
-Step 4: Fail the assertion if the values at STEP 3 does not match.
-
-Concerns: What if the value AuthFailureLoggingThreshold is very large, thus requiring a considerable
-amount of time to test the assertion.
-
-'''
 
 
 def Assertion_ACCO102(self, log):
@@ -159,7 +146,7 @@ def Assertion_ACCO102(self, log):
                 authorization = 'off'
                 json_payload, headers, status = self.http_GET('/redfish/v1/AccountService', rq_headers, authorization)
             except:
-                print('Failed Authorization for testing');
+                  print("~ \'AccountsService\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
 
             // Test if log has been registerd. 
             try: 
@@ -168,7 +155,7 @@ def Assertion_ACCO102(self, log):
                 log_collection = (json_payload['Members'])
 
             except:     
-                print('Members\' not found in the payload from GET %s" % ('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/'));
+                print("'Members\' not found in the payload from GET %s" % ('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/'));
                 return assertion_status
          
             attempt += 1
@@ -177,8 +164,8 @@ def Assertion_ACCO102(self, log):
                 log.assertion_log('line', "Assertion Failed")
                 return assertion_status
       
-        assertion_status = log.FAIL
-        log.assertion_log('line', "Assertion Failed")
+        assertion_status = log.PASS
+        log.assertion_log('line', "Assertion Passed")
         return assertion_status
 
     except:
@@ -196,15 +183,6 @@ def Assertion_ACCO102(self, log):
 # This property shall reference the minimum password length that the implementation will allow a
 # password to be set to.
 ###################################################################################################
-
-
-'''
-Step 1: Try creating an account with the password length less than the property MinPasswordLength.
-Step 2: If the value at MinPasswordLength is 0, then the assertion should automatically be passed or
-else proceed to STEP 3.
-Step 3: Check for an error message as part of the HTTP request.
-Step 4: Fail the assertion if an account was created sucessfully.
-'''
 
 
 def Assertion_ACCO103(self, log):
@@ -254,14 +232,6 @@ def Assertion_ACCO103(self, log):
 # This property shall reference the maximum password length that the implementation will allow a
 # password to be set to.
 ###################################################################################################
-
-'''
-NOTE: This assertion can be combined with the Assertion_ACCO103
-Step 1: Try creating an account with the password length more than the property MaxPasswordLength.
-Step 2: Check for an error message as part of the HTTP request.
-Step 3: Fail the assertion if an account was created sucessfully.
-'''
-
 
 def Assertion_ACCO104(self, log):
 
@@ -313,13 +283,6 @@ def Assertion_ACCO104(self, log):
 # account is locked.  If set to 0, no lockout shall ever occur.
 ###################################################################################################
 
-'''
-Step 1: Simulate a failed login attempt by providing wrong credentials.
-Step 2: Check if the account is locked after repeating Step 1 for threshold number of times. 
-Step 3: Fail the assertion if an account was not locked. 
-
-'''
-
 def Assertion_ACCO105(self, log):
 
     log.AssertionID = 'ACCO105'
@@ -337,14 +300,23 @@ def Assertion_ACCO105(self, log):
         AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
 
         for i in range(0, AccountLockoutThreshold):
-            json_payload, headers, status = self.http_GET(
-            '/redfish/v1/AccountService', rq_headers, authorization) # Needs to know the proper procedure for providing credentials to acess a Redfish server. 
+            authorization = 'off'
+            json_payload, headers, status = self.http_GET('/redfish/v1/AccountService', rq_headers, authorization) 
+            try: 
+                authorization = 'on'
+                json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+                log_collection = (json_payload['Members'])
+            except: 
+                print("'Members\' not found in the payload from GET %s" % ('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/'));
 
-        if authFailureisLogged:  # Needs to know where the log is located.
+        try: 
+            authorization = 'on'
+            json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+            log_collection = (json_payload['Members'])
             log.assertion_log(assertion_status, None)
             log.assertion_log('line', "Assertion Passes")
             return assertion_status
-        else:
+        except: 
             assertion_status = log.FAIL
             log.assertion_log('line', "Assertion Failed")
             return assertion_status
@@ -367,13 +339,7 @@ def Assertion_ACCO105(self, log):
 # occur.
 ###################################################################################################
 
-'''
-Step 1: Run Assertion_ACCO105
-Step 2: If Step 1 passes, start a timer. 
-Step 3: Check if the value obtained at Step 2 is the same as AccountLockoutCounterResetAfter when 
-the account is unlocked. 
-Step 4: Pass the assertion if Step 3 returns true. 
-'''
+
 def Assertion_ACCO106(self, log):
 
     log.AssertionID = 'ACCO106'
@@ -390,37 +356,41 @@ def Assertion_ACCO106(self, log):
     try:
         AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
         AccountLockoutCounterResetAfter = json_payload['AccountLockoutCounterResetAfter']
-
+        authorization = 'off'
 
         for i in range(0, AccountLockoutThreshold):
             json_payload, headers, status = self.http_GET(
-            '/redfish/v1/AccountService', rq_headers, authorization) # Needs to know the procedure for providing credentials to acess a Redfish server. 
+            '/redfish/v1/AccountService', rq_headers, authorization) 
 
-        if authFailureisLogged:  # Needs to know where the log is located.
+        try: 
+            authorization = 'on'
+            json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+            log_collection = (json_payload['Members'])
+
             start = time.time()
 
             while not isUnlocked: # Needs to know the procedure for finding if an account is unlocked.
-            
-            end = time.time()
-            
-            if end - start = AccountLockoutCounterResetAfter: 
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', "Assertion Passes")
-                return assertion_status
 
-            else: 
-                assertion_status = log.FAIL
-                log.assertion_log('line', "Assertion Failed")
-                return assertion_status
-        else:
-            assertion_status = log.WARN
+                end = time.time()
+                
+                if end - start = AccountLockoutCounterResetAfter: 
+                    log.assertion_log(assertion_status, None)
+                    log.assertion_log('line', "Assertion Passes")
+                    return assertion_status
+
+                else: 
+                    assertion_status = log.FAIL
+                    log.assertion_log('line', "Assertion Failed")
+                    return assertion_status
+          
+        except: 
+            assertion_status = log.FAIL
             log.assertion_log('line', "Failure attempt was not logged in after failed login attempts reached the threshold referenced by AccountLockoutThreshold")
             return assertion_status
     
     except:
         assertion_status = log.WARN
-        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % (
-            '/redfish/v1/AccountService'))
+        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
         return assertion_status
 
 # end Assertion_ACCO106
@@ -458,13 +428,17 @@ def Assertion_ACCO107(self, log):
     try:
         AccountLockoutCounterResetAfter = json_payload['AccountLockoutCounterResetAfter']
         AccountLockoutCounter = json_payload['AccountLockoutCounter'] # Assumption: There exist an AccountLockoutCounter property. 
+        AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
 
 
         for i in range(0, AccountLockoutThreshold):
             json_payload, headers, status = self.http_GET(
             '/redfish/v1/AccountService', rq_headers, authorization) # Needs to know the procedure for providing credentials to acess a Redfish server. 
 
-        if authFailureisLogged:  # Needs to know where the log is located.
+        try: 
+            authorization = 'on'
+            json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+            log_collection = (json_payload['Members'])
 
             while not time.time() == AccountLockoutCounterResetAfter: 
             
