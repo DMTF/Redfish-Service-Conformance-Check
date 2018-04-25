@@ -4254,7 +4254,7 @@ def Assertion_6_5_26(self, log) :
                     elif re.match(r"(#)(\w+)(\.)(.+)", action, re.I) is None:
                         assertion_status_ = log.FAIL
                         assertion_status = log.status_fixup(assertion_status, assertion_status_)
-                        log.assertion_log('line', '%s: property %s should match the format: #Namespace.ActionName, found: %s'
+                        log.assertion_log('line', '%s: %s property should match the format: #Namespace.ActionName, found: %s'
                                           % (relative_uris[relative_uri], key, action))
                     else:
                         # match namespace and action name
