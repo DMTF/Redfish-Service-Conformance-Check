@@ -4225,7 +4225,7 @@ def Assertion_6_5_25(self, log) :
 def Assertion_6_5_26(self, log) :
 
     log.AssertionID = '6.5.26'
-    assertion_status =  log.PASS
+    assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
     authorization = 'on'
 
@@ -4249,35 +4249,43 @@ def Assertion_6_5_26(self, log) :
             key = 'Actions'
             if key in json_payload:  
                 for action in json_payload[key]:
-                    # get namespace by parsing odata.id and then find out the name of the action witihn typename to compare accurately
-                    collection = re.match(r"(#)(\w+)(\.)(.+)", action , re.I)
-                    if collection is None:
-                        assertion_status = log.FAIL
-                        log.assertion_log('line','%s value should match the format: #Namespace.ActionName, found: %s' %(key, action)) 
-
-                    else: # match namespace and action name
-                        action = action.rsplit('#',1)
-                        check_1 = action[1]
+                    if action == 'Oem':
+                        continue
+                    elif re.match(r"(#)(\w+)(\.)(.+)", action, re.I) is None:
+                        assertion_status_ = log.FAIL
+                        assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                        log.assertion_log('line', '%s: %s property should match the format: #Namespace.ActionName, found: %s'
+                                          % (relative_uris[relative_uri], key, action))
+                    else:
+                        # match namespace and action name
+                        check_1 = action.rsplit('#',1)[1]
                         namespace_1 = check_1.rsplit('.',1)
                         namespace = namespace_1[0]
                         check = namespace_1[1]
                         print ('The namespace is %s' %namespace +'_v1.xml')
                         doc = minidom.parse(os.getcwd()+'/redfish-1.0.0/metadata/'+ namespace + '_v1.xml')
-                        dataServices = doc.getElementsByTagName('Action')[0]
-                        if (dataServices.getAttribute('Name')== check):
-                            assertion_status = log.PASS
+                        action_elements = doc.getElementsByTagName('Action')
+                        match_found = False
+                        for e in action_elements:
+                            if e.getAttribute('Name') == check:
+                                match_found = True
+                                break
+                        if match_found:
+                            assertion_status_ = log.PASS
+                            assertion_status = log.status_fixup(assertion_status, assertion_status_)
                             print('The schema file has the same action name as in the response')
-                        else :
-                             assertion_status = log.FAIL
-                             log.assertion_log('line', 'Action %s could not be found within the Resource Type %s . Even though it is of the valid format \'#Namespace.ActionName\' but the values for \'Namespace\' and \'ActionaName\' could not be matched in its schema' %(key, namespace))
-                             continue
+                        else:
+                            assertion_status_ = log.FAIL
+                            assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                            log.assertion_log('line', '%s: Action %s could not be found within the Resource Type %s. Even though it is of the valid format \'#Namespace.ActionName\' but the values for \'Namespace\' and \'ActionName\' could not be matched in its schema.'
+                                              % (relative_uris[relative_uri], action, namespace))
+                            continue
                         '''namespace, typename = csdl_schema_model.get_resource_namespace_typename(json_payload['@odata.type'])
                         print('Namespace is %s and typename is %s' %(namespace,typename))
                         if namespace and typename:
                             if not csdl_schema_model.verify_action_name_recur(namespace, typename, action):
                                 assertion_status = log.FAIL
-                                log.assertion_log('line', 'Action %s could not be found within the Resource Type %s in its schema file: %s. Even though it is of the valid format \'#Namespace.ActionName\' but the values for \'Namespace\' and \'ActionaName\' could not be matched in its schema' %(key, action, namespace.SchemaUri, action.rsplit('.', 1), typename.Name ))''' 
-    assertion_status = log.status_fixup(assertion_status,assertion_status_)                            
+                                log.assertion_log('line', 'Action %s could not be found within the Resource Type %s in its schema file: %s. Even though it is of the valid format \'#Namespace.ActionName\' but the values for \'Namespace\' and \'ActionaName\' could not be matched in its schema' %(key, action, namespace.SchemaUri, action.rsplit('.', 1), typename.Name ))'''
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 #
