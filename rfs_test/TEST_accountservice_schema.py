@@ -26,6 +26,7 @@ import time
 from time import gmtime, strftime
 
 accSerData = None
+testAccountId = None
 
 # current spec followed for these assertions
 REDFISH_SPEC_VERSION = "Version 1.2.2"
@@ -41,6 +42,13 @@ def createDummyAccount(self):
         'RoleId': 'Administrator'
     }
     json_payload, headers, status = self.http_POST('/redfish/v1/AccountService/Accounts', rq_headers, rq_body, authorization)
+    testAccountId = json_payload['Id']
+
+def deleteDummyAccount(self):
+    authorization = 'on'
+    rq_headers = self.request_headers()
+    json_payload, headers, status = self.http_DELETE('/redfish/v1/AccountService/Accounts/' + testAccountId, rq_headers, authorization)
+
 
 
 def failAuthorization(self):
@@ -479,3 +487,4 @@ def run(self, log):
     assertion_status = Assertion_ACCO104(self, log)
     assertion_status = Assertion_ACCO105(self, log)
     assertion_status = Assertion_ACCO106(self, log)
+    deleteDummyAccount(self)
