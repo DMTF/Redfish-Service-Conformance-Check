@@ -9,7 +9,7 @@
 #   to the normative statements from the Redfish specification.
 #   See assertions in redfish-assertions.xlxs for assertions summary
 #
-# Verified/operational Python revisions (Windows OS) :
+# Verified/operational Python revisions (Ubuntu OS) :
 #       3.5.2
 #
 # Initial code released : 02/2018
