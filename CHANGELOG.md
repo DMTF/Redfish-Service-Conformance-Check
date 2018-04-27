@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.0.7] - 2018-04-27
+- Made fix to allow for the Oem property to be inside of Actions
+
 ## [1.0.6] - 2018-04-13
 - Added type checking of responses to ensure they're JSON objects
 
