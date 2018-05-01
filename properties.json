@@ -37,8 +37,8 @@
   },
   "RedfishServiceCheckTool_SchemaFiles": {
     "DMTF_SPMFSchemas": {
-      "SchemaZipFileName": "DSP8010_1.0.0.zip",
-      "SchemaRepository": "http://redfish.dmtf.org/schemas",
+      "SchemaZipFileName": "DSP8010_2017.3.zip",
+      "SchemaRepository": "http://redfish.dmtf.org/schemas/",
       "ClientProxy": {
         "http_proxy": "none",
         "https_proxy": "none",
@@ -50,6 +50,6 @@
     },
     "Description": "Path of folder containing schema files ('json-schema/' and 'metadata/' expected within redfish-1.0.0), place in the same directory as scripts",
     "LocalSchemaDirectoryFolder": "redfish-1.0.0",
-    "RetrieveDMTFSchemas": "no"
+    "RetrieveDMTFSchemas": "auto"
   }
 }
