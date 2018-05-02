@@ -5,20 +5,20 @@
       "MessageArgs": [ "conformance test Args" ],
       "EventId": "111",
       "OriginOfCondition": "rfs_check.py Service Conformance check assertion 7.2.1",
-      "LongDescription": "The 8.1.3 and 7.2.1 Assertions dont check to see that the event is delivered but they will verify SubmitTestEvent against Subscription creation",
+      "LongDescription": "The 8.1.3 and 7.2.1 Assertions do not check to see that the event is delivered but they will verify SubmitTestEvent against Subscription creation.",
       "MessageId": "721",
       "Message": "conformance test Assertion 7.2.1",
-      "Description": "set the properties for the SubmitTestEvent action here",
+      "Description": "Set the properties for the SubmitTestEvent action here.",
       "Severity": "OK",
       "EventType": "StatusChange",
       "EventTimestamp": "gets overwritten/set to current date/time"
     },
     "Subscription": {
       "Context": "Conformance Assertion 8.1.3 and 7.2.1",
-      "LongDescription": "The 8.1.3 and 7.2.1 Assertions dont check to see that the event is delivered but they will verify SubmitTestEvent against Subscription creation",
-      "Destination": "https://ctsxq3456789.cf.contoso.com/BobDarnitHTTPEventHandler",
+      "LongDescription": "The 8.1.3 and 7.2.1 Assertions do not check to see that the event is delivered but they will verify SubmitTestEvent against Subscription creation.",
+      "Destination": "https://example.com/MyHTTPEventHandler",
       "Protocol": "Redfish",
-      "Description": "set the URL for your Client Event handler and related properties here. Properties set thru: http://redfish.dmtf.org/schemas/v1/EventDestination_v1.xml",
+      "Description": "Set the URL for your Client Event handler and related properties here. Properties set per: http://redfish.dmtf.org/schemas/v1/EventDestination_v1.xml",
       "EventTypes": [ "StatusChange", "ResourceUpdated", "ResourceAdded", "ResourceRemoved", "Alert" ]
     }
   },
@@ -33,7 +33,7 @@
         "RedfishVersion": "v1"
       }
     ],
-    "Description": "setup your server (SUT) location/authorization information here:  AllowAction_LogServiceClearLog = yes will allow this Action during test"
+    "Description": "Setup your server (SUT) location/authorization information here:  AllowAction_LogServiceClearLog = yes will allow this Action during test"
   },
   "RedfishServiceCheckTool_SchemaFiles": {
     "DMTF_SPMFSchemas": {
@@ -42,10 +42,10 @@
       "ClientProxy": {
         "http_proxy": "none",
         "https_proxy": "none",
-        "Description": "setup your client proxy here or set the entries to 'none' if its not needed to get outside a firewall to the Schema Repository URL"
+        "Description": "Setup your client proxy here or set the entries to 'none' if it is not needed to get outside a firewall to the Schema Repository URL"
       },
-      "LongDescription": "if RetrieveDMTFSchemas is set to 'no' then the tool expects that the scema files are already in LocalSchemaDirectoryFolder",
-      "Description": "Set RetreiveDMTFSchemas to 'yes' to download the schema files from Schema Repository URL (current) to LocalSchemaDirectoryFolder",
+      "LongDescription": "If RetrieveDMTFSchemas is set to 'no' then the tool expects that the schema files are already in LocalSchemaDirectoryFolder",
+      "Description": "Set RetrieveDMTFSchemas to 'auto' to download the schema files if they are not already downloaded or 'yes' to force the tool to download them again.",
       "SchemaVersion": "v1"
     },
     "Description": "Path of folder containing schema files ('json-schema/' and 'metadata/' expected within redfish-1.0.0), place in the same directory as scripts",
