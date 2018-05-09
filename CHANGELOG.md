@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.0.8] - 2018-05-04
+- Fixed schema download to use a zip file instead of downloading them individually
+
+## [1.0.7] - 2018-04-27
+- Made fix to allow for the Oem property to be inside of Actions
+
 ## [1.0.6] - 2018-04-13
 - Added type checking of responses to ensure they're JSON objects
 
