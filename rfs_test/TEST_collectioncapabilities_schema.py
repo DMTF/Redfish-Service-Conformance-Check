@@ -3,7 +3,7 @@
 # License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/blob/master/LICENSE.md
 
 #####################################################################################################
-# File: TEST_bootoption_schema.py
+# File: TEST_collectioncapabilities_schema.py
 # Description: Redfish service conformance check tool. This module contains implemented assertions for
 #   SUT.These assertions are based on operational checks on Redfish Service to verify that it conforms
 #   to the normative statements from the Redfish specification.
