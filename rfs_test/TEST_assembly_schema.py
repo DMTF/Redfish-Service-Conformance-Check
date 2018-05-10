@@ -44,8 +44,7 @@ def Assertion_ASSE114(self, log):
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET(
-        '/redfish/v1/Assembly', rq_headers, authorization)
+    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Assembly']['url'], rq_headers, authorization)
 
     try:
         binaryDataURI = json_payload['BinaryDataURI']

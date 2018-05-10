@@ -41,13 +41,14 @@ def createDummyAccount(self):
         'Password': 'test_pswd',
         'RoleId': 'Administrator'
     }
-    json_payload, headers, status = self.http_POST('/redfish/v1/AccountService/Accounts', rq_headers, rq_body, authorization)
+
+     json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
     testAccountId = json_payload['Id']
 
 def deleteDummyAccount(self):
     authorization = 'on'
     rq_headers = self.request_headers()
-    json_payload, headers, status = self.http_DELETE('/redfish/v1/AccountService/Accounts/' + testAccountId, rq_headers, authorization)
+    json_payload, headers, status = self.http_DELETE(self.sut_toplevel_uris['Accounts']['url'] + testAccountId, rq_headers, authorization)
 
 
 
@@ -59,7 +60,7 @@ def failAuthorization(self):
         'Password': 'wrong_pswd'
     }
 
-    json_payload, headers, status = self.http_POST('/redfish/v1/SessionService/Sessions', rq_headers, rq_body, authorization)
+    json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['SessionService/Sessions']['url'], rq_headers, rq_body, authorization)
 
     # The status code for authentication credentials included with this request being missing or invalid.
     return status == 401
@@ -72,7 +73,7 @@ def clearLog(self):
       
     }
 
-    json_payload, headers, status = self.http_POST('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Actions/LogService.Reset', rq_headers, rq_body, authorization)
+    json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Actions/LogService.Reset']['url'], rq_headers, rq_body, authorization)
     
     return status == 200 or status == 201 or status == 202 or status == 204
 
@@ -99,7 +100,7 @@ def Assertion_ACCO101(self, log):
     rq_headers = self.request_headers()
 
     json_payload, headers, status = self.http_GET(
-        '/redfish/v1/AccountService', rq_headers, authorization)
+        self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
     try:
         isEnabled = json_payload['ServiceEnabled']
@@ -188,7 +189,7 @@ def Assertion_ACCO102(self, log):
 
     try:
         authorization = 'on'
-        json_payload, headers, status = self.http_GET('/redfish/v1/AccountService', rq_headers, authorization)
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
         authFailureThreshold = json_payload['AuthFailureLoggingThreshold']
         attempt = 0
         authFailureisLogged = False; 
@@ -202,7 +203,7 @@ def Assertion_ACCO102(self, log):
 
             try: 
                 authorization = 'on'
-                json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+                json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Entries/']['url'], rq_headers, authorization)
                 log_collection = (json_payload['Members'])
                 
                 if attempt == authFailureThreshold:
@@ -247,8 +248,7 @@ def Assertion_ACCO103(self, log):
     rq_headers = self.request_headers()
 
     try:
-        json_payload, headers, status = self.http_GET(
-            '/redfish/v1/AccountService', rq_headers, authorization)
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
         MinPasswordLength = json_payload['MinPasswordLength']
         
@@ -259,7 +259,7 @@ def Assertion_ACCO103(self, log):
             'Password': ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(MaxPasswordLength + 1)),
             'RoleId': 'Administrator'
         }
-        json_payload, headers, status = self.http_POST('/redfish/v1/AccountService/Accounts', rq_headers, rq_body, authorization)
+         json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
         # 201 is the only status when a request has created a new resource successfully
 
@@ -299,8 +299,7 @@ def Assertion_ACCO104(self, log):
     rq_headers = self.request_headers()
 
     try:
-        json_payload, headers, status = self.http_GET(
-            '/redfish/v1/AccountService', rq_headers, authorization)
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
         MaxPasswordLength = json_payload['MaxPasswordLength']
         
@@ -311,7 +310,7 @@ def Assertion_ACCO104(self, log):
             'Password': ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(MaxPasswordLength + 1)),
             'RoleId': 'Administrator'
         }
-        json_payload, headers, status = self.http_POST('/redfish/v1/AccountService/Accounts', rq_headers, rq_body, authorization)
+         json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
         # 201 is the only status when a request has created a new resource successfully
 
@@ -356,8 +355,7 @@ def Assertion_ACCO105(self, log):
     authorization = 'on'
     rq_headers = self.request_headers()
     
-    json_payload, headers, status = self.http_GET(
-        '/redfish/v1/AccountService', rq_headers, authorization)
+    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
     try:
         AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
@@ -369,14 +367,14 @@ def Assertion_ACCO105(self, log):
                 return assertion_status 
             try: 
                 authorization = 'on'
-                json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+                json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Entries/']['url'], rq_headers, authorization)
                 log_collection = (json_payload['Members'])
             except: 
                 print("'Members\' not found in the payload from GET %s" % ('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/'));
 
         try: 
             authorization = 'on'
-            json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+            json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Entries/']['url'], rq_headers, authorization)
             log_collection = (json_payload['Members'])
             log.assertion_log(assertion_status, None)
             log.assertion_log('line', "Assertion Passes")
@@ -420,8 +418,7 @@ def Assertion_ACCO106(self, log):
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET(
-        '/redfish/v1/AccountService', rq_headers, authorization)
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
     try:
         AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
@@ -435,7 +432,7 @@ def Assertion_ACCO106(self, log):
 
         try: 
             authorization = 'on'
-            json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+            json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Entries/']['url'], rq_headers, authorization)
             log_collection = (json_payload['Members'])
 
             start = time.time()
@@ -452,7 +449,7 @@ def Assertion_ACCO106(self, log):
                         'UserName': 'test_id',
                         'Password': 'test_pswd'
                     }
-                    json_payload, headers, status = self.http_POST('/redfish/v1/SessionService/Sessions', rq_headers, rq_body, authorization)
+                    json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['SessionService/Sessions']['url'], rq_headers, rq_body, authorization)
                     
                     if status == 200 or status == 201 or status == 202 or status == 204: 
                         assertion_status = log.PASS
