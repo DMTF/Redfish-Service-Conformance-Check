@@ -35,7 +35,37 @@ REDFISH_SPEC_VERSION = "Version 1.2.2"
 #associated Action, and shall be false if the parameter is not required (optional) to perform the
 #associated Action.
 ###################################################################################################
+def Assertion_ACTI104(self,log) :
+    log.AssertionID = 'ACTI104'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
 
+    root_link_key = 'Systems'    
+
+    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+
+    if status == 200: 
+          try: 
+            authorization = 'on'
+            json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
+            BootOptionEnabled = (json_payload['BootOptionEnabled'])
+
+            if BootOptionEnabled: 
+                #  Boot Option referenced in the Boot Order array found on the Computer System shall be skipped. (How can I check this ?)
+
+          except: 
+            assertion_status = log.WARN
+            log.assertion_log('line', "~ \'BootOptionEnabled\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))
+            
+    else
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'BootOptionEnabled\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))
+
+    log.assertion_log(assertion_status, None)
+    return (assertion_status)
 
 ## end Assertion_ACTI104
 

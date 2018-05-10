@@ -51,7 +51,7 @@ def Assertion_BOOT102(self,log) :
             
     else
         assertion_status = log.WARN
-        log.assertion_log('line', "The systems resource was not found.")
+        log.assertion_log('line', "~ \'Systems\' not found in the payload from GET, returned with the status code %s." % (status))
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
