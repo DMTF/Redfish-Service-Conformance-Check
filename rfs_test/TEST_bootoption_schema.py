@@ -40,13 +40,17 @@ def Assertion_BOOT102(self,log) :
           try: 
             authorization = 'on'
             json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
-            log_collection = (json_payload['Members'])
+            BootOptionEnabled = (json_payload['BootOptionEnabled'])
+
+            if BootOptionEnabled: 
+                #  Boot Option referenced in the Boot Order array found on the Computer System shall be skipped. (How can I check this ?)
 
           except: 
-            assertion_status = log.FAIL
-            log.assertion_log('line', "Failure attempt was not logged in after failed login attempts reached the threshold referenced by AccountLockoutThreshold")
+            assertion_status = log.WARN
+            log.assertion_log('line', "~ \'BootOptionEnabled\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))
+            
     else
-        assertion_status = log.FAIL
+        assertion_status = log.WARN
         log.assertion_log('line', "The systems resource was not found.")
 
     log.assertion_log(assertion_status, None)
