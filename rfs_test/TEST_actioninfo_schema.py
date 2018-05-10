@@ -43,26 +43,37 @@ def Assertion_ACTI104(self,log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    root_link_key = 'Systems'    
+    root_link_key = 'Systems/529QB9450R6'    # Not the correct method, how can I get an exsisting system. 
 
     json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
 
     if status == 200: 
           try: 
-            authorization = 'on'
-            json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
-            BootOptionEnabled = (json_payload['BootOptionEnabled'])
+            resetActions = (json_payload['Actions']['ComputerSystem.Reset'])
+                try:
+                    Required = (resetActions['Required'])
 
-            if BootOptionEnabled: 
-                #  Boot Option referenced in the Boot Order array found on the Computer System shall be skipped. (How can I check this ?)
+                    if Required: 
+                        # Performing an action without parametres when parameters are required.  
+                        rq_body = {
+                        }
+                        json_payload, headers, status = self.http_POST(self.sut_toplevel_uris[root_link_key + '/Actions/ComputerSystem.Reset']['url'], rq_headers, rq_body, authorization)
+
+                        if status < 400:  
+                            assertion_status = log.FAIL
+                            log.assertion_log('line', "Posting an action without parameter did not return an error status when the Required property was true")
+
+                except: 
+                    assertion_status = log.WARN
+                    log.assertion_log('line', "~ \'Required\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))
 
           except: 
             assertion_status = log.WARN
-            log.assertion_log('line', "~ \'BootOptionEnabled\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))
+            log.assertion_log('line', "~ \'Reset Actions\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))
             
     else
         assertion_status = log.WARN
-        log.assertion_log('line', "~ \'BootOptionEnabled\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))
+        log.assertion_log('line', "~ \'Systems\' not found in the payload from GET, returned with the status code %s." % (status))
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)

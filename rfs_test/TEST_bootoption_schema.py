@@ -38,8 +38,6 @@ def Assertion_BOOT102(self,log) :
 
     if status == 200: 
           try: 
-            authorization = 'on'
-            json_payload, headers, status = self.http_GET('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/', rq_headers, authorization)
             BootOptionEnabled = (json_payload['BootOptionEnabled'])
 
             if BootOptionEnabled: 
