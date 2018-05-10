@@ -29,18 +29,10 @@ def Assertion_COLL103(self,log) :
     relative_uris = self.relative_uris
     print('Checking if all responses are in JSON')
     authorization = 'on'
-    rq_headers = self.request_headers()
-
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-
-        if status == 200 :
-            if not json_payload:
-                print ('The response received is not in JSON %s'% json_payload)
-                assertion_status = log.FAIL
-        else :
-            continue
-    log.assertion_log(assertion_status, None)
+    
+    # Could not find a resourse with Capabilities Object property and the link https://github.com/DMTF/spmf/tree/master/mockups/development 
+    # to the development mockup which contains everry resources is broken. 
+    
     return (assertion_status)
 
 #
@@ -49,6 +41,5 @@ def Assertion_COLL103(self,log) :
 # run(self, log):
 # Takes sut obj and logger obj 
 ###################################################################################################
-def run(self, log): 
-      
+def run(self, log):     
     assertion_status = Assertion_COLL103(self,log)
