@@ -36,11 +36,6 @@ REDFISH_SPEC_VERSION = "Version 1.2.2"
 #associated Action.
 ###################################################################################################
 
-'''
-Step 1: Try performing an action without the parameter.
-Step 2: If Step 1 failed and Required property is False, fail the assertion. 
-Step 3: Else, pass the assertion. 
-'''
 
 ## end Assertion_ACTI104
 
