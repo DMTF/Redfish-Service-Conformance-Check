@@ -44,67 +44,81 @@ def Assertion_ASSE114(self, log):
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Assembly']['url'], rq_headers, authorization)
+    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Chassis/Blade1']['url'], rq_headers, authorization)
+    
+    try: 
+        assemblyLink = json_payload['Links']['Assembly'][0]['@odata.id']
 
-    try:
-        binaryDataURI = json_payload['BinaryDataURI']
+        json_payload, headers, status = self.http_GET(assemblyLink, rq_headers, authorization)
 
-        payload, headers, status = self.http_GET(
-            binaryDataURI, rq_headers, authorization)
+        if status != 200: 
+            assertion_status = log.WARN
+            log.assertion_log('line', "Assembly resource not found at %s" % (assemblyLink))
+            return assertion_status
 
         try:
-            if headers['Content-Type'] == 'application/octet-stream':
-                rq_body = {'Property': 'Test'}
-                json_payload, headers, status = self.http_PUT(
-                    binaryDataURI, rq_headers, rq_body, authorization)
+            binaryDataURI = json_payload['BinaryDataURI']
 
-                if status == 405:
-                    assertion_status = log.WARN
-                    log.assertion_log('line', "~ \'BinaryDataURI\'  HTTP PUT Request not supported %s" % (
-                        '/redfish/v1/Assembly'))
-                    return assertion_status
+            payload, headers, status = self.http_GET(
+                binaryDataURI, rq_headers, authorization)
 
-                elif status == 200 or status == 201 or status == 202 or status == 204:
-                    json_payload, headers, status = self.http_GET(
-                        '/redfish/v1/Assembly', rq_headers, authorization)
+            try:
+                if headers['Content-Type'] == 'application/octet-stream':
+                    rq_body = {'Property': 'Test'}
+                    json_payload, headers, status = self.http_PUT(
+                        binaryDataURI, rq_headers, rq_body, authorization)
 
-                    try:
-                        binaryDataURI = json_payload['BinaryDataURI']
-                        json_payload, headers, status = self.http_GET(
-                            binaryDataURI, rq_headers, authorization)
-
-                        if headers['Content-Type'] == 'application/json':
-                            assertion_status = log.PASS
-                            log.assertion_log(assertion_status, None)
-                            log.assertion_log('line', "Assertion Passed")
-
-                            # Reset the binaryDataURI back to original state
-                            json_payload, headers, status = self.http_PUT(
-                                binaryDataURI, rq_headers, payload, authorization)
-
-                            return assertion_status
-
-                    except:
+                    if status == 405:
                         assertion_status = log.WARN
-                        log.assertion_log('line', "~ \'BinaryDataURI\' not found in the payload from GET after modifiying the binaryDataURI %s" % (
+                        log.assertion_log('line', "~ \'BinaryDataURI\'  HTTP PUT Request not supported %s" % (
                             '/redfish/v1/Assembly'))
                         return assertion_status
-            else:
-                assertion_status = log.FAIL
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', "Assertion Failed")
+
+                    elif status == 200 or status == 201 or status == 202 or status == 204:
+                        json_payload, headers, status = self.http_GET(assemblyLink, rq_headers, authorization)
+
+                        try:
+                            binaryDataURI = json_payload['BinaryDataURI']
+                            json_payload, headers, status = self.http_GET(
+                                binaryDataURI, rq_headers, authorization)
+
+                            if headers['Content-Type'] == 'application/json':
+                                assertion_status = log.PASS
+                                log.assertion_log(assertion_status, None)
+                                log.assertion_log('line', "Assertion Passed")
+
+                                # Reset the binaryDataURI back to original state
+                                json_payload, headers, status = self.http_PUT(
+                                    binaryDataURI, rq_headers, payload, authorization)
+
+                                return assertion_status
+
+                        except:
+                            assertion_status = log.WARN
+                            log.assertion_log('line', "~ \'BinaryDataURI\' not found in the payload from GET after modifiying the binaryDataURI %s" % (
+                                '/redfish/v1/Assembly'))
+                            return assertion_status
+                else:
+                    assertion_status = log.FAIL
+                    log.assertion_log(assertion_status, None)
+                    log.assertion_log('line', "Assertion Failed")
+                    return assertion_status
+
+            except:
+                assertion_status = log.WARN
+                log.assertion_log('line', "~ \'Content-Type\' not found in the Header from GET %s" % (
+                    '/redfish/v1/Assembly'))
                 return assertion_status
 
         except:
             assertion_status = log.WARN
-            log.assertion_log('line', "~ \'Content-Type\' not found in the Header from GET %s" % (
+            log.assertion_log('line', "~ \'BinaryDataURI\' not found in the payload from GET %s" % (
                 '/redfish/v1/Assembly'))
             return assertion_status
 
-    except:
+    except: 
         assertion_status = log.WARN
-        log.assertion_log('line', "~ \'BinaryDataURI\' not found in the payload from GET %s" % (
-            '/redfish/v1/Assembly'))
+        log.assertion_log('line', "Assebmly link not found at  %s" % (self.sut_toplevel_uris['Chassis/Blade1']['url']))
         return assertion_status
 
 
