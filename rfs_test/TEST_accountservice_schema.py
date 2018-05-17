@@ -41,9 +41,14 @@ def createDummyAccount(self):
         'Password': 'test_pswd',
         'RoleId': 'Administrator'
     }
+    json_payload_get, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
-     json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+    acc_collection = json_payload_get['Accounts']['@odata.id']
+
+    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService/' + acc_collection + '/test']['url'], rq_headers, authorization)
     testAccountId = json_payload['Id']
+
+    return status
 
 def deleteDummyAccount(self):
     authorization = 'on'
@@ -99,70 +104,48 @@ def Assertion_ACCO101(self, log):
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET(
+    json_payload_get, headers, status = self.http_GET(
         self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
     try:
-        isEnabled = json_payload['ServiceEnabled']
+        isEnabled = json_payload_get['ServiceEnabled']
 
         if isEnabled:
             patch_key = 'ServiceEnabled'
             patch_value = False
             rq_body = {patch_key: patch_value}
-            self.http_PATCH('/redfish/v1/AccountService',
+            json_payload, headers, status = self.http_PATCH(self.sut_toplevel_uris['AccountService']['url'],
                             rq_headers, rq_body, authorization)
+            if status == 405: 
+                assertion_status = log.FAIL
+                log.assertion_log('line', "~ \'ServiceEnabled\' property is Read Only")
+                return assertion_status
+            
+            try:
+                acc_collection = json_payload_get['Accounts']['@odata.id']
+
+                status = createDummyAccount(self)
+
+                if not (status >= 400 and status <= 500) :
+                    assertion_status = log.FAIL
+                    log.assertion_log(assertion_status, None)
+                    log.assertion_log('line', "Assertion Failed")
+                    return assertion_status
+
+                patch_value = False
+                rq_body = {patch_key: patch_value}
+                json_payload, headers, status = self.http_PATCH(self.sut_toplevel_uris['AccountService']['url'],rq_headers, rq_body, authorization)
+                
+            except:
+                assertion_status = log.WARN
+                log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
+                return assertion_status
 
     except:
         assertion_status = log.WARN
         log.assertion_log('line', "~ \'ServiceEnabled\' not found in the payload from GET %s" % (
             '/redfish/v1/AccountService'))
         return assertion_status
-    else:
-        try:
-            acc_collection = (json_payload['Accounts'])['@odata.id']
-        except:
-            assertion_status = log.WARN
-            log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % (
-                '/redfish/v1/AccountService'))
-            return assertion_status
-        else:
-
-            rq_body = {'Name': 'Test'}
-
-            json_payload, headers, status = self.http_POST(
-                acc_collection + '/test', rq_headers, rq_body, authorization)
-
-            if status == 201:
-                assertion_status = log.FAIL
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', "Assertion Failed")
-                return assertion_status
-
-            try:
-                json_payload, headers, status = self.http_GET(
-                    acc_collection, rq_headers, authorization)
-                members_collection = (json_payload['Members'])
-            except:
-                assertion_status = log.WARN
-                log.assertion_log('line', "~ \'Members\' not found in the payload from GET %s" % (
-                    '/redfish/v1/AccountService'))
-                return assertion_status
-            else:
-                for member in members_collection:
-                    key = '@odata.id'
-                    member_link = member[key]
-                    json_payload, headers, status = self.http_PUT(
-                        member_link, rq_headers, rq_body, authorization)
-                    if status == 201:
-                        assertion_status = log.FAIL
-                        log.assertion_log(assertion_status, None)
-                        log.assertion_log('line', "Assertion Failed")
-                        return assertion_status
-
-    log.assertion_log(assertion_status, log.PASS)
-    log.assertion_log('line', "Assertion Passes")
-
-    return assertion_status
 
 # end Assertion_ACCO101
 
@@ -256,10 +239,10 @@ def Assertion_ACCO103(self, log):
         rq_headers = self.request_headers()
         rq_body = {
             'UserName': 'test_min',
-            'Password': ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(MaxPasswordLength + 1)),
+            'Password': ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(MinPasswordLength + 1)),
             'RoleId': 'Administrator'
         }
-         json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
         # 201 is the only status when a request has created a new resource successfully
 
@@ -310,7 +293,7 @@ def Assertion_ACCO104(self, log):
             'Password': ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(MaxPasswordLength + 1)),
             'RoleId': 'Administrator'
         }
-         json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
         # 201 is the only status when a request has created a new resource successfully
 
@@ -418,7 +401,7 @@ def Assertion_ACCO106(self, log):
     authorization = 'on'
     rq_headers = self.request_headers()
 
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
     try:
         AccountLockoutThreshold = json_payload['AccountLockoutThreshold']

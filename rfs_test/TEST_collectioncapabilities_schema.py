@@ -31,7 +31,7 @@ def Assertion_COLL103(self,log) :
     authorization = 'on'
     
     # Could not find a resourse with Capabilities Object property and the link https://github.com/DMTF/spmf/tree/master/mockups/development 
-    # to the development mockup which contains everry resources is broken. 
+    # to the development mockup which contains every resources is broken. 
     
     return (assertion_status)
 
