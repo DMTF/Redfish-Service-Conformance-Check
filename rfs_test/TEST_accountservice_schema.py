@@ -322,6 +322,11 @@ def Assertion_ACCO105(self, log):
     try:
         AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
 
+        if AccountLockoutThreshold == 0: 
+            assertion_status = log.WARN
+            log.assertion_log('line', "AccountLockoutThreshold is set to zero")
+            return assertion_status 
+
         for i in range(0, AccountLockoutThreshold):
             if not failAuthorization(self): 
                 assertion_status = log.WARN
