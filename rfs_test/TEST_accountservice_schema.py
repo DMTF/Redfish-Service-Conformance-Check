@@ -70,17 +70,14 @@ def failAuthorization(self):
     # The status code for authentication credentials included with this request being missing or invalid.
     return status == 401
     
-# Question: Does this method redquire authorization in order to perform the Reset action on LogService ?
-def clearLog(self): 
+def isLocked(self):
     authorization = 'on'
     rq_headers = self.request_headers()
-    rq_body = {
-      
-    }
+    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
-    json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Actions/LogService.Reset']['url'], rq_headers, rq_body, authorization)
-    
-    return status == 200 or status == 201 or status == 202 or status == 204
+    return status != 200 or status != 201 or status != 200 or status != 204
+
+
 
 
 ###################################################################################################
@@ -165,11 +162,6 @@ def Assertion_ACCO102(self, log):
     log.assertion_log('BEGIN_ASSERTION', None)
     rq_headers = self.request_headers()
 
-    if not clearLog(self):
-        assertion_status = log.WARN
-        log.assertion_log('line', "Could not clear the Service Log")
-        return assertion_status
-
     try:
         authorization = 'on'
         json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
@@ -184,22 +176,14 @@ def Assertion_ACCO102(self, log):
                 log.assertion_log('line', "Could not fail the authorization")
                 return assertion_status
 
-            try: 
-                authorization = 'on'
-                json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Entries/']['url'], rq_headers, authorization)
-                log_collection = (json_payload['Members'])
+            if isLocked(self): 
                 
                 if attempt == authFailureThreshold:
                     assertion_status = log.PASS
                     log.assertion_log('line', "Assertion Passed")
                     return assertion_status
 
-            except:     
-                print("'Members\' not found in the payload from GET %s" % ('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/'));
-         
-            attempt += 1
-
-            if attempt > authFailureThreshold:
+            else:     
                 log.assertion_log('line', "Assertion Failed")
                 return assertion_status
 
@@ -329,11 +313,6 @@ def Assertion_ACCO105(self, log):
     assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
-    if not clearLog(self):
-        assertion_status = log.WARN
-        log.assertion_log('line', "Could not clear the Service Log")
-        return assertion_status
-
     relative_uris = self.relative_uris
     authorization = 'on'
     rq_headers = self.request_headers()
@@ -348,21 +327,11 @@ def Assertion_ACCO105(self, log):
                 assertion_status = log.WARN
                 log.assertion_log('line', "Could not fail the authorization")
                 return assertion_status 
-            try: 
-                authorization = 'on'
-                json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Entries/']['url'], rq_headers, authorization)
-                log_collection = (json_payload['Members'])
-            except: 
-                print("'Members\' not found in the payload from GET %s" % ('/redfish/v1/Managers/MultiBladeBMC/LogServices/Log/Entries/'));
 
-        try: 
-            authorization = 'on'
-            json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Entries/']['url'], rq_headers, authorization)
-            log_collection = (json_payload['Members'])
-            log.assertion_log(assertion_status, None)
+        if isLocked(self): 
             log.assertion_log('line', "Assertion Passes")
             return assertion_status
-        except: 
+        else: 
             assertion_status = log.FAIL
             log.assertion_log('line', "Assertion Failed")
             return assertion_status
@@ -392,11 +361,6 @@ def Assertion_ACCO106(self, log):
     assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
-    if not clearLog(self):
-        assertion_status = log.WARN
-        log.assertion_log('line', "Could not clear the Service Log")
-        return assertion_status
-
     relative_uris = self.relative_uris
     authorization = 'on'
     rq_headers = self.request_headers()
@@ -413,10 +377,7 @@ def Assertion_ACCO106(self, log):
                 log.assertion_log('line', "Could not fail the authorization")
                 return assertion_status 
 
-        try: 
-            authorization = 'on'
-            json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['Managers/MultiBladeBMC/LogServices/Log/Entries/']['url'], rq_headers, authorization)
-            log_collection = (json_payload['Members'])
+        if isLocked(self): 
 
             start = time.time()
 
@@ -445,7 +406,7 @@ def Assertion_ACCO106(self, log):
                         log.assertion_log('line', "Assertion Failed")
                         return assertion_status
           
-        except: 
+        else: 
             assertion_status = log.FAIL
             log.assertion_log('line', "Failure attempt was not logged in after failed login attempts reached the threshold referenced by AccountLockoutThreshold")
             return assertion_status
