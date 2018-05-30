@@ -45,7 +45,7 @@ def createDummyAccount(self):
 
     acc_collection = json_payload_get['Accounts']['@odata.id']
 
-    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService/' + acc_collection + '/test']['url'], rq_headers, authorization)
+    json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['AccountService/' + acc_collection + '/test']['url'], rq_headers, authorization)
     testAccountId = json_payload['Id']
 
     return status
@@ -323,7 +323,7 @@ def Assertion_ACCO105(self, log):
         AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
 
         if AccountLockoutThreshold == 0: 
-            assertion_status = log.WARN
+            assertion_status = log.INFO
             log.assertion_log('line', "AccountLockoutThreshold is set to zero")
             return assertion_status 
 
@@ -376,6 +376,11 @@ def Assertion_ACCO106(self, log):
         AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
         AccountLockoutCounterResetAfter = json_payload['AccountLockoutCounterResetAfter']
 
+        if AccountLockoutThreshold == 0: 
+            assertion_status = log.INFO
+            log.assertion_log('line', "AccountLockoutThreshold is set to zero")
+            return assertion_status 
+            
         for i in range(0, AccountLockoutThreshold):
             if not failAuthorization(self): 
                 assertion_status = log.WARN
