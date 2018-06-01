@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.0.9] - 2018-06-01
+- Updated schema bundle to use the 2018.1 release
+
 ## [1.0.8] - 2018-05-04
 - Fixed schema download to use a zip file instead of downloading them individually
 
