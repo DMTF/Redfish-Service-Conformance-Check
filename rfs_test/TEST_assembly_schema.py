@@ -84,10 +84,7 @@ def Assertion_ASSE114(self, log):
             log.assertion_log('line',"~  Assertion Passed") 
             assertion_status = log.PASS
             return assertion_status
-
-        log.assertion_log('line', "~  Unable to perform a PUT request on BinaryDataURI.")
-        return assertion_status
-
+        
     except: 
         assertion_status = log.WARN
         log.assertion_log('line', "~  Unable to perform a PUT request on BinaryDataURI.")
