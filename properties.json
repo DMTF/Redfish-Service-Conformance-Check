@@ -25,10 +25,10 @@
   "RedfishServiceCheckTool_SUTConfiguration": {
     "SUTs": [
       {
-        "Password": "",
-        "LoginName": "",
+        "Password": "redfish",
+        "LoginName": "root",
         "AllowAction_LogServiceClearLog": "yes",
-        "DnsName": "",
+        "DnsName": "10.9.1.1",
         "DisplayName": "",
         "RedfishVersion": "v1"
       }

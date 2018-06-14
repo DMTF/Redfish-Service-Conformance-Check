@@ -385,7 +385,7 @@ def Assertion_ACCO106(self, log):
     
     except:
         assertion_status = log.WARN
-        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
+        log.assertion_log('line', "~ \'AccountLockoutThreshold or AccountLockoutCounterResetAfter\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
         return assertion_status
 
     if AccountLockoutThreshold == 0: 
@@ -407,7 +407,7 @@ def Assertion_ACCO106(self, log):
 
             end = time.time()
             
-            if int(end - start) % 60 == AccountLockoutCounterResetAfter: 
+            if int(end - start) > AccountLockoutCounterResetAfter: 
 
                 authorization = 'on'
                 rq_headers = self.request_headers()
@@ -417,7 +417,7 @@ def Assertion_ACCO106(self, log):
                 }
                 json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['SessionService/Sessions']['url'], rq_headers, rq_body, authorization)
                 
-                if status == 200 or status == 201 or status == 202 or status == 204: 
+                if not isLocked(self): 
                     assertion_status = log.PASS
                     log.assertion_log(assertion_status, None)
                     log.assertion_log('line', "Assertion Passes")
@@ -438,11 +438,12 @@ def Assertion_ACCO106(self, log):
 # Testing
 
 def run(self, log):
-    createDummyAccount(self)
     assertion_status = Assertion_ACCO101(self, log)
-    #assertion_status = Assertion_ACCO102(self, log) This assertion cannot be programmatically tested since prior knowlege of the log file is unavailable.
     assertion_status = Assertion_ACCO103(self, log)
     assertion_status = Assertion_ACCO104(self, log)
+    createDummyAccount(self)
     assertion_status = Assertion_ACCO105(self, log)
+    deleteDummyAccount(self)
+    createDummyAccount(self)
     assertion_status = Assertion_ACCO106(self, log)
     deleteDummyAccount(self)
