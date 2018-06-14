@@ -35,7 +35,7 @@ def put_test(self, uri):
     rq_headers = self.request_headers()
     rq_body = {'IndicatorLED': 'Unknown'}
     json_payload, headers, status = self.http_PUT(uri, rq_headers, rq_body, authorization)
-    return status == 405
+    return status == 400
 
 ###################################################################################################
 # Name: Assertion_COMP139(self, log) : Assembly
@@ -57,7 +57,7 @@ def Assertion_COMP139(self, log):
     try:
 
         json_payload, headers, status = self.http_GET(relative_uris['Root Service_Systems'], rq_headers, authorization)
-    
+
     except: 
 
         assertion_status = log.WARN
@@ -67,11 +67,16 @@ def Assertion_COMP139(self, log):
     try:
 
         json_payload, headers, status = self.http_GET(json_payload['Members'][0]['@odata.id'], rq_headers, authorization)
+        
+        if not 'PATCH' in headers['allow'] or not 'PUT' in headers['allow']:
+            assertion_status = log.WARN
+            log.assertion_log('line', "~  PATCH or PUT methods are not supported")
+            return assertion_status
 
     except: 
 
         assertion_status = log.WARN
-        log.assertion_log('line', "No systems are found at resource %s" % (relative_uris['Root Service_Systems']))
+        log.assertion_log('line', "~  No systems are found at resource %s" % (relative_uris['Root Service_Systems']))
         return assertion_status
 
 
@@ -92,13 +97,13 @@ def Assertion_COMP139(self, log):
     if patch_test(self, json_payload['Members'][0]['@odata.id']) and put_test(self, json_payload['Members'][0]['@odata.id']):
 
         assertion_status = log.PASS
-        log.assertion_log('line', "Assertion Passed")
+        log.assertion_log('line', "~  Assertion Passed")
         return assertion_status
 
     else:
 
         assertion_status = log.FAIL
-        log.assertion_log('line', "Assertion Failed")
+        log.assertion_log('line', "~  Assertion Failed")
         return assertion_status
 
 def run(self, log):
