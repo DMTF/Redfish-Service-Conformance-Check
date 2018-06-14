@@ -23,19 +23,19 @@ from openpyxl.styles import PatternFill
 
 # Helper Functions
 
-def patch_test(uri):
+def patch_test(self, uri):
     authorization = 'on'
     rq_headers = self.request_headers()
-    rq_body = {LEDStatus: 'Test'}
+    rq_body = {'IndicatorLED': 'Unknown'}
     json_payload, headers, status = self.http_PATCH(uri, rq_headers, rq_body, authorization)
     return status == 400
 
-def put_test(uri):
+def put_test(self, uri):
     authorization = 'on'
     rq_headers = self.request_headers()
-    rq_body = {LEDStatus: 'Test'}
+    rq_body = {'IndicatorLED': 'Unknown'}
     json_payload, headers, status = self.http_PUT(uri, rq_headers, rq_body, authorization)
-    return status == 400
+    return status == 405
 
 ###################################################################################################
 # Name: Assertion_COMP139(self, log) : Assembly
@@ -52,180 +52,54 @@ def Assertion_COMP139(self, log):
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    root_link_key = 'Systems'
-    relative_uris = self.relative_uris[root_link_key]['url']
+    relative_uris = self.relative_uris 
+   
+    try:
 
-    for relative_uri in relative_uris:
+        json_payload, headers, status = self.http_GET(relative_uris['Root Service_Systems'], rq_headers, authorization)
+    
+    except: 
 
-        json_payload, headers, status = self.http_GET(relative_uri, rq_headers, authorization)
-        
-        try:
-            LEDStatus = json_payload_get['IndicatorLED']
+        assertion_status = log.WARN
+        log.assertion_log('line', "Resource %s, is not found." % (relative_uris['Root Service_Systems']))
+        return assertion_status
 
-            if LEDStatus == "Unknown":
-                if !patch_test(relative_uri) or !put_test(relative_uri):
-                    assertion_status = log.FAIL
-                    log.assertion_log('line', "~ \'IndicatorLED\' Assertion Failed")
-                    return assertion_status
-            
-            else:
-                assertion_status = log.INFO
-                log.assertion_log('line', "~ \'IndicatorLED\' is not in the Unknown State")
-                return assertion_status
-            
-        except: 
-            assertion_status = log.WARN
-            log.assertion_log('line', "~ \'IndicatorLED\' not found in the payload from GET %s" % (relative_uri))
-            return assertion_status
+    try:
 
-    assertion_status = log.PASS
-        log.assertion_log('line', "~ \'IndicatorLED\' Assertion Passed " % (relative_uri))
+        json_payload, headers, status = self.http_GET(json_payload['Members'][0]['@odata.id'], rq_headers, authorization)
+
+    except: 
+
+        assertion_status = log.WARN
+        log.assertion_log('line', "No systems are found at resource %s" % (relative_uris['Root Service_Systems']))
         return assertion_status
 
 
-###################################################################################################
-# Name: Assertion_COMP140(self, log) : Assembly
-# Assertion text:
-# This value shall represent the Indicator LED is in a solid on state.  If this value is not 
-# supported by the service, the service shall reject PATCH or PUT requests containing this value by 
-# returning HTTP 400 (Bad Request). 
-###################################################################################################
+    try:
 
-def Assertion_COMP140(self, log):
-    log.AssertionID = 'COMP140'
-    assertion_status = log.PASS
-    log.assertion_log('BEGIN_ASSERTION', None)
-    relative_uris = self.relative_uris
-    authorization = 'on'
-    rq_headers = self.request_headers()
+       json_payload, headers, status = self.http_GET(json_payload['IndicatorLED'], rq_headers, authorization)
 
-    root_link_key = 'Systems'
-    relative_uris = self.relative_uris[root_link_key]['url']
+    except:
 
-    for relative_uri in relative_uris:
+       assertion_status = log.WARN
+       log.assertion_log('line', "Property IndicatorLED is not found.")
+       return assertion_status
 
-        json_payload, headers, status = self.http_GET(relative_uri, rq_headers, authorization)
-        
-        try:
-            LEDStatus = json_payload_get['IndicatorLED']
 
-            if LEDStatus == "Lit":
-                if !patch_test(relative_uri) or !put_test(relative_uri):
-                    assertion_status = log.FAIL
-                    log.assertion_log('line', "~ \'IndicatorLED\' Assertion Failed")
-                    return assertion_status
-            
-            else:
-                assertion_status = log.INFO
-                log.assertion_log('line', "~ \'IndicatorLED\' is not in the On State")
-                return assertion_status
-            
-        except: 
-            assertion_status = log.WARN
-            log.assertion_log('line', "~ \'IndicatorLED\' not found in the payload from GET %s" % (relative_uri))
-            return assertion_status
+    json_payload, headers, status = self.http_GET(relative_uris['Root Service_Systems'], rq_headers, authorization)
 
-    assertion_status = log.PASS
-        log.assertion_log('line', "~ \'IndicatorLED\' Assertion Passed " % (relative_uri))
+
+    if patch_test(self, json_payload['Members'][0]['@odata.id']) and put_test(self, json_payload['Members'][0]['@odata.id']):
+
+        assertion_status = log.PASS
+        log.assertion_log('line', "Assertion Passed")
         return assertion_status
 
+    else:
 
-###################################################################################################
-# Name: Assertion_COMP141(self, log) : Assembly
-# Assertion text:
-# This value shall represent the Indicator LED is in a blinking state where the LED is being 
-# turned on and off in repetition.  If this value is not supported by the service, the service 
-# shall reject PATCH or PUT requests containing this value by returning HTTP 400 (Bad Request).
-###################################################################################################
-
-def Assertion_COMP141(self, log):
-    log.AssertionID = 'COMP141'
-    assertion_status = log.PASS
-    log.assertion_log('BEGIN_ASSERTION', None)
-    relative_uris = self.relative_uris
-    authorization = 'on'
-    rq_headers = self.request_headers()
-
-    root_link_key = 'Systems'
-    relative_uris = self.relative_uris[root_link_key]['url']
-
-    for relative_uri in relative_uris:
-
-        json_payload, headers, status = self.http_GET(relative_uri, rq_headers, authorization)
-        
-        try:
-            LEDStatus = json_payload_get['IndicatorLED']
-
-            if LEDStatus == "Blinking":
-                if !patch_test(relative_uri) or !put_test(relative_uri):
-                    assertion_status = log.FAIL
-                    log.assertion_log('line', "~ \'IndicatorLED\' Assertion Failed")
-                    return assertion_status
-            
-            else:
-                assertion_status = log.INFO
-                log.assertion_log('line', "~ \'IndicatorLED\' is not in the Unknown State")
-                return assertion_status
-            
-        except: 
-            assertion_status = log.WARN
-            log.assertion_log('line', "~ \'IndicatorLED\' not found in the payload from GET %s" % (relative_uri))
-            return assertion_status
-
-    assertion_status = log.PASS
-        log.assertion_log('line', "~ \'IndicatorLED\' Assertion Passed " % (relative_uri))
+        assertion_status = log.FAIL
+        log.assertion_log('line', "Assertion Failed")
         return assertion_status
-
-
-###################################################################################################
-# Name: Assertion_COMP142(self, log) : Assembly
-# Assertion text:
-# This value shall represent the Indicator LED is in a solid off state.  If this value is not 
-# supported by the service, the service shall reject PATCH or PUT requests containing this value 
-# by returning HTTP 400 (Bad Request).
-###################################################################################################
-
-def Assertion_COMP142(self, log):
-    log.AssertionID = 'COMP142'
-    assertion_status = log.PASS
-    log.assertion_log('BEGIN_ASSERTION', None)
-    relative_uris = self.relative_uris
-    authorization = 'on'
-    rq_headers = self.request_headers()
-
-    root_link_key = 'Systems'
-    relative_uris = self.relative_uris[root_link_key]['url']
-
-    for relative_uri in relative_uris:
-
-        json_payload, headers, status = self.http_GET(relative_uri, rq_headers, authorization)
-        
-        try:
-            LEDStatus = json_payload_get['IndicatorLED']
-
-            if LEDStatus == "Off":
-                if !patch_test(relative_uri) or !put_test(relative_uri):
-                    assertion_status = log.FAIL
-                    log.assertion_log('line', "~ \'IndicatorLED\' Assertion Failed")
-                    return assertion_status
-            
-            else:
-                assertion_status = log.INFO
-                log.assertion_log('line', "~ \'IndicatorLED\' is not in the Unknown State")
-                return assertion_status
-            
-        except: 
-            assertion_status = log.WARN
-            log.assertion_log('line', "~ \'IndicatorLED\' not found in the payload from GET %s" % (relative_uri))
-            return assertion_status
-
-    assertion_status = log.PASS
-        log.assertion_log('line', "~ \'IndicatorLED\' Assertion Passed " % (relative_uri))
-        return assertion_status
-
 
 def run(self, log):
-     assertion_status = Assertion_COMP139(self, log)
-     assertion_status = Assertion_COMP140(self, log)
-     assertion_status = Assertion_COMP141(self, log)
-     assertion_status = Assertion_COMP142(self, log)
+    assertion_status = Assertion_COMP139(self, log)

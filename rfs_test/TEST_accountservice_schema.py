@@ -36,44 +36,49 @@ REDFISH_SPEC_VERSION = "Version 1.2.2"
 def createDummyAccount(self):
     authorization = 'on'
     rq_headers = self.request_headers()
+    relative_uris = self.relative_uris
     rq_body = {
         'UserName': 'test_id',
         'Password': 'test_pswd',
         'RoleId': 'Administrator'
     }
-    json_payload_get, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
-
-    acc_collection = json_payload_get['Accounts']['@odata.id']
-
-    json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['AccountService/' + acc_collection + '/test']['url'], rq_headers, authorization)
-    testAccountId = json_payload['Id']
+    
+    uri =  relative_uris['Root Service_AccountService_Accounts'] 
+    
+    json_payload, headers, status = self.http_POST(uri, rq_headers, rq_body, authorization)
+  
+    if status == 201 or status == 204:
+    
+        testAccountId = headers['location']
 
     return status
 
 def deleteDummyAccount(self):
-    authorization = 'on'
-    rq_headers = self.request_headers()
-    json_payload, headers, status = self.http_DELETE(self.sut_toplevel_uris['Accounts']['url'] + testAccountId, rq_headers, authorization)
+    
+    if not testAccountId == None: 
+        authorization = 'on'
+        rq_headers = self.request_headers()
+        json_payload, headers, status = self.http_DELETE(testAccountId, rq_headers, authorization)
 
 
 
 def failAuthorization(self):
-    authorization = 'on'
-    rq_headers = self.request_headers()
-    rq_body = {
-        'UserName': 'test_id',
-        'Password': 'wrong_pswd'
-    }
 
-    json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['SessionService/Sessions']['url'], rq_headers, rq_body, authorization)
+    if not testAccountId == None: 
+        authorization = 'on'
+        rq_headers = self.request_headers()
+        json_payload, headers, status = self.http_GET(testAccountId, rq_headers, authorization)
 
-    # The status code for authentication credentials included with this request being missing or invalid.
-    return status == 401
+        # The status code for authentication credentials included with this request being missing or invalid.
+        return status == 401
     
+    else:
+        return False
+
 def isLocked(self):
     authorization = 'on'
     rq_headers = self.request_headers()
-    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+    json_payload, headers, status = self.http_GET(testAccountId, rq_headers, authorization)
 
     return status != 200 or status != 201 or status != 200 or status != 204
 
@@ -164,12 +169,15 @@ def Assertion_ACCO102(self, log):
 
     try:
         authorization = 'on'
+
+        print(self.sut_toplevel_uris['AccountService']['url'])
         json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+        print(json_payload)
         authFailureThreshold = json_payload['AuthFailureLoggingThreshold']
         attempt = 0
         authFailureisLogged = False; 
 
-        while(not authFailureisLogged):
+        while not authFailureisLogged:
             
             if not failAuthorization(self): 
                 assertion_status = log.WARN
@@ -241,8 +249,7 @@ def Assertion_ACCO103(self, log):
             '/redfish/v1/AccountService'))
         return assertion_status
 
-    log.assertion_log(assertion_status, None)
-    log.assertion_log('line', "Assertion Passes")
+    log.assertion_log('line', "~  Assertion Passed")
     return assertion_status
 
 
@@ -292,8 +299,7 @@ def Assertion_ACCO104(self, log):
             '/redfish/v1/AccountService'))
         return assertion_status
 
-    log.assertion_log(assertion_status, None)
-    log.assertion_log('line', "Assertion Passes")
+    log.assertion_log('line', "~  Assertion Passed")
     return assertion_status
 
 
@@ -320,32 +326,33 @@ def Assertion_ACCO105(self, log):
     json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
     try:
-        AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
-
-        if AccountLockoutThreshold == 0: 
-            assertion_status = log.INFO
-            log.assertion_log('line', "AccountLockoutThreshold is set to zero")
-            return assertion_status 
-
-        for i in range(0, AccountLockoutThreshold):
-            if not failAuthorization(self): 
-                assertion_status = log.WARN
-                log.assertion_log('line', "Could not fail the authorization")
-                return assertion_status 
-
-        if isLocked(self): 
-            log.assertion_log('line', "Assertion Passes")
-            return assertion_status
-        else: 
-            assertion_status = log.FAIL
-            log.assertion_log('line', "Assertion Failed")
-            return assertion_status
-
+        threshold = json_payload['AccountLockoutThreshold']
+    
     except:
         assertion_status = log.WARN
-        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % (
+        log.assertion_log('line', "~ \'AccountsLockoutThreshold Property\' is not supported %s" % (
             '/redfish/v1/AccountService'))
+         
+    if  threshold == 0:
+        assertion_status = log.PASS
+        log.assertion_log('line', "~  AccountLockoutThreshold is set to zero")
+        return assertion_status 
+
+    for i in range(0, AccountLockoutThreshold):
+        if not failAuthorization(self): 
+            assertion_status = log.WARN
+            log.assertion_log('line', "~  Could not fail the authorization")
+            return assertion_status 
+
+    if isLocked(self): 
+        log.assertion_log('line', "~  Assertion Passed")
         return assertion_status
+    else: 
+        assertion_status = log.FAIL
+        log.assertion_log('line', "~  Assertion Failed")
+        return assertion_status
+
+    return assertion_status
 
 # end Assertion_ACCO105
 
@@ -375,65 +382,65 @@ def Assertion_ACCO106(self, log):
     try:
         AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
         AccountLockoutCounterResetAfter = json_payload['AccountLockoutCounterResetAfter']
-
-        if AccountLockoutThreshold == 0: 
-            assertion_status = log.INFO
-            log.assertion_log('line', "AccountLockoutThreshold is set to zero")
-            return assertion_status 
-            
-        for i in range(0, AccountLockoutThreshold):
-            if not failAuthorization(self): 
-                assertion_status = log.WARN
-                log.assertion_log('line', "Could not fail the authorization")
-                return assertion_status 
-
-        if isLocked(self): 
-
-            start = time.time()
-
-            while True: 
-
-                end = time.time()
-                
-                if int(end - start) % 60 == AccountLockoutCounterResetAfter: 
-
-                    authorization = 'on'
-                    rq_headers = self.request_headers()
-                    rq_body = {
-                        'UserName': 'test_id',
-                        'Password': 'test_pswd'
-                    }
-                    json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['SessionService/Sessions']['url'], rq_headers, rq_body, authorization)
-                    
-                    if status == 200 or status == 201 or status == 202 or status == 204: 
-                        assertion_status = log.PASS
-                        log.assertion_log(assertion_status, None)
-                        log.assertion_log('line', "Assertion Passes")
-                        return assertion_status
-
-                    else: 
-                        assertion_status = log.FAIL
-                        log.assertion_log('line', "Assertion Failed")
-                        return assertion_status
-          
-        else: 
-            assertion_status = log.FAIL
-            log.assertion_log('line', "Failure attempt was not logged in after failed login attempts reached the threshold referenced by AccountLockoutThreshold")
-            return assertion_status
     
     except:
         assertion_status = log.WARN
         log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
         return assertion_status
 
-# end Assertion_ACCO106
+    if AccountLockoutThreshold == 0: 
+        assertion_status = log.PASS
+        log.assertion_log('line', "~  AccountLockoutThreshold is set to zero")
+        return assertion_status 
+        
+    for i in range(0, AccountLockoutThreshold):
+        if not failAuthorization(self): 
+            assertion_status = log.WARN
+            log.assertion_log('line', "Could not fail the authorization")
+            return assertion_status 
+
+    if isLocked(self): 
+
+        start = time.time()
+
+        while True: 
+
+            end = time.time()
+            
+            if int(end - start) % 60 == AccountLockoutCounterResetAfter: 
+
+                authorization = 'on'
+                rq_headers = self.request_headers()
+                rq_body = {
+                    'UserName': 'test_id',
+                    'Password': 'test_pswd'
+                }
+                json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['SessionService/Sessions']['url'], rq_headers, rq_body, authorization)
+                
+                if status == 200 or status == 201 or status == 202 or status == 204: 
+                    assertion_status = log.PASS
+                    log.assertion_log(assertion_status, None)
+                    log.assertion_log('line', "Assertion Passes")
+                    return assertion_status
+
+                else: 
+                    assertion_status = log.FAIL
+                    log.assertion_log('line', "Assertion Failed")
+                    return assertion_status
+      
+    else: 
+        assertion_status = log.FAIL
+        log.assertion_log('line', "Failure attempt was not logged in after failed login attempts reached the threshold referenced by AccountLockoutThreshold")
+        return assertion_status
+
+   # end Assertion_ACCO106
 
 # Testing
 
 def run(self, log):
     createDummyAccount(self)
     assertion_status = Assertion_ACCO101(self, log)
-    assertion_status = Assertion_ACCO102(self, log)
+    #assertion_status = Assertion_ACCO102(self, log) This assertion cannot be programmatically tested since prior knowlege of the log file is unavailable.
     assertion_status = Assertion_ACCO103(self, log)
     assertion_status = Assertion_ACCO104(self, log)
     assertion_status = Assertion_ACCO105(self, log)
