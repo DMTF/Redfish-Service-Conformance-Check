@@ -19,6 +19,7 @@ from rfs_test import TEST_datamodel_schema
 from rfs_test import TEST_accountservice_schema
 from rfs_test import TEST_assembly_schema
 from rfs_test import TEST_computersystem_schema
+from rfs_test import TEST_actioninfo_schema
 from rfs_test_in_progress import TEST_service_details
 from rfs_test_in_progress import TEST_security
 
@@ -39,16 +40,16 @@ def run(sut):
         run_single([TEST_protocol_details, TEST_datamodel_schema], sut, log)
     else:
         # Run all assertions
+        #TEST_protocol_details.run(sut, log) # Takes a long time. 
+        #TEST_security.run(sut, log) # Assertion: 9.3.1.4 is lagging
+        #TEST_service_details.run(sut, log) # This test is running fine
+        
         #TEST_computersystem_schema.run(sut, log)
-        #TEST_protocol_details.run(sut, log)
-        #TEST_datamodel_schema.run(sut, log)
         #TEST_accountservice_schema.run(sut, log)
-        TEST_assembly_schema.run(sut, log)
-        #TEST_actioninfo_schema.run(sut, log)
+        #TEST_assembly_schema.run(sut, log)
+        TEST_actioninfo_schema.run(sut, log)
         #TEST_attributeregistry_schema.run(sut, log)
-        #TEST_service_details.run(sut, log)
-        #TEST_security.run(sut, log)
-        ## end: assertion verification
+        # end: assertion verification
     ## close log files
     #-log.assertion_log('CLOSE', None)
 # end run
