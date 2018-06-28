@@ -40,14 +40,15 @@ def run(sut):
         run_single([TEST_protocol_details, TEST_datamodel_schema], sut, log)
     else:
         # Run all assertions
-        #TEST_protocol_details.run(sut, log) # Takes a long time. 
+        TEST_protocol_details.run(sut, log) # Takes a long time. 
         #TEST_security.run(sut, log) # Assertion: 9.3.1.4 is lagging
         #TEST_service_details.run(sut, log) # This test is running fine
-        
+        #TEST_datamodel_schema.run(sut, log) # 7.2.1 veryvery slow
+
         #TEST_computersystem_schema.run(sut, log)
         #TEST_accountservice_schema.run(sut, log)
         #TEST_assembly_schema.run(sut, log)
-        TEST_actioninfo_schema.run(sut, log)
+        #TEST_actioninfo_schema.run(sut, log)
         #TEST_attributeregistry_schema.run(sut, log)
         # end: assertion verification
     ## close log files

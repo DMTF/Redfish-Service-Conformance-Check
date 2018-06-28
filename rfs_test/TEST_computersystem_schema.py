@@ -93,7 +93,6 @@ def Assertion_COMP139(self, log):
 
     json_payload, headers, status = self.http_GET(relative_uris['Root Service_Systems'], rq_headers, authorization)
 
-
     if patch_test(self, json_payload['Members'][0]['@odata.id']) and put_test(self, json_payload['Members'][0]['@odata.id']):
 
         assertion_status = log.PASS
@@ -105,6 +104,14 @@ def Assertion_COMP139(self, log):
         assertion_status = log.FAIL
         log.assertion_log('line', "~  Assertion Failed")
         return assertion_status
+
+###################################################################################################
+# Name: Assertion_COMP140(self, log) : Assembly
+# Assertion text:
+#This value shall represent the Indicator LED is in a solid on state.  If this value is not supported
+###################################################################################################
+
+
 
 def run(self, log):
     assertion_status = Assertion_COMP139(self, log)
