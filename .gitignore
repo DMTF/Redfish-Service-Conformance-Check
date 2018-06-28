@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 redfish-1.0.0/
 .project
+*.vscode

@@ -28,6 +28,7 @@ import rf_utility
 import datetime
 import xml.etree.ElementTree as ET
 import urllib
+import random
 
 # map python 2 vs 3 imports
 if (sys.version_info < (3, 0)):
@@ -118,7 +119,8 @@ def Assertion_6_1_8_2(self, log) :
     rq_headers = self.request_headers()
     
     # loop for each uri in relative uris dict
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)             
         # manage assertion status
@@ -144,7 +146,7 @@ def Assertion_6_1_8_2(self, log) :
 # Spec: 
 # The service shall set the Location header to the URI of the newly created resource.   
 # The response to a successful create request should be 201 (Created) and may include
-# a response body containing the "representation of the newly created resource".		                                             
+# a response body containing the "representation of the newly created resource".							     
 # For POST request body see requiredOnCreate annotation in schemas
 # TODO try a sample post, patch and delete for every resource that allows the methods, run it in series
 #####################################################################################################
@@ -225,7 +227,7 @@ def Assertion_6_1_8_1(self, log) :
 
 #####################################################################################################
 # Name: Assertion_6_1_8_1_1(self, log)  Authentication                                             
-# Description:      	       
+# Description:		       
 # The response to the POST request to create a user includes:
 #  a "Location header that contains a link to the newly created resource.
 #####################################################################################################
@@ -247,7 +249,7 @@ def Assertion_6_1_8_1_1(headers, url, log):
 
 #####################################################################################################
 # Name: Assertion_6_1_8_1_2(self, log)                                           
-# Description:     	       
+# Description:		       
 # The JSON response body 'may' contain a full representation of the newly created object     
 #####################################################################################################
 def Assertion_6_1_8_1_2(location_url, json_payload, self, log):
@@ -325,7 +327,7 @@ def verifyCreatedObject(object_payload, check_payload, log):
 #####################################################################################################
 # Name: Assertion_6_1_8_3(self, log)                                               
 # Description:     
-# PATCH Object update	                                                          
+# PATCH Object update								  
 #####################################################################################################
 def Assertion_6_1_8_3(self, log) :
     log.AssertionID = '6.1.8.3'
@@ -522,7 +524,8 @@ def Assertion_6_1_9(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_TRACE(relative_uris[relative_uri], rq_headers, None, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'TRACE')          
         if(status== 405):
@@ -543,7 +546,7 @@ def Assertion_6_1_9(self, log) :
 ###################################################################################################
 # Name: Assertion_6_1_11(self, log)                                               
 # Description:     
-#	All resources shall be made available using the JSON media type "application/json".		                                                            
+#	All resources shall be made available using the JSON media type "application/json".									    
 ###################################################################################################
 def Assertion_6_1_11(self, log) :
  
@@ -558,7 +561,8 @@ def Assertion_6_1_11(self, log) :
     rq_headers[header_key] = header_value
     authorization = 'on'
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -584,7 +588,8 @@ def Assertion_6_1_12(self,log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
 
         if status == 200 :
@@ -616,7 +621,8 @@ def Assertion_6_1_14(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()    
     # loop for each uri in relative uris dict
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         if status == rf_utility.HTTP_OK:
             if 'etag' in headers:
@@ -661,7 +667,9 @@ def Assertion_6_1_13(self, log) :
     header_value = 'gzip'
     rq_headers[header_key] = header_value
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTACCEPTABLE)      
         # manage assertion status
@@ -730,10 +738,12 @@ def Assertion_6_1_0(self,log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        '''if status == rf_utility.HTTP_OK:
-            print('HTTP OK - 200 for ', relative_uri )'''
+        if status == rf_utility.HTTP_OK:
+            print('HTTP OK - 200 for ', relative_uri )
 
         if status == rf_utility.HTTP_NOT_FOUND:
             print ('HTTP Not Found- 404 for ', relative_uri , json_payload)
@@ -802,7 +812,8 @@ def Assertion_6_1_2(self,log) :
     uri = set ()
     uniq = []
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         if status == rf_utility.HTTP_OK:
             print('HTTP OK - 200 for ', relative_uri )
@@ -828,7 +839,7 @@ def Assertion_6_1_2(self,log) :
 ###################################################################################################
 # Name: Assertion_6_3_1(self, log)                                               
 # Description: 
-# 	The following Redfish-defined URIs shall be supported by a Redfish service and authorization 
+#	The following Redfish-defined URIs shall be supported by a Redfish service and authorization 
 #   should not be required to get the uri
 #	/redfish The URI that is used to return the protocol version 
 #	/redfish/v1/ The URI for the Redfish Service Root 
@@ -865,7 +876,7 @@ def Assertion_6_3_1(self, log) :
         oem_key = 'OEM'
         # do a quick-check on the json payload -~ get the oem name from the root service payload
         stat, oem_name = rf_utility.json_get_key_value(json_payload, oem_key)
-        if (stat != False):		             	
+        if (stat != False):				
             #might be useful info...
             self.SUT_OEM['key'] = oem_key
             self.SUT_OEM['name'] = oem_name
@@ -956,7 +967,8 @@ def Assertion_6_3_3(self, log) :
     #1. single slash
     # example: GET /pub/WWW/TheProject.html HTTP/1.1
     # Host: www.w3.org
-    '''for relative_uri in relative_uris:
+    '''for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -999,8 +1011,9 @@ def Assertion_6_4_1(self, log) :
     #print('Headers is %s' %headers)
     #The headers mentioned below are the headers that are required and conditional.
     Headers = ['accept', 'odata-version', 'User-Agent','Host','Origin','X-Auth-Token','content-type','Authorization','If-Match']
-
-    for relative_uri in relative_uris : 
+    
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
 
         try:
@@ -1061,7 +1074,8 @@ def Assertion_6_4_4(self, log):
     authorization = 'on'
     rq_headers = self.request_headers()
     # loop for each uri in relative uris dict
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)             
         # manage assertion status
@@ -1092,7 +1106,8 @@ def Assertion_6_4_5(self, log):
     rq_headers = self.request_headers()
     rq_body = {'@odata.id' : '123'}
     # loop for each uri in relative uris dict
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         try:
             json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, rq_body, authorization)
             if status == '200':
@@ -1117,7 +1132,7 @@ def Assertion_6_4_5(self, log):
 ###################################################################################################
 # Name: Assertion_6_4_11(self, log)                                               
 # Description:     
-#	Services shall not require authentication in order to retrieve the service document.	                                                           
+#	Services shall not require authentication in order to retrieve the service document.								   
 ###################################################################################################
 def Assertion_6_4_11(self, log) :
  
@@ -1161,7 +1176,8 @@ def Assertion_6_4_13(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
     print('Beginning Assertion Test 6.4.13 for checking the status code with unsupported $')
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1217,7 +1233,8 @@ def Assertion_6_4_14(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1268,7 +1285,8 @@ def Assertion_6_4_16(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1313,7 +1331,8 @@ def Assertion_6_4_18(self, log) :
 
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris: 
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys())) 
         authorization = 'on'
         rq_headers = self.request_headers()
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
@@ -1372,7 +1391,7 @@ def Assertion_6_4_18(self, log) :
 
 ###################################################################################################
 # Name: Assertion_6_4_21(self, log)                                               
-# Description:     	
+# Description:		
 # Modification Request: 
 # 6.4.21 Services return a status code 405 if the specified resource exists but does not support
 # the requested operation
@@ -1388,7 +1407,8 @@ def Assertion_6_4_21(self, log) : #POST
 
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         rq_headers = self.request_headers()
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
@@ -1427,7 +1447,7 @@ def Assertion_6_4_21(self, log) : #POST
 # Name: Assertion_6_4_23(self, log)                                               
 # Description:   
 #   Services shall support the PATCH method to update a resource. If the resource can never be 
-#   updated, status code 405 shall be returned.  	
+#   updated, status code 405 shall be returned.		
 # Method: PATCH ~ try to modify a resource that does not support PATCH,
 #               expected result HTTP_METHODNOTALLOWED (405)            
 ###################################################################################################
@@ -1441,7 +1461,8 @@ def Assertion_6_4_23(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1480,7 +1501,7 @@ def Assertion_6_4_23(self, log) :
 # Method: PATCH ~ If a property in the request can never be updated, such as when a property is
 # read only, a status code of 200 shall be returned along with a representation of the resource 
 # containing an annotation specifying the non-updatable property. In this success case, other 
-# properties may be updated in the resource.	                                                           
+# properties may be updated in the resource.								   
 ###################################################################################################
 def _Assertion_6_4_24(self, log) :
     log.AssertionID = '6.4.24'
@@ -1495,7 +1516,8 @@ def _Assertion_6_4_24(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1567,7 +1589,7 @@ def verify_typename_in_json_metadata(typename, json_metadata):
 # Method: PATCH ~ If a property in the request can never be updated,  such as when a property is 
 # read only, a status code of 200 shall be returned along with a representation of the resource 
 # containing an annotation specifying the non-updatable property. In this success case, other 
-# properties may be updated in the resource.	                                             
+# properties may be updated in the resource.						     
 ###################################################################################################
 def Assertion_6_4_24(self, log) :
     log.AssertionID = '6.4.24'
@@ -1584,7 +1606,8 @@ def Assertion_6_4_24(self, log) :
 
     annotation_term = 'readonly'
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1671,7 +1694,8 @@ def Assertion_6_4_25(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1710,7 +1734,7 @@ def Assertion_6_4_25(self, log) :
 ###################################################################################################
 # Name: Assertion_6_4_26(self, log)                                     
 # Description:                                                  
-# 	Submitting a POST request to a resource representing a collection is equivalent to submitting the same request to 
+#	Submitting a POST request to a resource representing a collection is equivalent to submitting the same request to 
 #   the Members property of that resource. Services that support adding members to a collection shall support both forms.
 ###################################################################################################
 def Assertion_6_4_26(self, log) :
@@ -1772,7 +1796,7 @@ def Assertion_6_4_26(self, log) :
 ###################################################################################################
 # Name: Assertion_6_4_27(self, log)                                     
 # Description:                                                  
-# 	Services shall support the POST method for creating resources. If the resource does not offer anything to be created, 
+#	Services shall support the POST method for creating resources. If the resource does not offer anything to be created, 
 #   a status code 405 shall be returned.
 ###################################################################################################
 def Assertion_6_4_27(self, log) :
@@ -1787,7 +1811,8 @@ def Assertion_6_4_27(self, log) :
     csdl_schema_model = self.csdl_schema_model
     rq_body = {'Name': 'New Name'}
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1816,7 +1841,7 @@ def Assertion_6_4_27(self, log) :
 # Name: Assertion_6_4_30(self, log)                                               
 # Description:     
 # Method: DELETE ~ try to modify a service that does not support DELETE,
-#               expected result 405 METHOD NOT ALLOWED	                                                        
+#               expected result 405 METHOD NOT ALLOWED								
 ###################################################################################################
 def Assertion_6_4_30(self, log) :
  
@@ -1828,7 +1853,8 @@ def Assertion_6_4_30(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1926,7 +1952,7 @@ def Assertion_6_4_31(self, log) :
 # Description:     
 #   Custom actions are requested on a resource by sending the HTTP POST method to the URI of the 
 #   action. If the actions property within a resource does not specify a target property, then the 
-#   URI of an action shall be of the form: ResourceUri/Actions/QualifiedActionName- Tried checking with Dell Server		                                               
+#   URI of an action shall be of the form: ResourceUri/Actions/QualifiedActionName- Tried checking with Dell Server							       
 ###################################################################################################
 
 def Assertion_6_4_32(self, log) :
@@ -1984,7 +2010,7 @@ def Assertion_6_4_32(self, log) :
 # Description:     
 #   Custom actions are requested on a resource by sending the HTTP POST method to the URI of the 
 #   action. If the actions property within a resource does not specify a target property, then the 
-#   URI of an action shall be of the form: ResourceUri/Actions/QualifiedActionName		                                               
+#   URI of an action shall be of the form: ResourceUri/Actions/QualifiedActionName							       
 ###################################################################################################
 def Assertion_6_4_32_old(self, log) :
 
@@ -2037,7 +2063,7 @@ def Assertion_6_4_32_old(self, log) :
 ###################################################################################################
 # Name: Assertion_6_4_2_1(self, log)                                               
 # Description:                                                  
-# 	application/json shall be supported for requesting resources and application/xml shall be 
+#	application/json shall be supported for requesting resources and application/xml shall be 
 #   supported for requesting metadata. This assertion checks only the xml case for $metadata... 
 ###################################################################################################
 def Assertion_6_4_2_1(self, log) :
@@ -2091,7 +2117,7 @@ def Assertion_6_4_2_1(self, log) :
 ###################################################################################################
 # Name: Assertion_6_4_2_2(self, log)   Request header : Content type                                    
 # Description:                                                  
-# 	charset=utf-8 shall be supported and required if there is a request body.
+#	charset=utf-8 shall be supported and required if there is a request body.
 # Method:
 #   First check POST without content type, should Fail, then try POST with content type, should PASS
 #   try POST then PATCH as they both have request body should just be check against status 
@@ -2175,7 +2201,7 @@ def Assertion_6_4_2_2(self, log) :
 ###################################################################################################
 # Name: Assertion_6_4_2_3(self, log)                                               
 # Description:                                                  
-# 	Services shall reject requests which specify an unsupported OData version.
+#	Services shall reject requests which specify an unsupported OData version.
 ###################################################################################################
 def Assertion_6_4_2_3(self, log) :
 
@@ -2188,7 +2214,8 @@ def Assertion_6_4_2_3(self, log) :
     rq_headers = self.request_headers()
     header = 'OData-Version'
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         #supported version
         version = '4.0'
         rq_headers[header] = version
@@ -2203,7 +2230,8 @@ def Assertion_6_4_2_3(self, log) :
                 assertion_status = log.WARN
                 log.assertion_log('line', "~ Response Header %s with value %s expected: found %s" % (header, version, headers[header]))
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         assertion_status_ = log.PASS
         #unsupported version
         version = '3.0'
@@ -2228,7 +2256,7 @@ def Assertion_6_4_2_3(self, log) :
 ###################################################################################################
 # Name: Assertion_6_4_2_4(self, log)                                               
 # Description:                                                  
-# 	Services shall reject requests whithout BASIC authorization header
+#	Services shall reject requests whithout BASIC authorization header
 ###################################################################################################
 def Assertion_6_4_2_4(self, log) :
 
@@ -2239,7 +2267,8 @@ def Assertion_6_4_2_4(self, log) :
     relative_uris = self.relative_uris
     header = 'Authorization'
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         assertion_status_ = log.PASS 
         #/redfish/v1/ can be requested without auth
         if relative_uris[relative_uri] == '/redfish/v1/':
@@ -2287,7 +2316,7 @@ def Assertion_6_4_2_4(self, log) :
 ###################################################################################################
 # Name: Assertion_6_4_2_5(self, log)   WIP    Specification requirement changes                                        
 # Description:                                                  
-# 	Services shall be able to understand and process User-Agent Request Header.  
+#	Services shall be able to understand and process User-Agent Request Header.  
 ###################################################################################################
 def Assertion_6_4_2_5(self, log) :
 
@@ -2302,7 +2331,8 @@ def Assertion_6_4_2_5(self, log) :
     header = 'User-Agent'
     rq_headers[header] = ''
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -2317,7 +2347,7 @@ def Assertion_6_4_2_5(self, log) :
 ###################################################################################################
 # Name: Assertion_6_4_2_6(self, log)   WIP    Specification requirement changes                                              
 # Description:                                                  
-# 	Services shall be able to understand and process 'Host' in the request header.
+#	Services shall be able to understand and process 'Host' in the request header.
 ###################################################################################################
 def Assertion_6_4_2_6(self, log) :
 
@@ -2333,7 +2363,8 @@ def Assertion_6_4_2_6(self, log) :
     header = 'Host'
     rq_headers[header] = self.SUT_prop['DnsName']
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -2370,7 +2401,8 @@ def Assertion_6_5_1(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -2597,7 +2629,7 @@ def Assertion_6_5_2_6_1(self, log):
 # Description:               
 # Redfish services shall be able to return the headers in the following table as defined by the
 # HTTP 1.1 specification if the value in the Required column is set to "yes" .                                  
-# 	link header: a Link header satisfying rel=describedby shall be returned on GET and HEAD.
+#	link header: a Link header satisfying rel=describedby shall be returned on GET and HEAD.
 #   In addition to links from the resource, the URL of the JSON schema for the resource shall be
 #   returned with a `rel=describedby`
 ###################################################################################################
@@ -2610,7 +2642,8 @@ def Assertion_6_5_3(self, log) :
 
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         uri = relative_uris[relative_uri]
         json_payload, headers, status = self.http_GET(uri, rq_headers, authorization)
         assertion_status_ = self.response_status_check(uri, status, log)      
@@ -2668,7 +2701,8 @@ def Assertion_6_5_6_2(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -2722,7 +2756,8 @@ def Assertion_6_5_6_5(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uri, rq_headers, authorization)
         if status == 204:
             print('The request for te resource %s has succeeded, but no content is being returned in the body of the response' %relative_uri)
@@ -2754,7 +2789,8 @@ def Assertion_6_5_6_6(self, log):
     relative_uris = self.relative_uris
     found_redirect = False
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         # try to trigger a redirect: change /redfish/v1/foo/ to /redfish/v1/foo or /redfish/v1/bar to /redfish/v1/bar/
         if relative_uris[relative_uri].endswith('/'):
             url_redirect = relative_uris[relative_uri].rstrip('/')
@@ -2789,7 +2825,7 @@ def Assertion_6_5_6_6(self, log):
 # Name: Assertion_6_5_6_8(self, log)                                               
 # Description:     
 # Method: conditional GET ~ 304 Not Modified
-###################################################################################################		                                                        
+###################################################################################################									
 
 def Assertion_6_5_6_8(self, log) :
  
@@ -2982,7 +3018,7 @@ def Assertion_6_5_6_9(self, log):
 ###################################################################################################
 # Name: Assertion_6_5_6_10(self, log)                                               
 # Description:                                                  
-# 	401 Unauthorized 
+#	401 Unauthorized 
 #   The authentication credentials included with this request are missing or invalid
 ###################################################################################################
 def Assertion_6_5_6_10(self, log) :
@@ -2995,7 +3031,8 @@ def Assertion_6_5_6_10(self, log) :
     header = 'authorization'
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         #/redfish/v1/ can be requested without auth
         if relative_uris[relative_uri] == '/redfish/v1/':
             continue
@@ -3038,7 +3075,8 @@ def Assertion_6_5_6_13(self, log) :
 
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -3407,7 +3445,8 @@ def Assertion_6_5_14(self, log):
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -3455,7 +3494,8 @@ def Assertion_6_5_15(self, log):
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -3505,7 +3545,8 @@ def Assertion_6_5_14_old(self, log):
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -3549,7 +3590,8 @@ def Assertion_6_5_17(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -3597,7 +3639,8 @@ def Assertion_6_5_18(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
 
         # Determine which string type to compare against based on the currently running
@@ -3658,7 +3701,8 @@ def Assertion_6_5_19(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -3770,7 +3814,8 @@ def Assertion_6_5_20(self, log):
                        'Edm.Double': (int, float), 'Edm.Guid': str, 'Edm.Int64': int, 'Edm.String': str}
     relative_uris = self.relative_uris
     #find alias in Include first?
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         if 'Root Service' in relative_uri:
             rq_headers['Accept'] = rf_utility.accept_type['json']
             json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
@@ -3800,11 +3845,11 @@ def Assertion_6_5_20(self, log):
                     except Exception as e:
                         print('The response is %s' % response)
                         print('Exception received when parsing response from resource {}; exception is "{}"'
-                              .format(resource, e))
+                  <9            .format(resource, e))
                         continue
                     dataServices = doc.getElementsByTagName('edmx:Reference')
                     count = 0
-                    for d in dataServices:
+                    for d in dataServices: ## Here is the Problem
                         uris = d.getAttribute('Uri')
                         print('The uri is %s' %uris)
                         if uris.startswith('/'):
@@ -3883,7 +3928,8 @@ def Assertion_6_5_21(self, log):
     relative_uris = self.relative_uris
     #find alias in Include first?
     date_time = 'DateTime'
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -3947,7 +3993,8 @@ def Assertion_6_5_22(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -3996,7 +4043,8 @@ def Assertion_6_5_23(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -4049,7 +4097,8 @@ def Assertion_6_5_23_1(self, log) :
 
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4119,7 +4168,8 @@ def Assertion_6_5_24(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -4176,7 +4226,8 @@ def Assertion_6_5_25(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -4233,7 +4284,8 @@ def Assertion_6_5_26(self, log) :
     relative_uris = self.relative_uris
     csdl_schema_model = self.csdl_schema_model
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -4340,7 +4392,8 @@ def Assertion_6_5_28(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -4384,7 +4437,8 @@ def Assertion_6_5_30(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -4427,7 +4481,8 @@ def Assertion_6_5_31(self, log) :
     relative_uris = self.relative_uris_no_members
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -4559,7 +4614,8 @@ def Assertion_6_5_8(self, log):
 
     if self.metadata_document_structure is not None:
         # gather all the namespace references from the service
-        for relative_uri in relative_uris:
+        for i in range(0, 4):
+            relative_uri = random.choice(list(relative_uris.keys()))
             json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
             assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4636,7 +4692,8 @@ def Assertion_6_5_9(self, log) :
     direc = os.getcwd()+'/redfish-1.0.0/metadata/'
 
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         rq_headers['Accept'] = rf_utility.accept_type['json']
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
@@ -4661,7 +4718,7 @@ def Assertion_6_5_9(self, log) :
                 resource = json_payload['@odata.context']
                 if 'ServiceRoot' in resource :
                         #r = requests.get(resource)
-                        #print('The response is %s' %r)
+                        print('The response is %s' %r)
                         rq_headers['Accept'] = rf_utility.accept_type['xml']
                         response,headers,status = self.http_GET(resource,rq_headers,None)
                         if status != 200:
@@ -4720,7 +4777,8 @@ def Assertion_6_5_35(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -4803,7 +4861,8 @@ def Assertion_6_5_40_old(self, log) :
     #url = self.Redfish_URIs['Service_Odata_Doc']
     relative_uris = self.relative_uris
     rq_headers = self.request_headers()
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         if 'Registries' in relative_uri:
             json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
             if 'Members' in json_payload:
@@ -4857,7 +4916,8 @@ def Assertion_6_5_40(self, log) :
 
     relative_uris = self.relative_uris
     rq_headers = self.request_headers()
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         rq_body = {'Name': 'New Name'}
         json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers,
                                                         rq_body, authorization)
@@ -4922,7 +4982,8 @@ def Assertion_6_1_6(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
     resource_path = set()
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         print('The uri is %s' %relative_uri)
         try:
             json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
@@ -4974,12 +5035,13 @@ def Assertion_6_1_7(self, log) :
     rq_headers = self.request_headers()
     print('Beginning assertion 6.1.7')
     query = '#123'
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         uri = relative_uris[relative_uri] + query
         try:
             json_payload, headers, status = self.http_GET(uri, rq_headers, authorization)
             assertion_status_ = self.response_status_check(uri, status, log)    
-            #print('The status is %s', status)         
+            print('The status is %s', status)         
             # manage assertion status
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
         except:
@@ -4998,7 +5060,7 @@ def Assertion_6_1_7(self, log) :
 # Method: PATCH ~ If a property in the request can never be updated,  such as when a property is 
 # read only, a status code of 200 shall be returned along with a representation of the resource 
 # containing an annotation specifying the non-updatable property. In this success case, other 
-# properties may be updated in the resource.	                                             
+# properties may be updated in the resource.						     
 ###################################################################################################
 def Assertion_6_4_24_xml(self, log) :
     log.AssertionID = '6.4.24_xml'
@@ -5015,7 +5077,8 @@ def Assertion_6_4_24_xml(self, log) :
 
     annotation_term = 'readonly'
 
-    for relative_uri in relative_uris:
+    for i in range(0, 4):
+        relative_uri = random.choice(list(relative_uris.keys()))
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -5030,7 +5093,7 @@ def Assertion_6_4_24_xml(self, log) :
         else:
             if '@odata.type' in json_payload:
                 namespace, typename = rf_utility.parse_odata_type(json_payload['@odata.type'])
-                #print (os.getcwd())
+                print (os.getcwd())
                 doc = minidom.parse(os.getcwd()+'\\redfish-1.0.0\\metadata\\'+ typename + '_v1.xml')
                 dataServices = doc.getElementsByTagName('PropertyValue')[1]
                 if (dataServices.getAttribute('Property')=='Updatable'):
@@ -5090,22 +5153,22 @@ def Assertion_6_4_24_xml(self, log) :
 # Takes sut obj and logger obj 
 ###################################################################################################
 def run(self, log): 
-      
-    assertion_status = Assertion_6_1_0(self,log)
+    '''  
+    assertion_status = Assertion_6_1_0(self,log) # Goes through all the URI's
     assertion_status = Assertion_6_1_1(self,log)
     # Assertion 6_1_2 - Each unique instance of a resource shall be identified by a URI; thus a URI cannot reference multiple resources though it may reference a single collection resource.
-    assertion_status = Assertion_6_1_2(self,log)
+    assertion_status = Assertion_6_1_2(self,log) # Goes through all the URI's
     # Assertion 6.1.3 - This is client specific and not the Redfish Service rule.
     # assertion_status = Assertion_6_1_3(self,log)
 
-    assertion_status = Assertion_6_1_6(self,log)
+    assertion_status = Assertion_6_1_6(self,log) #Prints all the URI's
     #Fragments shall be ignored by the server when used as the URI
-    assertion_status = Assertion_6_1_7(self, log)
+    ## assertion_status = Assertion_6_1_7(self, log) #Loops all URI's
     # Create/update/delete an Account: these next 3 assertions need to be run in series
     # ...POST/create a new session for the account and it calls internally 6.1.8.1.1 and 6.1.8.1.2
     assertion_status = Assertion_6_1_8_1(self, log)
     # ...GET account collection
-    assertion_status = Assertion_6_1_8_2(self, log)
+    # assertion_status = Assertion_6_1_8_2(self, log) # Goes through all URI's
     # ...PATCH/update the new account note: this assertion expects 6_1_8_1 to run prior to this
     assertion_status = Assertion_6_1_8_3(self, log)
     # ...DELETE the new session that was created above note: this assertion expects 6_1_8_1 to run prior to this
@@ -5146,10 +5209,11 @@ def run(self, log):
     #-assertion_status = Assertion_6_4_15(self, log)
     assertion_status = Assertion_6_4_16(self, log)  
     assertion_status = Assertion_6_4_18(self, log)  
-    assertion_status = Assertion_6_4_21(self, log)    
+    assertion_status = Assertion_6_4_21(self, log)
     assertion_status = Assertion_6_4_23(self, log)
     assertion_status = Assertion_6_4_24(self, log)
     #assertion_status = Assertion_6_4_24_xml(self, log)
+    '''
     assertion_status = Assertion_6_4_25(self, log) 
     assertion_status = Assertion_6_4_26(self, log)   
     assertion_status = Assertion_6_4_27(self, log)      
@@ -5200,6 +5264,7 @@ def run(self, log):
     assertion_status = Assertion_6_5_23_1(self, log)
     assertion_status = Assertion_6_5_24(self, log)
     assertion_status = Assertion_6_5_25(self, log)
+    
     assertion_status = Assertion_6_5_26(self, log)
     assertion_status = Assertion_6_5_28(self, log)
     #WIP It'a a may condition
