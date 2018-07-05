@@ -368,7 +368,7 @@ def Assertion_6_1_8_3(self, log) :
                         account_url = json_payload['@odata.id']
                         patch_key = 'RoleId'
                         patch_value = 'Operator'
-                        rq_body = {'UserName': user_name, 'Password': '12345' , 'RoleId' : patch_value}
+                        rq_body = {'UserName': user_name, 'Password': '12345678' , 'RoleId' : patch_value}
                         rq_headers['Content-Type'] = rf_utility.content_type['json']
                         json_payload_, headers_, status_ = self.http_PATCH(account_url, rq_headers, rq_body, authorization)
                         assertion_status_ = self.response_status_check(account_url, status_, log, request_type = 'PATCH')
@@ -1646,7 +1646,7 @@ def Assertion_6_4_24(self, log) :
                                                         #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
                                                         if (json_payload[prop] == 'PatchName'):
                                                             assertion_status = log.FAIL
-                                                            log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri]) )
+                                                            log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri], schema_file) )
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
@@ -1672,6 +1672,7 @@ def Assertion_6_4_25(self, log) :
     rq_headers = self.request_headers()
 
     for relative_uri in relative_uris:
+        rq_headers = self.request_headers()
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
@@ -1897,15 +1898,22 @@ def Assertion_6_4_31(self, log) :
                 #get members    
                 for json_payload, headers in sub_members:
                     if 'Actions' in json_payload:
-                        log.assertion_log('line', 'Action %s found' % (json_payload['Actions']['#LogService.ClearLog']['target']))
-                        log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (json_payload['@odata.id'], rq_body))  
-                        json_payload_, headers_, status_ = self.http_POST(json_payload['@odata.id'], rq_headers, rq_body, authorization)
+                        if 'target' in json_payload['Actions']['#LogService.ClearLog']:
+                            target = json_payload['Actions']['#LogService.ClearLog']['target']
+                            log.assertion_log('line', 'Action target %s found' % target)
+                        else:
+                            target = json_payload.get('@odata.id').rstrip('/') + '/Actions/LogService.ClearLog'
+                            assertion_status_ = log.WARN
+                            assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                            log.assertion_log('line', 'Warning: Property "target" not found in Actions property, using %s' % target)
+                        log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (target, rq_body))  
+                        json_payload_, headers_, status_ = self.http_POST(target, rq_headers, rq_body, authorization)
                         print('The status of POST method is %s' %status_)
-                        assertion_status_ = self.response_status_check(json_payload['@odata.id'], status_, log, request_type = 'POST')          
+                        assertion_status_ = self.response_status_check(target, status_, log, request_type = 'POST')          
                         # manage assertion status
                         assertion_status = log.status_fixup(assertion_status,assertion_status_)
                         if assertion_status_ != log.PASS:                 
-                            log.assertion_log('line', 'POST on action %s at url %s failed' % (json_payload['Actions']['#LogService.ClearLog']['target'], json_payload['@odata.id']))
+                            log.assertion_log('line', 'POST on action %s at url %s failed' % (target, json_payload['@odata.id']))
                             continue
                     else:
                         assertion_status_ = log.WARN
@@ -3600,17 +3608,17 @@ def Assertion_6_5_18(self, log) :
     for relative_uri in relative_uris:
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
 
-        # Determine which string type to compare against based on the currently running
-        # version of Python. Python 3 deprecated the basestring baseclass that was common
-        # for all variants of string, in favour of expanding the definition of str to include
-        # strings such as unicode ones
-        str_type = str if Python3 else basestring
-
-        if(json_payload is not None and isinstance(json_payload, dict) and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],str_type)) :
-            print ('Resources identifiers represented in JSON payloads are represented as strings that conform to the rules for %s' %relative_uri)
-        else :
-            print ('Resources identifiers represented in JSON payloads are not represented as strings that conform to the rules for %s' %relative_uri)
-            assertion_status = log.FAIL
+#        # Determine which string type to compare against based on the currently running
+#        # version of Python. Python 3 deprecated the basestring baseclass that was common
+#        # for all variants of string, in favour of expanding the definition of str to include
+#        # strings such as unicode ones
+#        str_type = str if Python3 else basestring
+#
+#        if(json_payload is not None and isinstance(json_payload, dict) and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],str_type)) :
+#            print ('Resources identifiers represented in JSON payloads are represented as strings that conform to the rules for %s' %relative_uri)
+#        else :
+#            print ('Resources identifiers represented in JSON payloads are not represented as strings that conform to the rules for %s' %relative_uri)
+#            assertion_status = log.FAIL
 
 # for URI paths as defined in Section 3.3
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
@@ -3624,6 +3632,18 @@ def Assertion_6_5_18(self, log) :
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
             log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
         else:     
+            # Determine which string type to compare against based on the currently running
+            # version of Python. Python 3 deprecated the basestring baseclass that was common
+            # for all variants of string, in favour of expanding the definition of str to include
+            # strings such as unicode ones
+            str_type = str if Python3 else basestring
+
+            if(json_payload is not None and isinstance(json_payload, dict) and '@odata.type' in json_payload and isinstance(json_payload['@odata.type'],str_type)) :
+                print ('Resources identifiers represented in JSON payloads are represented as strings that conform to the rules for %s' %relative_uri)
+            else :
+                print ('Resources identifiers represented in JSON payloads are not represented as strings that conform to the rules for %s' %relative_uri)
+                assertion_status = log.FAIL
+
             response_key = '@odata.id'
             if response_key not in json_payload:
                 assertion_status = log.FAIL
@@ -5078,7 +5098,7 @@ def Assertion_6_4_24_xml(self, log) :
                                                                 #check if resource remain unchanged, else FAIL. The object might have changed by another source changing the etag, so, in this case, checking value of property makes more sense than etags
                                                                 if (json_payload[property.Name] == 'PatchName'):
                                                                     assertion_status = log.FAIL
-                                                                    log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri]) )                                                                                         
+                                                                    log.assertion_log('line', "~ PATCH on Property %s of resource %s is a Read-only property according to its schema document %s, which might have been updated unexpectedly" % (prop, relative_uris[relative_uri], schema_file) )                                                                                         
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
