@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.1.0] - 2018-07-06
+- Added change to use a higher level of TLS
+- Changed default password used for test cases
+- Fixes to tests that check for resource changes after a PATCH
+
 ## [1.0.9] - 2018-06-01
 - Updated schema bundle to use the 2018.1 release
 
