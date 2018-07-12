@@ -127,7 +127,13 @@ class SUT():
     ###############################################################################################
     def request_headers(self): 
         return rf_utility.create_request_headers()
-   
+    
+    ###################################################################################
+    # Name: initalize_cache(self)
+    #   Returns a list of URI's cached by the http GET requests for Redfish API 
+    # Returns:
+    #   - URI's list: Cached URI's List                                                
+    ###################################################################################
     def initalize_cache(self):
         relative_uris = self.relative_uris
         relative_uris_no_members = self.relative_uris_no_members
