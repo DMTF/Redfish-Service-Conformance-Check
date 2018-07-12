@@ -35,12 +35,69 @@ REDFISH_SPEC_VERSION = "Version 1.2.2"
 #associated Action, and shall be false if the parameter is not required (optional) to perform the
 #associated Action.
 ###################################################################################################
+def Assertion_ACTI104(self,log) :
+    log.AssertionID = 'ACTI104'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
 
-'''
-Step 1: Try performing an action without the parameter.
-Step 2: If Step 1 failed and Required property is False, fail the assertion. 
-Step 3: Else, pass the assertion. 
-'''
+    try:
+
+        json_payload, headers, status = self.http_GET(relative_uris['Root Service_Systems'], rq_headers, authorization)
+
+    except:
+
+        assertion_status = log.WARN
+        log.assertion_log('line', "Resource %s, is not found." % (relative_uris['Root Service_Systems']))
+        return assertion_status
+
+    try:
+
+        json_payload, headers, status = self.http_GET(json_payload['Members'][0]['@odata.id'], rq_headers, authorization)
+
+    except:
+
+        assertion_status = log.WARN
+        log.assertion_log('line', "~  No systems are found at resource %s" % (relative_uris['Root Service_Systems']))
+        return assertion_status
+    
+    try:
+        
+        ActionInfo = json_payload['Actions']['#ComputerSystem.Reset']['ActionInfo']
+    
+    except:
+
+        assertion_status = log.WARN
+        log.assertion_log('line', "~  No ActionInfo object found at ComputerSystem_#0")
+        return assertion_status
+   
+    try: 
+        
+        Required = ActionInfo['Parameters'][0]['Required']
+    
+    except:
+        
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ Required Parameter not found inside of ActionInfo for ComputerSystem_#0")
+        return assertion_status
+  
+    if Required: 
+        # Performing an action without parametres when parameters are required.  
+        rq_body = {
+        }
+        json_payload, headers, status = self.http_POST(self.sut_toplevel_uris[root_link_key + '/Actions/ComputerSystem.Reset']['url'], rq_headers, rq_body, authorization)
+
+    if not status >= 400 and not status <= 599:  
+        assertion_status = log.FAIL
+        log.assertion_log('line', "Posting an action without parameter did not return an error status when the Required property was true")
+        return assertion_status
+
+    assertion_status = log.PASS
+    log.assertion_log('line', "~ Assertion Passed")
+
+    return assertion_status
 
 ## end Assertion_ACTI104
 

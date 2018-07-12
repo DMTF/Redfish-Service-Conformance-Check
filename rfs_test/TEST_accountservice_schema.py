@@ -18,283 +18,432 @@
 
 import urllib3
 import json
+import string
+import random
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+import time
 from time import gmtime, strftime
 
 accSerData = None
+testAccountId = None
 
 # current spec followed for these assertions
 REDFISH_SPEC_VERSION = "Version 1.2.2"
 
+# Helper Functions
+
+def createDummyAccount(self):
+    authorization = 'on'
+    rq_headers = self.request_headers()
+    relative_uris = self.relative_uris
+    rq_body = {
+        'UserName': 'test_id',
+        'Password': 'test_pswd',
+        'RoleId': 'Administrator'
+    }
+    
+    uri =  relative_uris['Root Service_AccountService_Accounts'] 
+    
+    json_payload, headers, status = self.http_POST(uri, rq_headers, rq_body, authorization)
+  
+    if status == 201 or status == 204:
+    
+        testAccountId = headers['location']
+
+    return status
+
+def deleteDummyAccount(self):
+    
+    if not testAccountId == None: 
+        authorization = 'on'
+        rq_headers = self.request_headers()
+        json_payload, headers, status = self.http_DELETE(testAccountId, rq_headers, authorization)
+
+
+
+def failAuthorization(self):
+
+    if not testAccountId == None: 
+        authorization = 'on'
+        rq_headers = self.request_headers()
+        json_payload, headers, status = self.http_GET(testAccountId, rq_headers, authorization)
+
+        # The status code for authentication credentials included with this request being missing or invalid.
+        return status == 401
+    
+    else:
+        return False
+
+def isLocked(self):
+    authorization = 'on'
+    rq_headers = self.request_headers()
+    json_payload, headers, status = self.http_GET(testAccountId, rq_headers, authorization)
+
+    return status != 200 or status != 201 or status != 200 or status != 204
+
+
+
 
 ###################################################################################################
-# Name: Assertion_ACCO101(self, log) :Account Service                                            
-# Assertion text: 
-#The value of this property shall be a boolean indicating whether this service is enabled.  If 
-#this is set to false, the AccountService is disabled.  This means no users can be created, 
-#deleted or modified.  Any service attempting to access the Account Service, like the Session 
-#Service, will fail accessing.  Thus new sessions cannot be started with the service disabled 
-#(though established sessions may still continue operating).  Note: this does not affect Basic 
-#AUTH connections.
+# Name: Assertion_ACCO101(self, log) :Account Service
+# Assertion text:
+# The value of this property shall be a boolean indicating whether this service is enabled.  If
+# this is set to false, the AccountService is disabled.  This means no users can be created,
+# deleted or modified.  Any service attempting to access the Account Service, like the Session
+# Service, will fail accessing.  Thus new sessions cannot be started with the service disabled
+# (though established sessions may still continue operating).  Note: this does not affect Basic
+# AUTH connections.
 ###################################################################################################
 
 def Assertion_ACCO101(self, log):
 
     log.AssertionID = 'ACCO101'
-    assertion_status =  log.PASS 
+    assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
     relative_uris = self.relative_uris
-    authorization = 'on' 
+    authorization = 'on'
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET('/redfish/v1/AccountService', rq_headers, authorization)
+    json_payload_get, headers, status = self.http_GET(
+        self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
     try:
-        isEnabled = json_payload['ServiceEnabled']
+        isEnabled = json_payload_get['ServiceEnabled']
 
         if isEnabled:
-            patch_key = 'ServiceEnabled'   
+            patch_key = 'ServiceEnabled'
             patch_value = False
-            rq_body = {patch_key : patch_value}
-            self.http_PATCH('/redfish/v1/AccountService', rq_headers, rq_body, authorization)
+            rq_body = {patch_key: patch_value}
+            json_payload, headers, status = self.http_PATCH(self.sut_toplevel_uris['AccountService']['url'],
+                            rq_headers, rq_body, authorization)
+            if status == 405: 
+                assertion_status = log.FAIL
+                log.assertion_log('line', "~ \'ServiceEnabled\' property is Read Only")
+                return assertion_status
+            
+            try:
+                acc_collection = json_payload_get['Accounts']['@odata.id']
+
+                status = createDummyAccount(self)
+
+                if not (status >= 400 and status <= 500) :
+                    assertion_status = log.FAIL
+                    log.assertion_log(assertion_status, None)
+                    log.assertion_log('line', "Assertion Failed")
+                    return assertion_status
+
+                patch_value = False
+                rq_body = {patch_key: patch_value}
+                json_payload, headers, status = self.http_PATCH(self.sut_toplevel_uris['AccountService']['url'],rq_headers, rq_body, authorization)
+                
+            except:
+                assertion_status = log.WARN
+                log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
+                return assertion_status
 
     except:
         assertion_status = log.WARN
-        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
+        log.assertion_log('line', "~ \'ServiceEnabled\' not found in the payload from GET %s" % (
+            '/redfish/v1/AccountService'))
         return assertion_status
-    else:
-        try:
-            acc_collection = (json_payload['Accounts'])['@odata.id']
-        except:
-            assertion_status = log.WARN
-            log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
-            return assertion_status
-        else:
 
-            rq_body = {'Name': 'Test'}
-            
-            json_payload, headers, status = self.http_POST(acc_collection + '/test', rq_headers, rq_body, authorization)
-            
-            if status == 201:
-                assertion_status = log.FAIL
-                log.assertion_log(assertion_status, None)
-                log.assertion_log('line', "Assertion Failed")  
-                return assertion_status
+# end Assertion_ACCO101
 
-            try:
-                json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
-                members_collection = (json_payload['Members'])
-            except:
+###################################################################################################
+# Name: Assertion_ACCO102(self, log) :Account Service
+# Assertion text:
+# This property shall reference the threshold for when an authorization failure is logged.  This
+# represents a modulo function value, thus the failure shall be logged every nth occurrence where
+# n represents the value of this property.
+###################################################################################################
+
+
+def Assertion_ACCO102(self, log):
+
+    log.AssertionID = 'ACCO102'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+    rq_headers = self.request_headers()
+
+    try:
+        authorization = 'on'
+
+        print(self.sut_toplevel_uris['AccountService']['url'])
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+        print(json_payload)
+        authFailureThreshold = json_payload['AuthFailureLoggingThreshold']
+        attempt = 0
+        authFailureisLogged = False; 
+
+        while not authFailureisLogged:
+            
+            if not failAuthorization(self): 
                 assertion_status = log.WARN
-                log.assertion_log('line', "~ \'Members\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
+                log.assertion_log('line', "Could not fail the authorization")
                 return assertion_status
-            else:
-                for member in members_collection:
-                    key = '@odata.id'
-                    member_link = member[key]
-                    json_payload, headers, status = self.http_PUT(member_link, rq_headers, rq_body, authorization)
-                    if status == 201:
-                        assertion_status = log.FAIL
-                        log.assertion_log(assertion_status, None)
-                        log.assertion_log('line', "Assertion Failed")  
-                        return assertion_status
-            
-    log.assertion_log(assertion_status, None)
-    log.assertion_log('line', "Assertion Passes") 
 
+            if isLocked(self): 
+                
+                if attempt == authFailureThreshold:
+                    assertion_status = log.PASS
+                    log.assertion_log('line', "Assertion Passed")
+                    return assertion_status
+
+            else:     
+                log.assertion_log('line', "Assertion Failed")
+                return assertion_status
+
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountsService\' not found in the payload from GET %s" % (
+            '/redfish/v1/AccountService'))
+        return assertion_status
+
+# end Assertion_ACCO102
+
+
+###################################################################################################
+# Name: Assertion_ACCO103(self, log) :Account Service
+# Assertion text:
+# This property shall reference the minimum password length that the implementation will allow a
+# password to be set to.
+###################################################################################################
+
+
+def Assertion_ACCO103(self, log):
+
+    log.AssertionID = 'ACCO103'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
+
+    try:
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+
+        MinPasswordLength = json_payload['MinPasswordLength']
+        
+        authorization = 'on'
+        rq_headers = self.request_headers()
+        rq_body = {
+            'UserName': 'test_min',
+            'Password': ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(MinPasswordLength + 1)),
+            'RoleId': 'Administrator'
+        }
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+
+        # 201 is the only status when a request has created a new resource successfully
+
+        if status == 201:
+            assertion_status = log.FAIL
+            log.assertion_log('line', "Assertion Failed")
+            return assertion_status
+
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountsService\MinPasswordLength' not found in the payload from GET %s" % (
+            '/redfish/v1/AccountService'))
+        return assertion_status
+
+    log.assertion_log('line', "~  Assertion Passed")
     return assertion_status
-    
-## end Assertion_ACCO101
+
+
+# end Assertion_ACCO103
 
 ###################################################################################################
-# Name: Assertion_ACCO102(self, log) :Account Service                                            
-# Assertion text: 
-# This property shall reference the threshold for when an authorization failure is logged.  This 
-#represents a modulo function value, thus the failure shall be logged every nth occurrence where 
-#n represents the value of this property.
-###################################################################################################
-
-'''
-Step 1: Simulate an authorization failure by providing wrong credentials.
-Step 2: Check at which attempt the authorization failure is logged.
-Step 3: Compare the value obtained from STEP 2, with the value extracted from the key "minimum" of 
-the property AuthFailureLoggingThreshold in the JSON Schema file.
-Step 4: Fail the assertion if the values at STEP 3 does not match.
-
-Concerns: What if the value AuthFailureLoggingThreshold is very large, thus requiring a considerable 
-amount of time to test the assertion. 
-'''
-## end Assertion_ACCO102
-
-###################################################################################################
-# Name: Assertion_ACCO103(self, log) :Account Service                                            
-# Assertion text: 
-# This property shall reference the minimum password length that the implementation will allow a 
+# Name: Assertion_ACCO104(self, log) :Account Service
+# Assertion text:
+# This property shall reference the maximum password length that the implementation will allow a
 # password to be set to.
 ###################################################################################################
 
-'''
-Step 1: Try creating an account with the password length less than the property MinPasswordLength.
-Step 2: If the value at MinPasswordLength is 0, then the assertion should automatically be passed or
-else proceed to STEP 3. 
-Step 3: Check for an error message as part of the HTTP request. 
-Step 4: Fail the assertion if an account was created sucessfully. 
-'''
-    
-## end Assertion_ACCO103
+def Assertion_ACCO104(self, log):
+
+    log.AssertionID = 'ACCO104'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
+
+    try:
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+
+        MaxPasswordLength = json_payload['MaxPasswordLength']
+        
+        authorization = 'on'
+        rq_headers = self.request_headers()
+        rq_body = {
+            'UserName': 'test_max',
+            'Password': ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(MaxPasswordLength + 1)),
+            'RoleId': 'Administrator'
+        }
+        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+
+        # 201 is the only status when a request has created a new resource successfully
+
+        if status == 201:
+            assertion_status = log.FAIL
+            log.assertion_log('line', "Assertion Failed")
+            return assertion_status
+
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountsService\MaxPasswordLength' not found in the payload from GET %s" % (
+            '/redfish/v1/AccountService'))
+        return assertion_status
+
+    log.assertion_log('line', "~  Assertion Passed")
+    return assertion_status
+
+
+# end Assertion_ACCO104
+
 
 ###################################################################################################
-# Name: Assertion_ACCO104(self, log) :Account Service                                            
-# Assertion text: 
-# This property shall reference the maximum password length that the implementation will allow a 
-# password to be set to.
-###################################################################################################
-
-'''
-NOTE: This assertion can be combined with the Assertion_ACCO103
-Step 1: Try creating an account with the password length more than the property MaxPasswordLength.
-Step 2: Check for an error message as part of the HTTP request. 
-Step 3: Fail the assertion if an account was created sucessfully. 
-'''
-
-## end Assertion_ACCO104
-
-
-###################################################################################################
-# Name: Assertion_ACCO105(self, log) :Account Service                                            
-# Assertion text: 
-# This property shall reference the threshold of failed login attempts at which point the user's 
+# Name: Assertion_ACCO105(self, log) :Account Service
+# Assertion text:
+# This property shall reference the threshold of failed login attempts at which point the user's
 # account is locked.  If set to 0, no lockout shall ever occur.
 ###################################################################################################
 
-'''
-Step 1: Simulate an failed login attempt by providing wrong credentials.
-Step 2: Check if the account is locaked after repeating Step 1 for threshold number of times. 
-Step 3: Fail the assertion if an account was not locked. 
+def Assertion_ACCO105(self, log):
 
-'''
+    log.AssertionID = 'ACCO105'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
 
-## end Assertion_ACCO105
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
+    
+    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+
+    try:
+        threshold = json_payload['AccountLockoutThreshold']
+    
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountsLockoutThreshold Property\' is not supported %s" % (
+            '/redfish/v1/AccountService'))
+         
+    if  threshold == 0:
+        assertion_status = log.PASS
+        log.assertion_log('line', "~  AccountLockoutThreshold is set to zero")
+        return assertion_status 
+
+    for i in range(0, AccountLockoutThreshold):
+        if not failAuthorization(self): 
+            assertion_status = log.WARN
+            log.assertion_log('line', "~  Could not fail the authorization")
+            return assertion_status 
+
+    if isLocked(self): 
+        log.assertion_log('line', "~  Assertion Passed")
+        return assertion_status
+    else: 
+        assertion_status = log.FAIL
+        log.assertion_log('line', "~  Assertion Failed")
+        return assertion_status
+
+    return assertion_status
+
+# end Assertion_ACCO105
 
 ###################################################################################################
-# Name: Assertion_ACCO106(self, log) :Account Service                                            
-# Assertion text: 
-# This property shall reference the period of time in seconds that an account is locked after the 
-# number of failed login attempts reaches the threshold referenced by AccountLockoutThreshold, 
-# within the window of time referenced by AccountLockoutCounterResetAfter.  The value shall be 
-# greater than or equal to the value of AccountLockoutResetAfter.  If set to 0, no lockout shall 
+# Name: Assertion_ACCO106(self, log) :Account Service
+# Assertion text:
+# This property shall reference the period of time in seconds that an account is locked after the
+# number of failed login attempts reaches the threshold referenced by AccountLockoutThreshold,
+# within the window of time referenced by AccountLockoutCounterResetAfter.  The value shall be
+# greater than or equal to the value of AccountLockoutResetAfter.  If set to 0, no lockout shall
 # occur.
 ###################################################################################################
 
-'''
-Step 1: Run Assertion_ACCO105
-Step 2: If Step 1 passes, start a timer. 
-Step 3: Check if the value obtained at Step 2 is the same as AccountLockoutCounterResetAfter when 
-the account is unlocked. 
-Step 4: Pass the assertion if Step 3 returns true. 
-'''
 
-## end Assertion_ACCO106
+def Assertion_ACCO106(self, log):
 
-###################################################################################################
-# Name: Assertion_ACCO107(self, log) :Account Service                                            
-# Assertion text: 
-# This property shall reference the threshold of time in seconds from the last failed login attempt 
-# at which point the AccountLockoutThreshold counter (that counts number of failed login attempts) 
-# is reset back to zero (at which point AccountLockoutThreshold failures would be required before 
-# the account is locked).  This value shall be less than or equal to AccountLockoutDuration. The 
-# threshold counter also resets to zero after each successful login.
-###################################################################################################
+    log.AssertionID = 'ACCO106'
+    assertion_status = log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
 
-'''
-Step 1: Simulate failed login attempts preiodically with a time interval more that of
-AccountLockoutCounterResetAfter value. 
-Step 2: Chek if AccountLockoutThreshold counter is reset to 0. 
-Step 3: Pass the assertion if Step 2 returns true. 
-'''
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
 
-## end Assertion_ACCO107
+    json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
-# NOT NECESSARY  
-###################################################################################################
-# Name: Assertion_ACCO108(self, log) :Account Service                                            
-# Assertion text: 
-# This property shall contain the link to a collection of type ManagerAccountCollection.
-###################################################################################################
+    try:
+        AccountLockoutThreshold = json_payload['AccountLockoutThreshold']
+        AccountLockoutCounterResetAfter = json_payload['AccountLockoutCounterResetAfter']
     
-    
-## end Assertion_ACCO108
+    except:
+        assertion_status = log.WARN
+        log.assertion_log('line', "~ \'AccountLockoutThreshold or AccountLockoutCounterResetAfter\' not found in the payload from GET %s" % ('/redfish/v1/AccountService'))
+        return assertion_status
 
-# NOT NECESSARY  
-###################################################################################################
-# Name: Assertion_ACCO109(self, log) :Account Service                                            
-# Assertion text: 
-# This property shall contain the link to a collection of type RoleCollection.
-###################################################################################################
+    if AccountLockoutThreshold == 0: 
+        assertion_status = log.PASS
+        log.assertion_log('line', "~  AccountLockoutThreshold is set to zero")
+        return assertion_status 
+        
+    for i in range(0, AccountLockoutThreshold):
+        if not failAuthorization(self): 
+            assertion_status = log.WARN
+            log.assertion_log('line', "Could not fail the authorization")
+            return assertion_status 
 
-## end Assertion_ACCO109
+    if isLocked(self): 
 
-# NOT NECESSARY  
-###################################################################################################
-# Name: Assertion_ACCO110(self, log) :Account Service                                            
-# Assertion text: 
-# The value of this property shall be a link to a resource of type PrivilegeMappoing that defines 
-# the privileges a user context needs in order to perform a requested operation on a URI associated 
-# with this service.
-###################################################################################################
+        start = time.time()
 
-   
-## end Assertion_ACCO110
+        while True: 
 
-# NOT NECESSARY  
+            end = time.time()
+            
+            if int(end - start) > AccountLockoutCounterResetAfter: 
 
-###################################################################################################
-# Name: Assertion_ACCO111(self, log) :Account Service                                            
-# Assertion text: 
-# The Actions property shall contain the available actions for this resource.
-###################################################################################################
+                authorization = 'on'
+                rq_headers = self.request_headers()
+                rq_body = {
+                    'UserName': 'test_id',
+                    'Password': 'test_pswd'
+                }
+                json_payload, headers, status = self.http_POST(self.sut_toplevel_uris['SessionService/Sessions']['url'], rq_headers, rq_body, authorization)
+                
+                if not isLocked(self): 
+                    assertion_status = log.PASS
+                    log.assertion_log(assertion_status, None)
+                    log.assertion_log('line', "Assertion Passes")
+                    return assertion_status
 
+                else: 
+                    assertion_status = log.FAIL
+                    log.assertion_log('line', "Assertion Failed")
+                    return assertion_status
+      
+    else: 
+        assertion_status = log.FAIL
+        log.assertion_log('line', "Failure attempt was not logged in after failed login attempts reached the threshold referenced by AccountLockoutThreshold")
+        return assertion_status
 
-## end Assertion_ACCO111
+   # end Assertion_ACCO106
 
-# NOT NECESSARY  
-
-###################################################################################################
-# Name: Assertion_ACCO112(self, log) :Account Service                                            
-# Assertion text: 
-# The Actions property shall contain the available actions for this resource.
-###################################################################################################
-
-    
-## end Assertion_ACCO112
- 
-# NOT NECESSARY  
-
-###################################################################################################
-# Name: Assertion_ACCO113(self, log) :Account Service                                            
-# Assertion text: 
-# This type shall contain any additional OEM actions for this resource.
-###################################################################################################
-
-
-## end Assertion_ACCO113
-
-
-#Testing
+# Testing
 
 def run(self, log):
-
     assertion_status = Assertion_ACCO101(self, log)
-    
-
-    
-    
-
-    
-    
-
-
-
-    
+    assertion_status = Assertion_ACCO103(self, log)
+    assertion_status = Assertion_ACCO104(self, log)
+    createDummyAccount(self)
+    assertion_status = Assertion_ACCO105(self, log)
+    deleteDummyAccount(self)
+    createDummyAccount(self)
+    assertion_status = Assertion_ACCO106(self, log)
+    deleteDummyAccount(self)
