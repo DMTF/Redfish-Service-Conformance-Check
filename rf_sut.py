@@ -132,7 +132,7 @@ class SUT():
     # Name: initalize_cache(self)
     #   Returns a list of URI's cached by the http GET requests for Redfish API 
     # Returns:
-    #   - URI's list: Cached URI's List                                                 
+    #   - URI's list: Cached URI's List                                                
     ###################################################################################
     def initalize_cache(self):
         relative_uris = self.relative_uris

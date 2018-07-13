@@ -14,6 +14,7 @@
 ####################################################################################################
 
 import logger
+import time
 from rfs_test import TEST_protocol_details
 from rfs_test import TEST_datamodel_schema
 from rfs_test import TEST_accountservice_schema
@@ -51,7 +52,11 @@ def run(sut):
         TEST_actioninfo_schema.run(sut, log)
         end = time.time()
         print ("Total Run Time: %d Minutes and %d Seconds." %((end - start)/60, (end - start)%60))
+<<<<<<< HEAD
     # end: assertion verification
+=======
+        # end: assertion verification
+>>>>>>> c633815c54e15aa53103c24062e8f9ec965bcba1
     ## close log files
     #-log.assertion_log('CLOSE', None)
 # end run
