@@ -143,7 +143,7 @@ class SUT():
         uris = []
         uris_no_members = []
         with open('cache_uri_data.json', 'w') as fp:
-            for i in range(0, 4):
+            for i in range(0, int(self.SUT_prop['Number of URI\'s to Cache'])):
                 relative_uri = random.choice(list(relative_uris.keys()))
                 relative_uri_no_member = random.choice(list(relative_uris_no_members.keys()))
                 json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)

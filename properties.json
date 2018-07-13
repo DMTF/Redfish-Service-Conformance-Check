@@ -30,7 +30,8 @@
         "AllowAction_LogServiceClearLog": "yes",
         "DnsName": "",
         "DisplayName": "",
-        "RedfishVersion": "v1"
+        "RedfishVersion": "v1",
+        "Number of URI's to Cache": ""
       }
     ],
     "Description": "Setup your server (SUT) location/authorization information here:  AllowAction_LogServiceClearLog = yes will allow this Action during test"
