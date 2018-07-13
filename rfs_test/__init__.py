@@ -17,10 +17,6 @@ import logger
 import time
 from rfs_test import TEST_protocol_details
 from rfs_test import TEST_datamodel_schema
-from rfs_test import TEST_accountservice_schema
-from rfs_test import TEST_assembly_schema
-from rfs_test import TEST_computersystem_schema
-from rfs_test import TEST_actioninfo_schema
 from rfs_test_in_progress import TEST_service_details
 from rfs_test_in_progress import TEST_security
 
@@ -46,17 +42,8 @@ def run(sut):
         TEST_security.run(sut, log)
         TEST_service_details.run(sut, log)
         TEST_datamodel_schema.run(sut, log)
-        TEST_computersystem_schema.run(sut, log)
-        TEST_accountservice_schema.run(sut, log)
-        TEST_assembly_schema.run(sut, log)
-        TEST_actioninfo_schema.run(sut, log)
         end = time.time()
         print ("Total Run Time: %d Minutes and %d Seconds." %((end - start)/60, (end - start)%60))
-<<<<<<< HEAD
-    # end: assertion verification
-=======
-        # end: assertion verification
->>>>>>> c633815c54e15aa53103c24062e8f9ec965bcba1
     ## close log files
     #-log.assertion_log('CLOSE', None)
 # end run
