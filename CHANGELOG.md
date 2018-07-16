@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.1.1] - 2018-07-16
+- Added caching mechanism to allow for reuse of responses in different tests
+- Reduced the sample size of URIs performed in each test to have the tool run to completion in a shorter amount of time
+
 ## [1.1.0] - 2018-07-06
 - Added change to use a higher level of TLS
 - Changed default password used for test cases
