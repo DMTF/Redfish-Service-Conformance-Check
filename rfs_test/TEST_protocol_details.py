@@ -67,6 +67,17 @@ import time
 REDFISH_SPEC_VERSION = "Version 1.0.5"
 
 #####################################################################################################
+# Name: CacheURI 
+# Description: Cache a few random URI's in order to speed up the tool 
+#####################################################################################################
+cached_uri = None
+cached_uri_no_member = None
+def cacheURI(self):
+    global cached_uri
+    global cached_uri_no_member
+    cached_uri, cached_uri_no_member = self.initalize_cache()
+
+#####################################################################################################
 # Name: Assertion_1_2_3(self, log)                                               
 # Description:  This is General Assertion Template for writing assertion code             
 #####################################################################################################
@@ -118,8 +129,8 @@ def Assertion_6_1_8_2(self, log) :
     rq_headers = self.request_headers()
     
     # loop for each uri in relative uris dict
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)             
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -163,7 +174,7 @@ def Assertion_6_1_8_1(self, log) :
     sample = dict()
 
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status, assertion_status_)
@@ -181,7 +192,7 @@ def Assertion_6_1_8_1(self, log) :
                 assertion_status = log.WARN
                 log.assertion_log('line', "~ \'Sessions\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))    
             else:          
-                json_payload, headers, status = self.http_GET(session_collection, rq_headers, authorization)
+                json_payload, headers, status = self.http_cached_GET(session_collection, rq_headers, authorization)
                 assertion_status_ = self.response_status_check(session_collection, status, log)
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -259,7 +270,7 @@ def Assertion_6_1_8_1_2(location_url, json_payload, self, log):
     rq_headers = self.request_headers()
 
     # get the object using GET on location and compare it against the payload returned during POST
-    check_payload, headers, status = self.http_GET(location_url, rq_headers, authorization)
+    check_payload, headers, status = self.http_cached_GET(location_url, rq_headers, authorization)
     assertion_status_ = self.response_status_check(location_url, status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -339,7 +350,7 @@ def Assertion_6_1_8_3(self, log) :
 
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
         # GET user accounts
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -379,7 +390,7 @@ def Assertion_6_1_8_3(self, log) :
                         else:
                             log.assertion_log('line', "~ note: PATCH %s PASS" % (account_url))
                             #check if the patch succeeded:
-                            json_payload, json_headers, status = self.http_GET(account_url, rq_headers, authorization)
+                            json_payload, json_headers, status = self.http_cached_GET(account_url, rq_headers, authorization)
                             assertion_status_ = self.response_status_check(account_url, status, log)
                             # manage assertion status
                             assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -425,7 +436,7 @@ def Assertion_6_1_8_4(self, log):
 
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
         # perform a GET on the SessionService
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers,
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers,
                                                       authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)
         assertion_status = log.status_fixup(assertion_status, assertion_status_)
@@ -447,7 +458,7 @@ def Assertion_6_1_8_4(self, log):
                     self.sut_toplevel_uris[root_link_key]['url']))
             else:
                 # perform a GET on the Sessions collection
-                json_payload, headers, status = self.http_GET(session_collection, rq_headers, authorization)
+                json_payload, headers, status = self.http_cached_GET(session_collection, rq_headers, authorization)
                 assertion_status_ = self.response_status_check(session_collection, status, log)
                 assertion_status = log.status_fixup(assertion_status, assertion_status_)
                 if assertion_status_ != log.PASS:
@@ -522,7 +533,7 @@ def Assertion_6_1_9(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         json_payload, headers, status = self.http_TRACE(relative_uris[relative_uri], rq_headers, None, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_METHODNOTALLOWED, 'TRACE')          
         if(status== 405):
@@ -558,8 +569,8 @@ def Assertion_6_1_11(self, log) :
     rq_headers[header_key] = header_value
     authorization = 'on'
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -584,8 +595,8 @@ def Assertion_6_1_12(self,log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
 
         if status == 200 :
             if not json_payload:
@@ -616,8 +627,8 @@ def Assertion_6_1_14(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()    
     # loop for each uri in relative uris dict
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         if status == rf_utility.HTTP_OK:
             if 'etag' in headers:
                 print('ETag header is present in {}'.format(relative_uris[relative_uri]))
@@ -661,8 +672,8 @@ def Assertion_6_1_13(self, log) :
     header_value = 'gzip'
     rq_headers[header_key] = header_value
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTACCEPTABLE)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -689,7 +700,7 @@ def Assertion_6_2_3(self, log) :
 
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET(self.Redfish_URIs['Protocol_Version'], rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(self.Redfish_URIs['Protocol_Version'], rq_headers, authorization)
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Protocol_Version'], status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -730,8 +741,8 @@ def Assertion_6_1_0(self,log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         '''if status == rf_utility.HTTP_OK:
             print('HTTP OK - 200 for ', relative_uri )'''
 
@@ -761,13 +772,13 @@ def Assertion_6_1_1(self,log) :
 
     
     print('This assertion is checked by accessing the all redfish root resources through HTTP and if this passes, this is passes, else failed')
-    json_payload, headers, status_1 = self.http_GET(self.Redfish_URIs['Service_Root'], rq_headers, authorization)
-    json_payload, headers, status_2 = self.http_GET(self.Redfish_URIs['Protocol_Version'], rq_headers, authorization)
-    json_payload, headers, status_3 = self.http_GET(self.Redfish_URIs['Service_Odata_Doc'], rq_headers, authorization)
+    json_payload, headers, status_1 = self.http_cached_GET(self.Redfish_URIs['Service_Root'], rq_headers, authorization)
+    json_payload, headers, status_2 = self.http_cached_GET(self.Redfish_URIs['Protocol_Version'], rq_headers, authorization)
+    json_payload, headers, status_3 = self.http_cached_GET(self.Redfish_URIs['Service_Odata_Doc'], rq_headers, authorization)
 
     # Update the Accept header in the request since the metadata doc is XML
     rq_headers['Accept'] = rf_utility.accept_type['xml']
-    json_payload, headers, status_4 = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
+    json_payload, headers, status_4 = self.http_cached_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
     print('The different status are %s, %s, %s, %s' %(status_1, status_2, status_3, status_4))
     if ( status_1 == status_2 == status_3 == status_4 == 200) :
         assertion_status = log.PASS
@@ -802,8 +813,8 @@ def Assertion_6_1_2(self,log) :
     uri = set ()
     uniq = []
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         if status == rf_utility.HTTP_OK:
             print('HTTP OK - 200 for ', relative_uri )
             if relative_uri not in uri :
@@ -845,14 +856,14 @@ def Assertion_6_3_1(self, log) :
     authorization = 'off'
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET(self.Redfish_URIs['Protocol_Version'] , rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(self.Redfish_URIs['Protocol_Version'] , rq_headers, authorization)
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Protocol_Version'], status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
     if assertion_status == log.PASS:                 
         log.assertion_log('line',"~ GET %s : HTTP status %s:%s" % (self.Redfish_URIs['Protocol_Version'], status, rf_utility.HTTP_status_string(status)) ) 
 
-    json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Root'], rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(self.Redfish_URIs['Service_Root'], rq_headers, authorization)
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Root'], status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -870,7 +881,7 @@ def Assertion_6_3_1(self, log) :
             self.SUT_OEM['key'] = oem_key
             self.SUT_OEM['name'] = oem_name
       
-    json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Odata_Doc'], rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(self.Redfish_URIs['Service_Odata_Doc'], rq_headers, authorization)
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Odata_Doc'], status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -878,7 +889,7 @@ def Assertion_6_3_1(self, log) :
         log.assertion_log('line',"~ GET %s : HTTP status %s:%s" % (self.Redfish_URIs['Service_Odata_Doc'], status, rf_utility.HTTP_status_string(status)) ) 
 
     rq_headers ['Accept'] = rf_utility.accept_type['xml']
-    json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Metadata_Doc'], status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -910,7 +921,7 @@ def Assertion_6_3_2(self, log) :
     rq_headers = self.request_headers()
     root_redirect = [self.Redfish_URIs['Service_Root'][:-1]][0]
 
-    json_payload, headers, status = self.http_GET(root_redirect, rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(root_redirect, rq_headers, authorization)
     assertion_status_ = self.response_status_check(root_redirect, status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -956,8 +967,8 @@ def Assertion_6_3_3(self, log) :
     #1. single slash
     # example: GET /pub/WWW/TheProject.html HTTP/1.1
     # Host: www.w3.org
-    '''for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    '''for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)'''
@@ -968,7 +979,7 @@ def Assertion_6_3_3(self, log) :
     # try  path with //auth/path
     url = proto + "://" + self.SUT_prop['DnsName'] + self.Redfish_URIs['Service_Root'] + 'Systems'
     # Made changes in accessing the url and opening the url and reading - Priyanka.
-    json_payload, headers, status = self.http_GET(url, rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(url, rq_headers, authorization)
     print('Status is %s' %status)
 
     if status != 200:
@@ -995,19 +1006,19 @@ def Assertion_6_4_1(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
-    #json_payload, headers, status = self.http_GET('/redfish/v1/Managers', rq_headers, authorization)
+    #json_payload, headers, status = self.http_cached_GET('/redfish/v1/Managers', rq_headers, authorization)
     #print('Headers is %s' %headers)
     #The headers mentioned below are the headers that are required and conditional.
     Headers = ['accept', 'odata-version', 'User-Agent','Host','Origin','X-Auth-Token','content-type','Authorization','If-Match']
 
-    for relative_uri in relative_uris : 
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri: 
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
 
         try:
             c_type = headers['content-type']
             if c_type in headers['content-type']:
                 headers['content-type'] = ''
-                json_payload, headers1, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                json_payload, headers1, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
 
                 if status != log.PASS:
                     assertion_status = log.PASS
@@ -1049,7 +1060,6 @@ def verify_retrieve_resource(json_payload, assertion_status, self, log):
 ###################################################################################################
 
 def Assertion_6_4_4(self, log):
-
     log.AssertionID = '6.4.4'
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
@@ -1092,9 +1102,9 @@ def Assertion_6_4_5(self, log):
     rq_headers = self.request_headers()
     rq_body = {'@odata.id' : '123'}
     # loop for each uri in relative uris dict
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri_no_member:
         try:
-            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, rq_body, authorization)
+            json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, rq_body, authorization)
             if status == '200':
                 assertion_status = log.FAIL
                 
@@ -1128,7 +1138,7 @@ def Assertion_6_4_11(self, log) :
     authorization = 'off'
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Metadata_Doc'], status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1161,8 +1171,8 @@ def Assertion_6_4_13(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
     print('Beginning Assertion Test 6.4.13 for checking the status code with unsupported $')
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1183,7 +1193,7 @@ def Assertion_6_4_13(self, log) :
                             relative_uris[relative_uri]))
                         continue
                     query_url = json_payload['@odata.id'][:-1] + query_param
-                    json_payload, headers, status = self.http_GET(query_url , rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(query_url , rq_headers, authorization)
                     print('Status is %s' %status)
                     assertion_status_ = self.response_status_check(query_url, status, log, rf_utility.HTTP_NOTIMPLEMENTED)      
                     # manage assertion status
@@ -1217,8 +1227,8 @@ def Assertion_6_4_14(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1233,7 +1243,7 @@ def Assertion_6_4_14(self, log) :
             if '@odata.type' in json_payload:
                 if 'Collection' in json_payload['@odata.type']:                  
                     query_url = json_payload['@odata.id'][:-1] + query_param
-                    json_payload, headers, status = self.http_GET(query_url , rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(query_url , rq_headers, authorization)
                     assertion_status_ = self.response_status_check(query_url, status, log)                       
             else:      
                 assertion_status_ = log.WARN
@@ -1268,8 +1278,8 @@ def Assertion_6_4_16(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1313,10 +1323,10 @@ def Assertion_6_4_18(self, log) :
 
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris: 
+    for relative_uri in cached_uri: 
         authorization = 'on'
         rq_headers = self.request_headers()
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)          
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1388,9 +1398,9 @@ def Assertion_6_4_21(self, log) : #POST
 
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         rq_headers = self.request_headers()
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1410,7 +1420,7 @@ def Assertion_6_4_21(self, log) : #POST
                     # check if resource remain unchanged using etag and If-None-Match header (this is a SHOULD, so only warn if it fails)
                     rq_headers = self.request_headers()
                     rq_headers['If-None-Match'] = etag
-                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
                     assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTMODIFIED, warn_only=True)
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1441,8 +1451,8 @@ def Assertion_6_4_23(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1454,7 +1464,7 @@ def Assertion_6_4_23(self, log) :
             if status == rf_utility.HTTP_METHODNOTALLOWED:
                 #check if resource remain unchanged
                 #TODO check if etags is in headers then use that method too
-                json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
                 assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1495,8 +1505,8 @@ def _Assertion_6_4_24(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1528,7 +1538,7 @@ def _Assertion_6_4_24(self, log) :
                                             continue
                                         else:
                                             #TODO check extended error should have property name in msgargs annotation...
-                                            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                                            json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
                                             assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
                                             # manage assertion status
                                             assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1584,8 +1594,8 @@ def Assertion_6_4_24(self, log) :
 
     annotation_term = 'readonly'
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1632,7 +1642,7 @@ def Assertion_6_4_24(self, log) :
                                                         continue
 
                                                 # Regardless of status - go ahead and check that the property has not been updated
-                                                json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                                                json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
                                                 assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
                                                 # manage assertion status
                                                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1671,9 +1681,9 @@ def Assertion_6_4_25(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         rq_headers = self.request_headers()
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1693,7 +1703,7 @@ def Assertion_6_4_25(self, log) :
                     #check if resource remain unchanged
                     rq_headers = self.request_headers()
                     rq_headers['If-None-Match'] = etag
-                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
                     assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_NOTMODIFIED)
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1728,7 +1738,7 @@ def Assertion_6_4_26(self, log) :
 
     root_link_key = 'SessionService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)           
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1749,7 +1759,7 @@ def Assertion_6_4_26(self, log) :
                 log.assertion_log('line', "~ \'Sessions\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))    
             else:         
                 ## Found the key in the payload, try a GET on the link for a response header
-                json_payload, headers, status = self.http_GET(session_collection, rq_headers, authorization)
+                json_payload, headers, status = self.http_cached_GET(session_collection, rq_headers, authorization)
                 assertion_status_ = self.response_status_check(session_collection, status, log)
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1788,8 +1798,8 @@ def Assertion_6_4_27(self, log) :
     csdl_schema_model = self.csdl_schema_model
     rq_body = {'Name': 'New Name'}
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1829,8 +1839,8 @@ def Assertion_6_4_30(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1850,7 +1860,7 @@ def Assertion_6_4_30(self, log) :
                 if status == rf_utility.HTTP_METHODNOTALLOWED:
                     # check if the url still exists and returns status 200 on GET
                     # could also check via etag
-                    json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers,
+                    json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers,
                                                                   authorization)
                     assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
                     # manage assertion status
@@ -2061,7 +2071,7 @@ def Assertion_6_4_2_1(self, log) :
     rq_headers = self.request_headers()
     rq_headers['Accept'] = rf_utility.accept_type['xml']
 
-    json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(self.Redfish_URIs['Service_Metadata_Doc'], rq_headers, authorization)
     log.assertion_log('line', "~ GET %s with Accept type '%s'" % (self.Redfish_URIs['Service_Metadata_Doc'], rf_utility.accept_type['xml']))
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Metadata_Doc'], status, log)         
     # manage assertion status
@@ -2120,7 +2130,7 @@ def Assertion_6_4_2_2(self, log) :
 
     root_link_key = 'SessionService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)           
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2141,7 +2151,7 @@ def Assertion_6_4_2_2(self, log) :
                 log.assertion_log('line', "~ \'Sessions\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))    
             else:         
                 ## Found the key in the payload, try a GET on the link for a response header
-                json_payload, headers, status = self.http_GET(session_collection, rq_headers, authorization)
+                json_payload, headers, status = self.http_cached_GET(session_collection, rq_headers, authorization)
                 assertion_status_ = self.response_status_check(session_collection, status, log)
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2196,11 +2206,11 @@ def Assertion_6_4_2_3(self, log) :
     rq_headers = self.request_headers()
     header = 'OData-Version'
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         #supported version
         version = '4.0'
         rq_headers[header] = version
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)     
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2211,12 +2221,12 @@ def Assertion_6_4_2_3(self, log) :
                 assertion_status = log.WARN
                 log.assertion_log('line', "~ Response Header %s with value %s expected: found %s" % (header, version, headers[header]))
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         assertion_status_ = log.PASS
         #unsupported version
         version = '3.0'
         rq_headers[header] = version
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         if not status:
             assertion_status_ = log.WARN
         elif (status == rf_utility.HTTP_OK) :
@@ -2247,14 +2257,14 @@ def Assertion_6_4_2_4(self, log) :
     relative_uris = self.relative_uris
     header = 'Authorization'
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         assertion_status_ = log.PASS 
         #/redfish/v1/ can be requested without auth
         if relative_uris[relative_uri] == '/redfish/v1/':
             continue
         rq_headers = self.request_headers()
         authorization = 'on'
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         if not status:
             assertion_status_ = log.WARN
             continue
@@ -2267,7 +2277,7 @@ def Assertion_6_4_2_4(self, log) :
         '''
         rq_headers = self.request_headers()
         authorization = 'off'
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         if not status:
             assertion_status = log.WARN
             continue
@@ -2278,7 +2288,7 @@ def Assertion_6_4_2_4(self, log) :
 
         rq_headers = self.request_headers()
         rf_utility.http__set_auth_header(rq_headers, 'wrongid', 'wrongpass')
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         if not status:
             assertion_status = log.WARN
             continue
@@ -2310,8 +2320,8 @@ def Assertion_6_4_2_5(self, log) :
     header = 'User-Agent'
     rq_headers[header] = ''
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2341,8 +2351,8 @@ def Assertion_6_4_2_6(self, log) :
     header = 'Host'
     rq_headers[header] = self.SUT_prop['DnsName']
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2378,8 +2388,8 @@ def Assertion_6_5_1(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2471,7 +2481,7 @@ def Assertion_6_5_2_6(self, log):
     root_link_key = 'SessionService'
 
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2491,7 +2501,7 @@ def Assertion_6_5_2_6(self, log):
                 assertion_status = log.WARN
                 log.assertion_log('line', "~ \'Sessions\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))
             else:
-                json_payload, headers, status = self.http_GET(session_collection, rq_headers, authorization)
+                json_payload, headers, status = self.http_cached_GET(session_collection, rq_headers, authorization)
                 assertion_status_ = self.response_status_check(session_collection, status, log)
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2543,7 +2553,7 @@ def Assertion_6_5_2_6_1(self, log):
     root_link_key = 'SessionService'
 
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2566,7 +2576,7 @@ def Assertion_6_5_2_6_1(self, log):
                     assertion_status = log.FAIL
                     log.assertion_log('line', "~ Sessions expected in the response payload of %s ~ not found" % ( self.sut_toplevel_uris[root_link_key]['url']))
                 else:
-                    json_payload, headers, status = self.http_GET(sessions_url, rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(sessions_url, rq_headers, authorization)
                     assertion_status_ = self.response_status_check(sessions_url, status, log)      
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2618,9 +2628,9 @@ def Assertion_6_5_3(self, log) :
 
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         uri = relative_uris[relative_uri]
-        json_payload, headers, status = self.http_GET(uri, rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(uri, rq_headers, authorization)
         assertion_status_ = self.response_status_check(uri, status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2676,8 +2686,8 @@ def Assertion_6_5_6_2(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2730,8 +2740,8 @@ def Assertion_6_5_6_5(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uri, rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uri, rq_headers, authorization)
         if status == 204:
             print('The request for te resource %s has succeeded, but no content is being returned in the body of the response' %relative_uri)
             continue
@@ -2762,7 +2772,7 @@ def Assertion_6_5_6_6(self, log):
     relative_uris = self.relative_uris
     found_redirect = False
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         # try to trigger a redirect: change /redfish/v1/foo/ to /redfish/v1/foo or /redfish/v1/bar to /redfish/v1/bar/
         if relative_uris[relative_uri].endswith('/'):
             url_redirect = relative_uris[relative_uri].rstrip('/')
@@ -2810,7 +2820,7 @@ def Assertion_6_5_6_8(self, log) :
 
     root_link_key = 'AccountService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2830,7 +2840,7 @@ def Assertion_6_5_6_8(self, log) :
     
             else:            
                 ## Found the key in the payload, try a GET on the link for a response header 
-                json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
+                json_payload, headers, status = self.http_cached_GET(acc_collection, rq_headers, authorization)
                 assertion_status_ = self.response_status_check(acc_collection, status, log)      
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2847,7 +2857,7 @@ def Assertion_6_5_6_8(self, log) :
                             etag = headers['etag']
                             rq_headers = self.request_headers()
                             rq_headers['If-None-Match'] = etag
-                            json_payload_, headers_, status_ = self.http_GET(json_payload['@odata.id'], rq_headers, authorization)
+                            json_payload_, headers_, status_ = self.http_cached_GET(json_payload['@odata.id'], rq_headers, authorization)
                             assertion_status_ = self.response_status_check(json_payload['@odata.id'], status_, log,
                                                                            rf_utility.HTTP_NOTMODIFIED, warn_only=True)
                             # manage assertion status
@@ -2889,7 +2899,7 @@ def Assertion_6_5_6_9(self, log):
     root_link_key = 'SessionService'
 
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers,
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers,
                                                       authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)
         # manage assertion status
@@ -2917,7 +2927,7 @@ def Assertion_6_5_6_9(self, log):
                     log.assertion_log('line', "~ Sessions expected in the response payload of %s ~ not found" % (
                         self.sut_toplevel_uris[root_link_key]['url']))
                 else:
-                    json_payload, headers, status = self.http_GET(sessions_url, rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(sessions_url, rq_headers, authorization)
                     assertion_status_ = self.response_status_check(sessions_url, status, log)
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status, assertion_status_)
@@ -3003,13 +3013,13 @@ def Assertion_6_5_6_10(self, log) :
     header = 'authorization'
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         #/redfish/v1/ can be requested without auth
         if relative_uris[relative_uri] == '/redfish/v1/':
             continue
         rq_headers = self.request_headers()
         log.assertion_log('line', 'Requesting GET %s without header %s... ' % (relative_uris[relative_uri], header))
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_UNAUTHORIZED)
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3017,7 +3027,7 @@ def Assertion_6_5_6_10(self, log) :
         rq_headers = self.request_headers()
         rf_utility.http__set_auth_header(rq_headers, 'wrongid', 'wrongpass')
         log.assertion_log('line', 'Requesting GET %s with invalid credentials for header %s... ' % (relative_uris[relative_uri], header))
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_UNAUTHORIZED)
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3046,8 +3056,8 @@ def Assertion_6_5_6_13(self, log) :
 
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3132,7 +3142,7 @@ def Assertion_6_5_10(self, log) :
     url = self.Redfish_URIs['Service_Odata_Doc']
 
     rq_headers = self.request_headers()
-    json_payload, headers, status = self.http_GET(url, rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(url, rq_headers, authorization)
     assertion_status_ = self.response_status_check(url, status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3167,7 +3177,7 @@ def Assertion_6_5_11(self, log) :
     url = self.Redfish_URIs['Service_Odata_Doc']
 
     rq_headers = self.request_headers()
-    json_payload, headers, status = self.http_GET(url, rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(url, rq_headers, authorization)
     assertion_status_ = self.response_status_check(url, status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3210,7 +3220,7 @@ def Assertion_6_5_12(self, log) :
 
     rq_headers = self.request_headers()
 
-    json_payload, headers, status = self.http_GET(url, rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(url, rq_headers, authorization)
     assertion_status_ = self.response_status_check(url, status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3265,7 +3275,7 @@ def Assertion_6_5_13(self, log) :
     url = self.Redfish_URIs['Service_Odata_Doc']
 
     rq_headers = self.request_headers()
-    json_payload, headers, status = self.http_GET(url, rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(url, rq_headers, authorization)
     assertion_status_ = self.response_status_check(url, status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3415,12 +3425,12 @@ def Assertion_6_5_14(self, log):
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
+    for relative_uri in cached_uri_no_member:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
+        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
-        if assertion_status_ != log.PASS: 
+        if assertion_status_ != log.PASS:
             continue
         elif not json_payload:
             assertion_status_ = log.WARN
@@ -3432,13 +3442,13 @@ def Assertion_6_5_14(self, log):
                 if 'Collection' in json_payload['@odata.type']:
                     assertion_status = verify_collection_urlcxt(json_payload, assertion_status, self, log)
                     #check members of collection context url
-                    members = self.get_resource_members(json_payload = json_payload)     
+                    members = self.get_resource_members(json_payload = json_payload)
                     for json_payload, headers in members:
-                        assertion_status = verify_singleton_urlcxt(json_payload, assertion_status, self, log)                                               
+                        assertion_status = verify_singleton_urlcxt(json_payload, assertion_status, self, log)
                 else:
                     #check singleton context url                 
                     assertion_status = verify_singleton_urlcxt_new(json_payload, assertion_status,self,log)
-                                             
+
     log.assertion_log(assertion_status, None)
     return (assertion_status)
 #
@@ -3463,8 +3473,8 @@ def Assertion_6_5_15(self, log):
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri_no_member:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3513,8 +3523,8 @@ def Assertion_6_5_14_old(self, log):
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri_no_member:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3557,8 +3567,8 @@ def Assertion_6_5_17(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3605,8 +3615,8 @@ def Assertion_6_5_18(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
 
 #        # Determine which string type to compare against based on the currently running
 #        # version of Python. Python 3 deprecated the basestring baseclass that was common
@@ -3678,8 +3688,8 @@ def Assertion_6_5_19(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3790,10 +3800,10 @@ def Assertion_6_5_20(self, log):
                        'Edm.Double': (int, float), 'Edm.Guid': str, 'Edm.Int64': int, 'Edm.String': str}
     relative_uris = self.relative_uris
     #find alias in Include first?
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         if 'Root Service' in relative_uri:
             rq_headers['Accept'] = rf_utility.accept_type['json']
-            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+            json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
             assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
             if assertion_status_ != log.PASS:
@@ -3806,7 +3816,7 @@ def Assertion_6_5_20(self, log):
                 if '@odata.context' in json_payload:
                     resource = json_payload['@odata.context']
                     rq_headers['Accept'] = rf_utility.accept_type['xml']
-                    response,headers,status = self.http_GET(resource,rq_headers,None)
+                    response,headers,status = self.http_cached_GET(resource,rq_headers,None)
                     if status == rf_utility.HTTP_NOT_FOUND:
                         print('Resource {} not found'.format(resource))
                         continue
@@ -3830,7 +3840,7 @@ def Assertion_6_5_20(self, log):
                         if uris.startswith('/'):
                             # relative URI case
                             rq_headers['Accept'] = rf_utility.accept_type['xml']
-                            myfile, headers, status = self.http_GET(uris, rq_headers, None)
+                            myfile, headers, status = self.http_cached_GET(uris, rq_headers, None)
                             if status == rf_utility.HTTP_NOT_FOUND:
                                 print('Resource {} not found'.format(uris))
                                 continue
@@ -3903,8 +3913,8 @@ def Assertion_6_5_21(self, log):
     relative_uris = self.relative_uris
     #find alias in Include first?
     date_time = 'DateTime'
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -3967,8 +3977,8 @@ def Assertion_6_5_22(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4016,8 +4026,8 @@ def Assertion_6_5_23(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri_no_member:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4069,8 +4079,8 @@ def Assertion_6_5_23_1(self, log) :
 
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri_no_member:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
         if assertion_status_ != log.PASS: 
@@ -4139,8 +4149,8 @@ def Assertion_6_5_24(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri_no_member:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4196,8 +4206,8 @@ def Assertion_6_5_25(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri_no_member:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4253,8 +4263,8 @@ def Assertion_6_5_26(self, log) :
     relative_uris = self.relative_uris
     csdl_schema_model = self.csdl_schema_model
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4360,8 +4370,8 @@ def Assertion_6_5_28(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4404,8 +4414,8 @@ def Assertion_6_5_30(self, log) :
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4447,8 +4457,8 @@ def Assertion_6_5_31(self, log) :
     relative_uris = self.relative_uris_no_members
     rq_headers = self.request_headers()
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri_no_member:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4579,8 +4589,8 @@ def Assertion_6_5_8(self, log):
 
     if self.metadata_document_structure is not None:
         # gather all the namespace references from the service
-        for relative_uri in relative_uris:
-            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        for relative_uri in cached_uri:
+            json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
             assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
             if assertion_status_ != log.PASS or not json_payload:
@@ -4656,9 +4666,9 @@ def Assertion_6_5_9(self, log) :
     direc = os.getcwd()+'/redfish-1.0.0/metadata/'
 
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         rq_headers['Accept'] = rf_utility.accept_type['json']
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4683,7 +4693,7 @@ def Assertion_6_5_9(self, log) :
                         #r = requests.get(resource)
                         #print('The response is %s' %r)
                         rq_headers['Accept'] = rf_utility.accept_type['xml']
-                        response,headers,status = self.http_GET(resource,rq_headers,None)
+                        response,headers,status = self.http_cached_GET(resource,rq_headers,None)
                         if status != 200:
                             print('Unexpected status {} returned from resource {}'.format(status, resource))
                             continue
@@ -4740,8 +4750,8 @@ def Assertion_6_5_35(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris_no_members
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri_no_member:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -4823,14 +4833,14 @@ def Assertion_6_5_40_old(self, log) :
     #url = self.Redfish_URIs['Service_Odata_Doc']
     relative_uris = self.relative_uris
     rq_headers = self.request_headers()
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         if 'Registries' in relative_uri:
-            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+            json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
             if 'Members' in json_payload:
                 members = json_payload['Members']
                 for uri in members:
                     uri_ = uri['@odata.id']
-                    json_payload_, headers_, status = self.http_GET(uri_, rq_headers, authorization)
+                    json_payload_, headers_, status = self.http_cached_GET(uri_, rq_headers, authorization)
                     type_ = json_payload_['@odata.type']
                     package = type_.rsplit('#',1)
                     name = package[1]
@@ -4877,7 +4887,7 @@ def Assertion_6_5_40(self, log) :
 
     relative_uris = self.relative_uris
     rq_headers = self.request_headers()
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         rq_body = {'Name': 'New Name'}
         json_payload, headers, status = self.http_PATCH(relative_uris[relative_uri], rq_headers,
                                                         rq_body, authorization)
@@ -4942,10 +4952,10 @@ def Assertion_6_1_6(self, log) :
     authorization = 'on'
     rq_headers = self.request_headers()
     resource_path = set()
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         print('The uri is %s' %relative_uri)
         try:
-            json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+            json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
             print('Printing %s' %relative_uris[relative_uri])
             uri = relative_uris[relative_uri].split('/redfish/v1')
             root = uri[0]
@@ -4994,10 +5004,10 @@ def Assertion_6_1_7(self, log) :
     rq_headers = self.request_headers()
     print('Beginning assertion 6.1.7')
     query = '#123'
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         uri = relative_uris[relative_uri] + query
         try:
-            json_payload, headers, status = self.http_GET(uri, rq_headers, authorization)
+            json_payload, headers, status = self.http_cached_GET(uri, rq_headers, authorization)
             assertion_status_ = self.response_status_check(uri, status, log)    
             #print('The status is %s', status)         
             # manage assertion status
@@ -5035,8 +5045,8 @@ def Assertion_6_4_24_xml(self, log) :
 
     annotation_term = 'readonly'
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -5056,7 +5066,7 @@ def Assertion_6_4_24_xml(self, log) :
                 if (dataServices.getAttribute('Property')=='Updatable'):
                     if(dataServices.getAttribute('Bool')=='false'):
                         print ('Cannot be updated and the status of GET operation is')
-                        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
                         print(' %s' %status)
                     else:
                         print('Do the patch')
@@ -5084,7 +5094,7 @@ def Assertion_6_4_24_xml(self, log) :
                                                             continue                                                   
                                                     else:
                                                         #TODO check extended error should have property name in msgargs annotation...
-                                                        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                                                        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
                                                         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
                                                         # manage assertion status
                                                         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -5110,7 +5120,7 @@ def Assertion_6_4_24_xml(self, log) :
 # Takes sut obj and logger obj 
 ###################################################################################################
 def run(self, log): 
-      
+    cacheURI(self)  
     assertion_status = Assertion_6_1_0(self,log)
     assertion_status = Assertion_6_1_1(self,log)
     # Assertion 6_1_2 - Each unique instance of a resource shall be identified by a URI; thus a URI cannot reference multiple resources though it may reference a single collection resource.
@@ -5226,4 +5236,4 @@ def run(self, log):
     #assertion_status = Assertion_6_5_30(self, log)
     #-assertion_status = Assertion_6_5_31(self, log)
     assertion_status = Assertion_6_5_35(self, log)
-    assertion_status = Assertion_6_5_40(self,log)
+    #assertion_status = Assertion_6_5_40(self,log)

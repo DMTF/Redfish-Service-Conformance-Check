@@ -60,6 +60,18 @@ import time
 # current spec followed for these assertions
 REDFISH_SPEC_VERSION = "Version 1.0.2"
 
+#####################################################################################################
+# Name: CacheURI 
+# Description: Cache a few random URI's in order to speed up the tool 
+#####################################################################################################
+cached_uri = None
+cached_uri_no_member = None
+def cacheURI(self):
+    global cached_uri
+    global cached_uri_no_member
+    cached_uri, cached_uri_no_member = self.initalize_cache()
+
+
 #todo: check 7.x via json schemas aswell where applicable..
 ###################################################################################################
 # Name: Assertion_7_0_1(self, log) :Data Model                                             
@@ -118,8 +130,8 @@ def Assertion_7_2_1(self, log):
     csdl_schema_model = self.csdl_schema_model
     relative_uris = self.relative_uris # contains all the urls found in every navigation property of all schemas
     
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -168,8 +180,8 @@ def Assertion_7_3_0(self, log):
     csdl_schema_model = self.csdl_schema_model
     relative_uris = self.relative_uris # contains all the urls found in every navigation property of all schemas
     
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -271,9 +283,9 @@ def Assertion_7_5_4(self, log):
     csdl_schema_model = self.csdl_schema_model
     relative_uris = self.relative_uris
     #find alias in Include first?
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         if resource in relative_uri:
-                json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
                 if status == 200:
                     if 'ChassisType' in json_payload :
                             json_payload['Chassistype'] = json_payload['ChassisType']
@@ -573,8 +585,8 @@ def _Assertion_7_4_11(self, log):
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -650,8 +662,8 @@ def Assertion_7_5_11(self, log):
     #camelcased? need to verify this...
     annotation_term = 'additionalProperties'
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -739,8 +751,8 @@ def _Assertion_7_4_13(self, log):
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -793,8 +805,8 @@ def Assertion_7_5_14(self, log):
     relative_uris = self.relative_uris
     annotation_term = 'required'
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -841,8 +853,8 @@ def Assertion_7_5_14_1(self, log):
     relative_uris = self.relative_uris
     annotation_term = 'required'
     supported_term = 'the property is not currently supported'
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -902,8 +914,8 @@ def Assertion_7_5_13_xml(self, log):
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -958,8 +970,8 @@ def _Assertion_7_5_13(self, log):
     annotation_term = 'required'
     nullable_term = 'nullable'
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1113,7 +1125,7 @@ def Assertion_7_5_16(self, log):
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
-## end Assertion 7_5_16
+    ## end Assertion 7_5_16
 
 ###################################################################################################
 # Name: Assertion_7_5_18(self, log) Oem Property Format and Content   WIP                         
@@ -1133,8 +1145,8 @@ def Assertion_7_5_18(self, log):
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1184,8 +1196,8 @@ def Assertion_7_5_18_1(self, log):
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1236,8 +1248,8 @@ def Assertion_7_5_18_2(self, log):
     relative_uris = self.relative_uris
     #find alias in Include first?
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1599,6 +1611,7 @@ def Assertion_7_6_5_1(self, log):
 ###################################################################################################
 def run(self, log):
     #Section 7
+    cacheURI(self)
     assertion_status = Assertion_7_6_1(self, log)
     assertion_status = Assertion_7_0_1(self, log)
     assertion_status = Assertion_7_2_1(self, log)

@@ -46,6 +46,17 @@ import time
 # current spec followed for these assertions
 REDFISH_SPEC_VERSION = "Version 1.0.2"
 
+#####################################################################################################
+# Name: CacheURI 
+# Description: Cache a few random URI's in order to speed up the tool 
+#####################################################################################################
+cached_uri = None
+cached_uri_no_member = None
+def cacheURI(self):
+    global cached_uri
+    global cached_uri_no_member
+    cached_uri, cached_uri_no_member = self.initalize_cache()
+
 ###################################################################################################
 # Name: Assertion_9_3_1(self, log)  Authentication/Sessions                                             
 # Description:     
@@ -79,7 +90,7 @@ def Assertion_9_3_1(self, log) :
             if rel_uris.endswith('Sessions'):
                 session_uri = self.relative_uris[rel_uris]
     if session_uri:        
-        json_payload, headers, status = self.http_GET(session_uri, rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(session_uri, rq_headers, authorization)
         assertion_status_ = self.response_status_check(session_uri, status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -119,8 +130,8 @@ def Assertion_9_3_1(self, log) :
                     #auth off and use session key
                     authorization = 'off'
                     rq_headers[session_key] = x_auth_token
-                    for relative_uri in relative_uris:
-                        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+                    for relative_uri in cached_uri:
+                        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
                         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
                         # manage assertion status
                         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -169,7 +180,7 @@ def Assertion_9_3_1_1(self, log) :
             if rel_uris.endswith('Sessions'):
                 session_uri = self.relative_uris[rel_uris]
     if session_uri:
-        json_payload, headers, status = self.http_GET(session_uri, rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(session_uri, rq_headers, authorization)
         assertion_status_ = self.response_status_check(session_uri, status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -245,7 +256,7 @@ def Assertion_9_3_1_2(self, log):
             if rel_uris.endswith('Sessions'):
                 session_uri = self.relative_uris[rel_uris]
     if session_uri:
-        json_payload, headers, status = self.http_GET(session_uri, rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(session_uri, rq_headers, authorization)
         assertion_status_ = self.response_status_check(session_uri, status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -319,7 +330,7 @@ def Assertion_9_3_1_3(self, log):
             if rel_uris.endswith('Sessions'):
                 session_uri = self.relative_uris[rel_uris]
     if session_uri:
-        json_payload, headers, status = self.http_GET(session_uri, rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(session_uri, rq_headers, authorization)
         assertion_status_ = self.response_status_check(session_uri, status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -395,8 +406,8 @@ def Assertion_9_3_1_4(self, log) :
     relative_uris = self.relative_uris 
     authorization_key = 'Authorization'
 
-    for relative_uri in relative_uris:
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+    for relative_uri in cached_uri:
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -434,7 +445,7 @@ def Assertion_9_3_2_1(self, log) :
             if rel_uris.endswith('Sessions'):
                 session_uri = self.relative_uris[rel_uris]
     if session_uri:
-        json_payload, headers, status = self.http_GET(session_uri, rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(session_uri, rq_headers, authorization)
         assertion_status_ = self.response_status_check(session_uri, status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -493,7 +504,7 @@ def Assertion_9_3_2_1(self, log) :
         user_name = 'testuser'
         root_link_key = 'AccountService'
         if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-            json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+            json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
             assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
             # manage assertion status
             assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -512,7 +523,7 @@ def Assertion_9_3_2_1(self, log) :
                     log.assertion_log('line', "~ \'Accounts\' not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))
     
                 else:          
-                    json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(acc_collection, rq_headers, authorization)
                     assertion_status_ = self.response_status_check(acc_collection, status, log)      
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -670,7 +681,7 @@ def Assertion_9_3_2_2(self, log) :
 
         log.assertion_log('line', "~ note: this assertion sub-invokes Assertion 9.3.3.2")
 
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -701,7 +712,7 @@ def Assertion_9_3_2_2(self, log) :
                         break
 
                 if user_exist == False:                           
-                    json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(acc_collection, rq_headers, authorization)
                     assertion_status_ = self.response_status_check(acc_collection, status, log)      
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -734,7 +745,7 @@ def Assertion_9_3_2_2(self, log) :
                     #got past either creating new or using existing user account
                     found = False
                     #get on account_url 
-                    json_payload, headers, status = self.http_GET(account_url, rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(account_url, rq_headers, authorization)
                     assertion_status_ = self.response_status_check(account_url, status, log)      
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -775,7 +786,7 @@ def Assertion_9_3_2_2(self, log) :
                                     rq_headers = self.request_headers()
                                     rq_headers['If-None-Match'] = etag
                                     authorization = 'on' #turn auth on
-                                    json_payload, headers, status = self.http_GET(account_url, rq_headers, authorization)
+                                    json_payload, headers, status = self.http_cached_GET(account_url, rq_headers, authorization)
                                     assertion_status_ = self.response_status_check(account_url, status, log, rf_utility.HTTP_NOTMODIFIED)      
                                     # manage assertion status
                                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -857,7 +868,7 @@ def Assertion_9_3_2_3(self, log) :
     root_link_key = 'AccountService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
         log.assertion_log('line', "~ note: this assertion sub-invokes Assertion 9.3.3.3")
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -887,7 +898,7 @@ def Assertion_9_3_2_3(self, log) :
 
                 if user_exist == False:
                     #do a GET on acc_collection and check if POST is allowed 
-                    json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(acc_collection, rq_headers, authorization)
                     assertion_status_ = self.response_status_check(acc_collection, status, log)      
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -920,7 +931,7 @@ def Assertion_9_3_2_3(self, log) :
                         #got past either creating new or using existing user account
                         found = False
                         #get on account_url 
-                        json_payload, headers, status = self.http_GET(account_url, rq_headers, authorization)
+                        json_payload, headers, status = self.http_cached_GET(account_url, rq_headers, authorization)
                         assertion_status_ = self.response_status_check(account_url, status, log)      
                         # manage assertion status
                         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1010,14 +1021,14 @@ def Assertion_9_3_7(self, log) :
 
     relative_uris = self.relative_uris
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         #/redfish/v1/ can be requested without auth
         if relative_uris[relative_uri] == '/redfish/v1/':
             continue
         # to get an initial etag
         authorization = 'on'
         rq_headers = self.request_headers()
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1030,7 +1041,7 @@ def Assertion_9_3_7(self, log) :
         rq_headers = self.request_headers()
         auth = rf_utility.http__set_auth_header(rq_headers, 'wrong id', 'wrongpass')
         rq_headers['If-None-Match'] = etag
-        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log, rf_utility.HTTP_UNAUTHORIZED)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1103,7 +1114,7 @@ def Assertion_9_3_11_1(self, log) :
             if rel_uris.endswith('Sessions'):
                 session_uri = self.relative_uris[rel_uris]
     if session_uri:
-        json_payload, headers, status = self.http_GET(session_uri, rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(session_uri, rq_headers, authorization)
         assertion_status_ = self.response_status_check(session_uri, status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1169,7 +1180,7 @@ def Assertion_9_3_12(self, log) :
     rq_headers = self.request_headers()
     
     #check root service links for session url
-    json_payload, headers, status = self.http_GET(self.Redfish_URIs['Service_Root'], rq_headers, authorization)
+    json_payload, headers, status = self.http_cached_GET(self.Redfish_URIs['Service_Root'], rq_headers, authorization)
     assertion_status_ = self.response_status_check(self.Redfish_URIs['Service_Root'], status, log)      
     # manage assertion status
     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1200,7 +1211,7 @@ def Assertion_9_3_12(self, log) :
         if key in payload:
             try:
                 root_service_link = (payload[key])['@odata.id']
-                json_payload, headers, status = self.http_GET(root_service_link, rq_headers, authorization)
+                json_payload, headers, status = self.http_cached_GET(root_service_link, rq_headers, authorization)
                 assertion_status_ = self.response_status_check(root_service_link, status, log)      
                 # manage assertion status
                 assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1256,7 +1267,7 @@ def Assertion_9_3_13(self, log) :
             if rel_uris.endswith('Sessions'):
                 session_uri = self.relative_uris[rel_uris]
     if session_uri:
-        json_payload, headers, status = self.http_GET(session_uri, rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(session_uri, rq_headers, authorization)
         assertion_status_ = self.response_status_check(session_uri, status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1350,7 +1361,7 @@ def Assertion_9_3_13_1(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris 
 
-    for relative_uri in relative_uris:
+    for relative_uri in cached_uri:
         #/redfish/v1/ can be requested without auth
         if relative_uris[relative_uri] == '/redfish/v1/':
             continue
@@ -1401,7 +1412,7 @@ def Assertion_9_3_15(self, log) :
 
     root_link_key = 'AccountService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1420,7 +1431,7 @@ def Assertion_9_3_15(self, log) :
                 log.assertion_log('line', "~ no accounts collection was returned from GET %s" % self.sut_toplevel_uris[root_link_key]['url'])           
             else:
                 ## Found the key in the payload, try a GET on the link for a response header
-                    json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
+                    json_payload, headers, status = self.http_cached_GET(acc_collection, rq_headers, authorization)
                     assertion_status_ = self.response_status_check(acc_collection, status, log)      
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1477,7 +1488,7 @@ def Assertion_9_3_18(self, log):
     
     root_link_key = 'AccountService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1505,7 +1516,7 @@ def Assertion_9_3_18(self, log):
                     log.assertion_log('line', "Due to the service error stated, POST user Account with privileges/roles and their behavior comparision cannot be tested") 
                 else:
                     ## Found the key in the payload, try a GET on the link for a response header
-                    roles_payload, headers, status = self.http_GET(roles_collection, rq_headers, authorization)
+                    roles_payload, headers, status = self.http_cached_GET(roles_collection, rq_headers, authorization)
                     assertion_status_ = self.response_status_check(roles_collection, status, log)      
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1524,7 +1535,7 @@ def Assertion_9_3_18(self, log):
                             log.assertion_log('line', "Due to the service error stated, POST user Account with privileges/roles and their behavior comparision cannot be tested")  
                         else:             
                             ## Found the key in the payload, try a GET on the link for a response header 
-                            json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
+                            json_payload, headers, status = self.http_cached_GET(acc_collection, rq_headers, authorization)
                             assertion_status_ = self.response_status_check(acc_collection, status, log)      
                             # manage assertion status
                             assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1599,7 +1610,7 @@ def Assertion_9_3_19(self, log):
     
     root_link_key = 'AccountService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1628,7 +1639,7 @@ def Assertion_9_3_19(self, log):
                     log.assertion_log('line', "Due to the service error stated, POST user Account with privileges/roles cannot be tested")  
     
                 else: 
-                    roles_payload, headers, status = self.http_GET(roles_collection, rq_headers, authorization)
+                    roles_payload, headers, status = self.http_cached_GET(roles_collection, rq_headers, authorization)
                     assertion_status_ = self.response_status_check(roles_collection, status, log)      
                     # manage assertion status
                     assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1646,7 +1657,7 @@ def Assertion_9_3_19(self, log):
                             log.assertion_log('line', "Due to the service error stated, POST user Account with privileges/roles cannot be tested") 
                         else:             
                             ## Found the key in the payload, try a GET on the link for a response header 
-                            json_payload, headers, status = self.http_GET(acc_collection, rq_headers, authorization)
+                            json_payload, headers, status = self.http_cached_GET(acc_collection, rq_headers, authorization)
                             assertion_status_ = self.response_status_check(acc_collection, status, log)      
                             # manage assertion status
                             assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1714,7 +1725,7 @@ def Assertion_9_3_20(self, log):
     
     root_link_key = 'AccountService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1741,7 +1752,7 @@ def Assertion_9_3_20(self, log):
                     log.assertion_log('line', "~ \'Accounts\' expected but not found in the payload from GET %s" % (self.sut_toplevel_uris[root_link_key]['url']))   
                 else:
                     ## Found the key in the payload, try a GET on the link for a response header
-                        roles_payload, headers, status = self.http_GET(roles_collection, rq_headers, authorization)
+                        roles_payload, headers, status = self.http_cached_GET(roles_collection, rq_headers, authorization)
                         assertion_status_ = self.response_status_check(roles_collection, status, log)      
                         # manage assertion status
                         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1813,7 +1824,7 @@ def Assertion_9_3_22(self, log):
     # get the collection of user accounts...
     root_link_key = 'AccountService'
     if root_link_key in self.sut_toplevel_uris and self.sut_toplevel_uris[root_link_key]['url']:
-        json_payload, headers, status = self.http_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(self.sut_toplevel_uris[root_link_key]['url'], rq_headers, authorization)
         assertion_status_ = self.response_status_check(self.sut_toplevel_uris[root_link_key]['url'], status, log)      
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -1858,6 +1869,7 @@ def Assertion_9_3_22(self, log):
 ###################################################################################################
 def run(self, log):
     #Section 9 Sessions
+    cacheURI(self)
     assertion_status = Assertion_9_3_1(self, log)
     assertion_status = Assertion_9_3_1_1(self, log)  
     assertion_status = Assertion_9_3_1_2(self, log)  
