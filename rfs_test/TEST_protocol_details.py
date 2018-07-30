@@ -1908,20 +1908,25 @@ def Assertion_6_4_31(self, log) :
                 #get members    
                 for json_payload, headers in sub_members:
                     if 'Actions' in json_payload:
-                        if 'target' in json_payload['Actions']['#LogService.ClearLog']:
-                            target = json_payload['Actions']['#LogService.ClearLog']['target']
-                            log.assertion_log('line', 'Action target %s found' % target)
-                        else:
-                            target = json_payload.get('@odata.id').rstrip('/') + '/Actions/LogService.ClearLog'
+                        try:
+                            if 'target' in json_payload['Actions']['#LogService.ClearLog']:
+                                target = json_payload['Actions']['#LogService.ClearLog']['target']
+                                log.assertion_log('line', 'Action target %s found' % target)
+                            else:
+                                target = json_payload.get('@odata.id').rstrip('/') + '/Actions/LogService.ClearLog'
+                                assertion_status_ = log.WARN
+                                assertion_status = log.status_fixup(assertion_status, assertion_status_)
+                                log.assertion_log('line', 'Warning: Property "target" not found in Actions property, using %s' % target)
+                            log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (target, rq_body))  
+                            json_payload_, headers_, status_ = self.http_POST(target, rq_headers, rq_body, authorization)
+                            print('The status of POST method is %s' %status_)
+                            assertion_status_ = self.response_status_check(target, status_, log, request_type = 'POST')          
+                            # manage assertion status
+                            assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                        except:                                                
                             assertion_status_ = log.WARN
-                            assertion_status = log.status_fixup(assertion_status, assertion_status_)
-                            log.assertion_log('line', 'Warning: Property "target" not found in Actions property, using %s' % target)
-                        log.assertion_log('TX_COMMENT', 'Requesting POST on resource %s with request body %s' % (target, rq_body))  
-                        json_payload_, headers_, status_ = self.http_POST(target, rq_headers, rq_body, authorization)
-                        print('The status of POST method is %s' %status_)
-                        assertion_status_ = self.response_status_check(target, status_, log, request_type = 'POST')          
-                        # manage assertion status
-                        assertion_status = log.status_fixup(assertion_status,assertion_status_)
+                            log.assertion_log('line', ('Could not find any action with #LogService.ClearLog in resource %s' % (json_payload['@odata.id']) ))
+                            return (assertion_status)                          
                         if assertion_status_ != log.PASS:                 
                             log.assertion_log('line', 'POST on action %s at url %s failed' % (target, json_payload['@odata.id']))
                             continue
