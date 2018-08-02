@@ -39,8 +39,8 @@ def run(sut):
         # Run all assertions
         start = time.time()
         TEST_protocol_details.run(sut, log)
-        TEST_security.run(sut, log)
-        TEST_service_details.run(sut, log)
+        #TEST_security.run(sut, log)
+        #TEST_service_details.run(sut, log)
         TEST_datamodel_schema.run(sut, log)
         end = time.time()
         print ("Total Run Time: %d Minutes and %d Seconds." %((end - start)/60, (end - start)%60))
