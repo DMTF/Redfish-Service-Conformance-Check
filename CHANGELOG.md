@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.1.2] - 2018-08-03
+- Added checking for presence of an action before trying to test the action
+
 ## [1.1.1] - 2018-07-16
 - Added caching mechanism to allow for reuse of responses in different tests
 - Reduced the sample size of URIs performed in each test to have the tool run to completion in a shorter amount of time
