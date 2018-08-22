@@ -120,6 +120,10 @@ class SUT():
         self.json_directory = None
         self.xml_directory = None
 
+        # holds cached URIs
+        self.uris = []
+        self.uris_no_members = []
+
     ###############################################################################################
     # Name: self.request_headers()                                                
     #   returns a request header dictionary used globally throughout rfs_check.py thru base
@@ -128,36 +132,43 @@ class SUT():
     def request_headers(self): 
         return rf_utility.create_request_headers()
 
+    def get_and_cache_uris(self, relative_uris, k, payload):
+        authorization = 'on'
+        rq_headers = self.request_headers()
+        uris = []
+        k = min(k, len(relative_uris))
+        sample_keys = random.sample(relative_uris.keys(), k)
+        for key in sample_keys:
+            json_payload, headers, status = self.http_GET(
+                relative_uris[key], rq_headers, authorization)
+            if status == rf_utility.HTTP_OK and isinstance(json_payload, dict) and isinstance(headers, dict):
+                payload[relative_uris[key]] = json_payload
+                payload[relative_uris[key] + '_header'] = headers
+                payload[relative_uris[key] + '_status'] = status
+                uris.append(key)
+            else:
+                print('Error retrieving URI {} - status {}, JSON payload type {}, headers type {}'
+                      .format(relative_uris[key], status, type(json_payload), type(headers)))
+        return uris
+
     ###################################################################################
-    # Name: initalize_cache(self)
+    # Name: initialize_cache(self)
     #   Returns a list of URI's cached by the http GET requests for Redfish API 
     # Returns:
     #   - URI's list: Cached URI's List                                                
     ###################################################################################
-    def initalize_cache(self):
+    def initialize_cache(self):
+        num_uris = int(self.SUT_prop['Number of URI\'s to Cache'])
+        print('Getting {} URIs to sample and caching responses'.format(num_uris))
         relative_uris = self.relative_uris
         relative_uris_no_members = self.relative_uris_no_members
-        authorization = 'on'
-        rq_headers = self.request_headers()
         cache_payload = {}
-        uris = []
-        uris_no_members = []
         with open('cache_uri_data.json', 'w') as fp:
-            for i in range(0, int(self.SUT_prop['Number of URI\'s to Cache'])):
-                relative_uri = random.choice(list(relative_uris.keys()))
-                relative_uri_no_member = random.choice(list(relative_uris_no_members.keys()))
-                json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
-                cache_payload[relative_uris[relative_uri]] = json_payload
-                cache_payload[relative_uris[relative_uri]+'_header'] = headers 
-                cache_payload[relative_uris[relative_uri]+'_status'] = status 
-                uris.append(relative_uri)
-                json_payload, headers, status = self.http_GET(relative_uris_no_members[relative_uri_no_member], rq_headers, authorization)
-                cache_payload[relative_uris_no_members[relative_uri_no_member]] = json_payload
-                cache_payload[relative_uris_no_members[relative_uri_no_member]+'_header'] = headers 
-                cache_payload[relative_uris_no_members[relative_uri_no_member]+'_status'] = status 
-                uris_no_members.append(relative_uri_no_member)
+
+            self.uris = self.get_and_cache_uris(relative_uris, num_uris, cache_payload)
+            self.uris_no_members = self.get_and_cache_uris(relative_uris_no_members, num_uris, cache_payload)
             json.dump(cache_payload, fp, sort_keys=True, indent=4)
-        return uris, uris_no_members
+        print('')
         
     ###############################################################################################
     # Name: http_cached_GET(resource_uri, rq_headers, auth_on_off)                                              

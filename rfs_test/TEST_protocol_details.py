@@ -75,7 +75,8 @@ cached_uri_no_member = None
 def cacheURI(self):
     global cached_uri
     global cached_uri_no_member
-    cached_uri, cached_uri_no_member = self.initalize_cache()
+    cached_uri = self.uris
+    cached_uri_no_member = self.uris_no_members
 
 #####################################################################################################
 # Name: Assertion_1_2_3(self, log)                                               
@@ -5124,8 +5125,7 @@ def Assertion_6_4_24_xml(self, log) :
 # run(self, log):
 # Takes sut obj and logger obj 
 ###################################################################################################
-def run(self, log): 
-    cacheURI(self)  
+def run(self, log):
     assertion_status = Assertion_6_1_0(self,log)
     assertion_status = Assertion_6_1_1(self,log)
     # Assertion 6_1_2 - Each unique instance of a resource shall be identified by a URI; thus a URI cannot reference multiple resources though it may reference a single collection resource.

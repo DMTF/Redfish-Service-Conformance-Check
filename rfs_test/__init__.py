@@ -32,6 +32,10 @@ def run(sut):
     log.init_xl()
     ## Open/initialize the log files
     log.assertion_log('OPEN', None, sut.SUT_prop, sut.Redfish_URIs['Service_Root'])
+    # cache URIs
+    sut.initialize_cache()
+    TEST_datamodel_schema.cacheURI(sut)
+    TEST_protocol_details.cacheURI(sut)
     if 'SingleAssertion' in sut.SUT_prop and len(sut.SUT_prop.get('SingleAssertion')) > 0:
         # Run single assertion
         run_single([TEST_protocol_details, TEST_datamodel_schema], sut, log)
