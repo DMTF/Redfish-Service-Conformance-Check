@@ -4,3 +4,6 @@ __pycache__/
 *.pyc
 redfish-1.0.0/
 .project
+cache_uri_data.json
+data_rel.json
+data_rel_no_mem.json

@@ -55,7 +55,8 @@ cached_uri_no_member = None
 def cacheURI(self):
     global cached_uri
     global cached_uri_no_member
-    cached_uri, cached_uri_no_member = self.initalize_cache()
+    cached_uri = self.uris
+    cached_uri_no_member = self.uris_no_members
 
 ###################################################################################################
 # Name: Assertion_9_3_1(self, log)  Authentication/Sessions                                             
@@ -1869,7 +1870,6 @@ def Assertion_9_3_22(self, log):
 ###################################################################################################
 def run(self, log):
     #Section 9 Sessions
-    cacheURI(self)
     assertion_status = Assertion_9_3_1(self, log)
     assertion_status = Assertion_9_3_1_1(self, log)  
     assertion_status = Assertion_9_3_1_2(self, log)  

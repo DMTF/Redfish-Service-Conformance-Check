@@ -69,8 +69,8 @@ cached_uri_no_member = None
 def cacheURI(self):
     global cached_uri
     global cached_uri_no_member
-    cached_uri, cached_uri_no_member = self.initalize_cache()
-
+    cached_uri = self.uris
+    cached_uri_no_member = self.uris_no_members
 
 #todo: check 7.x via json schemas aswell where applicable..
 ###################################################################################################
@@ -1611,7 +1611,6 @@ def Assertion_7_6_5_1(self, log):
 ###################################################################################################
 def run(self, log):
     #Section 7
-    cacheURI(self)
     assertion_status = Assertion_7_6_1(self, log)
     assertion_status = Assertion_7_0_1(self, log)
     assertion_status = Assertion_7_2_1(self, log)
