@@ -137,6 +137,8 @@ class SUT():
         rq_headers = self.request_headers()
         uris = []
         k = min(k, len(relative_uris))
+        if k <= 0:
+            k = len(relative_uris)  # cache all the URIs
         sample_keys = random.sample(relative_uris.keys(), k)
         for key in sample_keys:
             json_payload, headers, status = self.http_GET(
@@ -158,13 +160,16 @@ class SUT():
     #   - URI's list: Cached URI's List                                                
     ###################################################################################
     def initialize_cache(self):
-        num_uris = int(self.SUT_prop['Number of URI\'s to Cache'])
-        print('Getting {} URIs to sample and caching responses'.format(num_uris))
+        try:
+            # default is zero, meaning cache all the URIs
+            num_uris = int(self.SUT_prop.get('Number of URI\'s to Cache', "0"))
+        except:
+            num_uris = 0
+        print('Getting {} URIs to sample and cache'.format("all" if num_uris <= 0 else num_uris))
         relative_uris = self.relative_uris
         relative_uris_no_members = self.relative_uris_no_members
         cache_payload = {}
         with open('cache_uri_data.json', 'w') as fp:
-
             self.uris = self.get_and_cache_uris(relative_uris, num_uris, cache_payload)
             self.uris_no_members = self.get_and_cache_uris(relative_uris_no_members, num_uris, cache_payload)
             json.dump(cache_payload, fp, sort_keys=True, indent=4)
