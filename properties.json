@@ -31,7 +31,7 @@
         "DnsName": "",
         "DisplayName": "",
         "RedfishVersion": "v1",
-        "Number of URI's to Cache": ""
+        "NumUrisToCache": "25"
       }
     ],
     "Description": "Setup your server (SUT) location/authorization information here:  AllowAction_LogServiceClearLog = yes will allow this Action during test"

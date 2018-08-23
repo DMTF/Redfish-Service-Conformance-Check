@@ -162,7 +162,7 @@ class SUT():
     def initialize_cache(self):
         try:
             # default is zero, meaning cache all the URIs
-            num_uris = int(self.SUT_prop.get('Number of URI\'s to Cache', "0"))
+            num_uris = int(self.SUT_prop.get('NumUrisToCache', "0"))
         except:
             num_uris = 0
         print('Getting {} URIs to sample and cache'.format("all" if num_uris <= 0 else num_uris))
