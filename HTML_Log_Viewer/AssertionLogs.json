@@ -1,0 +1,417 @@
+{
+    "08/30/2018 : 125326": {
+        "0.0.0": {},
+        "6.1.0": {
+            "Description": "All the URI's that are not valid should return 404 which is method not found.",
+            "Status": "PASS"
+        },
+        "6.1.1": {
+            "Description": "A Redfish interface shall be exposed through a web service endpoint implemented using Hypertext Transfer Protocols, version 1.1 (RFCL616).",
+            "Status": "FAIL"
+        },
+        "6.1.2": {
+            "Description": "Each unique instance of a resource shall be identified by a URI; thus a URI cannot reference multiple resources though it may reference a single collection resource.",
+            "Status": "PASS"
+        },
+        "6.1.6": {
+            "Description": "The unique identifier part of a URI shall be unique within the implementation.",
+            "Status": "PASS"
+        },
+        "6.1.7": {
+            "Description": "URIs, as described in RFCL986, may also contain a query (?query) and a frag (#frag) components.  Queries are addressed in the section Query Parameters.  Fragments (frag) shall be ignored by the server when used as the URI for submitting an operation.",
+            "Status": "PASS"
+        },
+        "Summary": {
+            "Cached_URIs": "25",
+            "DNS_Name": "10.9TTU Server.9.1",
+            "Description": "",
+            "Run_Time": "0 Min & 2 Sec"
+        }
+    },
+    "08/30/2018 : 132000": {
+        "0.0.0": {},
+        "6.1.0": {
+            "Description": "All the URI's that are not valid should return 404 which is method not found.",
+            "Status": "PASS"
+        },
+        "6.1.1": {
+            "Description": "A Redfish interface shall be exposed through a web service endpoint implemented using Hypertext Transfer Protocols, version 1.1 (RFCL616).",
+            "Status": "PASS"
+        },
+        "6.1.11": {
+            "Description": "All resources shall be made available using the JSON media type\n  \"application/json\".",
+            "Status": "PASS"
+        },
+        "6.1.12": {
+            "Description": "Redfish services shall make every resource available in a representation based on JSON, as specified in RFC4627. Receivers shall not reject a message because it is encoded in JSON, and shall offer at least one response representation based on JSON.",
+            "Status": "PASS"
+        },
+        "6.1.13": {
+            "Comment": "200:OK is also an acceptable status",
+            "Description": "Clients may request compression by specifying an Accept-Encoding header in the request.\n Responses to GET requests shall only be compressed if requested by the client.\n\n Services should support gzip compression when requested by the client.",
+            "Status": "PASS"
+        },
+        "6.1.14": {
+            "Description": "Implementations should support returning ETag headers for each response that represents a single resource.  Implementations shall support returning ETag headers for certain requests and responses as listed in the Security section.",
+            "Status": "WARN"
+        },
+        "6.1.2": {
+            "Description": "Each unique instance of a resource shall be identified by a URI; thus a URI cannot reference multiple resources though it may reference a single collection resource.",
+            "Status": "PASS"
+        },
+        "6.1.6": {
+            "Description": "The unique identifier part of a URI shall be unique within the implementation.",
+            "Status": "PASS"
+        },
+        "6.1.7": {
+            "Description": "URIs, as described in RFCL986, may also contain a query (?query) and a frag (#frag) components.  Queries are addressed in the section Query Parameters.  Fragments (frag) shall be ignored by the server when used as the URI for submitting an operation.",
+            "Status": "PASS"
+        },
+        "6.1.8.2": {
+            "Description": "\nGET\nObject or Collection retrieval\nYes\n",
+            "Status": "PASS"
+        },
+        "6.1.8.3": {
+            "Comment": "~ note: PATCH could not be verified",
+            "Description": "\nPATCH\nObject update\nYes\n",
+            "Status": "WARN"
+        },
+        "6.1.8.4": {
+            "Comment": "DEBUG response headers: Location: /redfish/v1/Sessions/80; X-Auth-Token: 957eef3acaac14ea282c43065ed7fb7b",
+            "Description": "\nDELETE\nObject delete\nYes\n",
+            "Status": "PASS"
+        },
+        "6.1.9": {
+            "Description": "<PUT and HEAD may be also be supported> - Other HTTP methods are not allowed and shall receive a 405 response.",
+            "Status": "PASS"
+        },
+        "6.2.3": {
+            "Description": "A GET on the resource \"/redfish\" shall return the following body:\njson { \"v1\": \"/redfish/v1/\" } ",
+            "Status": "PASS"
+        },
+        "6.3.1": {
+            "Comment": "~ GET /redfish/v1/$metadata : HTTP status 200:OK",
+            "Description": "Redfish is a hypermedia API with a small set of defined URIs.  All other resources are accessible via opaque URIs referenced from the root service.  The following Redfish-defined URIs shall be supported by a Redfish service:\n\n/redfish The URI that is used to return the version \n/redfish/v1/ The URI for the Redfish Service Root \n/redfish/v1/odata The URI for the Redfish OData Service Document \n/redfish/v1/$metadata The URI for the Redfish Metadata Document ",
+            "Status": "PASS"
+        },
+        "6.3.2": {
+            "Description": "In addition, the following URI without a trailing slash shall be either Redirected to the Associated Redfish-defined URI shown in the table below or else shall be treated by the service as the equivalent URI to the associated Redfish-defined URI:\n\n/redfish/v1     /redfish/v1/ ",
+            "Status": "PASS"
+        },
+        "6.3.3": {
+            "Description": "All relative URIs used by the service shall start with a double forward slash (\"//\") and include the authority (e.g. //mgmt.vendor.com/redfish/v1/Systems) or a single forward slash (\"/\") and include the absolute-path (e.g. /redfish/v1/Systems).",
+            "Status": "PASS"
+        },
+        "6.4.1": {
+            "Description": "Redfish services shall understand and be able to process the headers in the following table as defined by the HTTP 1.1 specification if the value in the Required column is set to \"Yes\".",
+            "Status": "PASS"
+        },
+        "6.4.13": {
+            "Description": "Implementation shall return the 501, Not Implemented, status code for any query parameters starting with \"$\" that are not supported, and should return an extended error indicating the requested query parameter(s) not supported for this resource.",
+            "Status": "PASS"
+        },
+        "6.4.14": {
+            "Description": "Implementations shall ignore unknown or unsupported query parameters that do not begin with \"$\".",
+            "Status": "PASS"
+        },
+        "6.4.16": {
+            "Description": "Retrieved collections shall always include the count property to specify the total number of members in the collection.",
+            "Status": "PASS"
+        },
+        "6.4.18": {
+            "Description": "The HEAD method differs from the GET method in that it MUST NOT return message body information.  However, all of the same meta information and status codes in the HTTP headers will be returned as though a GET method were processed, including authorization checks.",
+            "Status": "PASS"
+        },
+        "6.4.2.1": {
+            "Comment": "~ GET /redfish/v1/$metadata with Accept type 'application/xml'",
+            "Description": "\nAccept\nYes\nRFC 2616, Section 14.1\nIndicates to the server what media type(s) this client is prepared to accept. application/json shall be supported for requesting resources and application/xml shall be supported for requesting metadata.\n",
+            "Status": "PASS"
+        },
+        "6.4.2.2": {
+            "Comment": "2nd POST returned status 201",
+            "Description": "\nContent-Type\nConditional\nRFC 2616, Section 14.17\nDescribes the type of representation used in the message body.  charset=utf-8 shall be supported for requests that have a body.  Shall be required if there is a request body.\n",
+            "Status": "PASS"
+        },
+        "6.4.2.3": {
+            "Comment": "~ GET: /redfish/v1/ HTTP status 200:OK with request header: OData-Version and incorrect value: 3.0 passed, which is an unexpected behavior",
+            "Description": "\nOData-Version\nYes\n4.0\nServices shall reject requests which specify an unsupported OData version.\n",
+            "Status": "FAIL"
+        },
+        "6.4.2.4": {
+            "Description": "\nAuthorization\nconditional\n4.0\nRequired for [Basic Authorization\n",
+            "Status": "PASS"
+        },
+        "6.4.2.5": {
+            "Description": "\nUser-Agent\nYes\nRFC 2616, Section 14.43\nRequired for tracing product tokens and their version.  Multiple product tokens may be listed.\n",
+            "Status": "PASS"
+        },
+        "6.4.2.6": {
+            "Description": "\nHost\nYes\nRFC 2616, Section 14.23\nRequired to allow support of multiple origin hosts at a single IP address.\n",
+            "Status": "PASS"
+        },
+        "6.4.21": {
+            "Comment": "~ note: Modifications to resource using If-None-Match header without Etag cannot be tested",
+            "Description": "Clients create, modify, and delete resources by issuing the appropriate Create, Update, Replace or Delete operation, or by invoking an Action on the resource. Services return a status code 405 if the specified resource exists but does not support the requested operation. ",
+            "Status": "WARN"
+        },
+        "6.4.23": {
+            "Description": "Services shall support the PATCH method to update a resource. If the resource can never be updated, status code 405 shall be returned.",
+            "Status": "PASS"
+        },
+        "6.4.24": {
+            "Description": "If a property in the request can never be updated, such as when a property is read only, a status code of 200 shall be returned along with a representation of the resource containing an annotation specifying the non-updatable property. In this success case, other properties may be updated in the resource.",
+            "Status": "PASS"
+        },
+        "6.4.25": {
+            "Comment": "~ note: Modifications to resource using If-None-Match header without Etag cannot be tested",
+            "Description": "Services may support the PUT method to replace a resource in whole.  If a service does not implement this method, status code 405 shall be returned.",
+            "Status": "WARN"
+        },
+        "6.4.26": {
+            "Comment": "~ POST:/redfish/v1/Sessions/Members failed : HTTP status 400:Bad Request, Expected statuses: [200, 201, 202, 204]",
+            "Description": "Submitting a POST request to a resource representing a collection is equivalent to submitting the same request to the Members property of that resource. Services that support adding members to a collection shall support both forms.",
+            "Status": "FAIL"
+        },
+        "6.4.27": {
+            "Comment": "/redfish/v1/ does not support creating resources. Received status 405 from POST",
+            "Description": "Services shall support the POST method for creating resources. If the resource does not offer anything to be created, a status code 405 shall be returned.",
+            "Status": "PASS"
+        },
+        "6.4.30": {
+            "Description": "Services shall support the DELETE method for resources that can be deleted. If the resource can never be deleted, status code 405 shall be returned.",
+            "Status": "PASS"
+        },
+        "6.4.32": {
+            "Comment": "Note: assertions 6.4.31 and 6.4.32 skipped as per json configuration file setting\n",
+            "Description": "Custom actions are requested on a resource by sending the HTTP POST method to the URI of the action. If the actions property within a resource does not specify a target property, then the URI of an action shall be of the form:\n\nResourceUri/Actions/QualifiedActionName",
+            "Status": "WARN"
+        },
+        "6.4.4": {
+            "Description": "The HTTP GET method shall be used to retrieve a resource without causing any side effects.",
+            "Status": "PASS"
+        },
+        "6.4.5": {
+            "Description": "The service shall ignore the content of the body on a GET.",
+            "Status": "PASS"
+        },
+        "6.5.1": {
+            "Comment": "Note: header[x-frame-options] not listed in Redfish spec but found in response header of resource /redfish/v1/",
+            "Description": "Redfish services shall be able to return the headers in the following table as defined by the HTTP 1.1 specification if the value in the Required column is set to \"yes\" .",
+            "Status": "PASS"
+        },
+        "6.5.10": {
+            "Description": "The OData Service Document shall be returned as a JSON object, using the MIME type application/json.",
+            "Status": "PASS"
+        },
+        "6.5.11": {
+            "Description": "The JSON object shall contain a context property named \"@odata.context\" with a value of \"/redfish/v1/$metadata\". This context tells a generic OData client how to find the service metadata describing the types exposed by the service.",
+            "Status": "PASS"
+        },
+        "6.5.12": {
+            "Description": "The JSON object shall include a property named \"value\" whose value is a JSON array containing an entry for the service root and each resource that is a direct child of the service root.",
+            "Status": "PASS"
+        },
+        "6.5.13": {
+            "Description": "Each entry shall be represented as a JSON object and shall include a \"name\" property whose value is a user-friendly name of the resource, a \"kind\" property whose value is \"Singleton\" for individual resources (including collection resources) or \"EntitySet\" for top-level resource collections, and a \"url\" property whose value is the relative URL for the top-level resource.",
+            "Status": "PASS"
+        },
+        "6.5.14": {
+            "Description": "Responses that represent a single resource shall contain a context property named \"@odata.context\" describing the source of the payload. The value of the context property shall be the context URL that describes the resource according to OData-Protocol.",
+            "Status": "PASS"
+        },
+        "6.5.17": {
+            "Description": "Resources in a response shall include a unique identifier property named \"@odata.id\". The value of the identifier property shall be the unique identifier for the resource.",
+            "Status": "PASS"
+        },
+        "6.5.18": {
+            "Description": "Resources identifiers shall be represented in JSON payloads as strings that conform to the rules for URI paths as defined in Section 3.3, Path of RFCL986.",
+            "Status": "PASS"
+        },
+        "6.5.2.6": {
+            "Comment": "Requesting POST for resource /redfish/v1/Sessions with request body {'UserName': 'root', 'Password': 'redfish'}",
+            "Description": "\nLocation\nConditional\nRFC 2616, Section 14.30\nIndicates a URI that can be used to request a representation of the resource.  Shall be returned if a new resource was created.  Location and X-Auth-Token shall be included on responses which create user sessions.\n",
+            "Status": "PASS"
+        },
+        "6.5.2.6.1": {
+            "Comment": "Requesting POST for resource /redfish/v1/Sessions with request body {'UserName': 'root', 'Password': 'redfish'}",
+            "Description": " ",
+            "Status": "PASS"
+        },
+        "6.5.20": {
+            "Description": "Primitive properties shall be returned as JSON values according to the following table.\n\nType    JSON Representation\n\nEdm.Boolean     Boolean \nEdm.DateTimeOffset    String, formatted as specified in DateTime Values \nEdm.Decimal     Number, optionally containing a decimal point \nEdm.Double     Number, optionally containing a decimal point and optionally containing an exponent \nEdm.Guid     String, matching the pattern ([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}) \nEdm.Int64     Number with no decimal point \nEdm.String     String \n",
+            "Status": "PASS"
+        },
+        "6.5.21": {
+            "Description": "DateTime values shall be returned as JSON strings according to the ISO 8601 \"extended\" format, with time offset or UTC suffix included, of the form:\nYYYY-MM-DD T hh:mm:ss[.SSS] (Z | (+ | - ) hh:mm)",
+            "Status": "PASS"
+        },
+        "6.5.23": {
+            "Description": "Collection-valued properties may contain a subset of the members of the full collection. In this case, the collection-valued property shall be annotated with a next link property. The property representing the next link shall be a peer of the collection-valued property, with the name of the collection-valued property suffixed with \"@odata.nextLink\". . The value of the next link property shall be an opaque URL that the client can use to retrieve the next set of collection members",
+            "Status": "PASS"
+        },
+        "6.5.23.1": {
+            "Description": "The next link property shall only be present if the number of resources requested is greater than the number of resources returned.",
+            "Status": "PASS"
+        },
+        "6.5.24": {
+            "Description": "Collection-valued properties shall be annotated with a count. The property representing the count is a peer of the collection-valued property, with the name of the collection-valued property suffixed with \"Members@odata.count\". The value of the count is the total number of members available in the collection.",
+            "Status": "PASS"
+        },
+        "6.5.25": {
+            "Description": "Collection-valued properties shall not be null. Empty collections shall be returned in JSON as an empty array.",
+            "Status": "PASS"
+        },
+        "6.5.26": {
+            "Description": "Actions are represented by a property nested under \"Actions\" whose name is the unique URI that identifies the action. This URI shall be of the form:\n#Namespace.ActionName\nwhere\n\u2022 Namespace = The namespace used in the reference to the Redfish Schema in which the action is defined. For Redfish resources this shall be the version-independent namespace.\n\u2022 ActionName = The name of the action",
+            "Status": "PASS"
+        },
+        "6.5.28": {
+            "Description": "The links property shall be named \"Links\" and shall contain a property for each non-contained reference property defined in the Redfish Schema for that type. For single-valued reference properties, the value of the property shall be the single related resource id. For collection-valued reference properties, the value of the property shall be the array of related resource ids.",
+            "Status": "PASS"
+        },
+        "6.5.3": {
+            "Description": "The Link header provides metadata information on the\naccessed resource in response to a HEAD or GET operation. In addition to\nlinks from the resource, the URL of the JSON schema for the resource shall be\nreturned with a rel=describedby. ",
+            "Status": "PASS"
+        },
+        "6.5.35": {
+            "Description": "Responses representing a single resource shall not be broken into multiple results.",
+            "Status": "PASS"
+        },
+        "6.5.6.10": {
+            "Description": "\n401 Unauthorized \nThe authentication credentials included with this request are missing or invalid\n",
+            "Status": "PASS"
+        },
+        "6.5.6.2": {
+            "Description": "\n200 OK\nThe request was successfully completed and includes a representation in its body.\n",
+            "Status": "PASS"
+        },
+        "6.5.6.3": {},
+        "6.5.6.5": {
+            "Description": "\n204 No Content\nThe request succeeded, but no content is being returned in the body of the response.\n",
+            "Status": "PASS"
+        },
+        "6.5.6.6": {
+            "Comment": "Unable to verify 301 Moved Permanently behavior. No 301 response status returned.",
+            "Description": "\n301 Moved Permanently \nThe requested resource resides under a different URI\n",
+            "Status": "PASS (Incomplete). Check Log for details"
+        },
+        "6.5.6.8": {
+            "Description": "\n304 Not Modified\nThe service has performed a conditional GET request where access is allowed, but the resource content has not changed. Conditional requests are initiated using the headers If-Modified-Since and/or If-None-Match (see HTTP 1.1, sections 14.25 and 14.26) to save network bandwidth if there is no change.\n",
+            "Status": "PASS"
+        },
+        "6.5.6.9": {
+            "Comment": "~ note: 400 response did not include extended error in the body",
+            "Description": "\n400 Bad Request\nThe request could not be processed because it contains missing or invalid information (such as validation error on an input field, a missing required value, and so on). An extended error shall be returned in the response body, as defined in section Extended Error Handling.\n",
+            "Status": "FAIL"
+        },
+        "6.5.8": {
+            "Comment": "In the metadadata document, included Namespace RedfishExtensions.v1_0_0 is missing the required Redfish Alias",
+            "Description": "The service metadata shall include the namespaces for each of the Redfish resource types, along with the \"RedfishExtensions.1.0.0\" namespace. These references may use the standard Uri for the hosted Redfish Schema definitions (i.e., on http://redfish.dmtf.org/schema) or a Url to a local version of the Redfish Schema that shall be identical to the hosted version.",
+            "Status": "FAIL"
+        },
+        "6.5.9": {
+            "Description": "The service metadata shall include an entity container that defines the top level resources and Resource\nCollections. An implementation may extend the ServiceContainer defined in the ServiceRoot.v1_0_0\nschema and may include additional resources.",
+            "Status": "PASS"
+        },
+        "7.0.1": {
+            "Description": "Each resource shall be strongly typed according to a resource type definition. The type shall be defined in a Redfish schema document and identified by a unique type identifier.",
+            "Status": "PASS"
+        },
+        "7.2.1": {
+            "Description": "Types used within a JSON payload shall be defined in, or referenced, by the metadata document.",
+            "Status": "PASS"
+        },
+        "7.3.0": {
+            "Description": "Resource Name, Property Names, and constants such as Enumerations shall be Pascal-cased\n The first letter of each word shall be upper case with spaces between words shall be removed  (eg PowerState, SerialNumber.)\n No underscores are used.\n Both characters are capitalized for two-character acronyms (eg IPAddress, RemoteIP)\n Only the first character of acronyms with three or more characters is capitalized, except the first word of a Pascal-cased identifier (eg Wwn, VirtualWwn)",
+            "Status": "PASS"
+        },
+        "7.5.1.3": {
+            "Description": " ",
+            "Status": "PASS"
+        },
+        "7.5.10": {
+            "Description": "Enumeration Members shall include Description annotations.",
+            "Status": "PASS"
+        },
+        "7.5.11": {
+            "Description": "The AdditionalProperties annotation term is used to specify whether a type can contain additional properties outside of those defined. Types annotated with the AdditionalProperties annotation with a Boolean attribute with a value of \"False\", must not contain additional properties.",
+            "Status": "PASS"
+        },
+        "7.5.13": {
+            "Description": "Required properties shall be annotated with the Required annotation, or annotated with a Nullable attribute with a value of \"false\". ",
+            "Status": "PASS"
+        },
+        "7.5.14": {
+            "Description": "If an implementation supports a property, it shall always provide a value for that property. If a value is\nunknown, then null is an acceptable values in most cases.",
+            "Status": "PASS"
+        },
+        "7.5.14.1": {
+            "Description": "Properties not returned from a GET operation shall indicate that the property is not currently supported by the\nimplementation",
+            "Status": "PASS"
+        },
+        "7.5.15": {
+            "Description": "In addition to following naming conventions, properties representing units of measure shall be annotated with the Units annotation term in order to specify the units of measurement for the property.",
+            "Status": "PASS"
+        },
+        "7.5.16": {
+            "Comment": "~ NavigationProperty: Members, Type: Collection(Zone.Zone) and any of its parent BaseType resources (based on inheritance) does not have annotation 'OData.LongDescription' in its OData schema representation document: redfish-1.0.0/metadata/ZoneCollection_v1.xml",
+            "Description": "All reference properties shall include Description and LongDescription annotations.",
+            "Status": "FAIL"
+        },
+        "7.5.2": {
+            "Description": "The outer element of the OData Schema representation document shall be the Edmx element, and shall have a Version attribute with a value of \"4.0\".",
+            "Status": "PASS"
+        },
+        "7.5.3": {
+            "Comment": "~ Resource: ZoneCollection, BaseType: Resource.v1_0_0.ResourceCollection and any of its parent BaseType resources (based on inheritance) does not have annotation 'OData.LongDescription' in its OData schema representation document: redfish-1.0.0/metadata/ZoneCollection_v1.xml",
+            "Description": "All resources shall include Description and LongDescription annotations.",
+            "Status": "FAIL"
+        },
+        "7.5.5": {
+            "Comment": "~ Property: Oem, Type: Zone.v1_1_0.OemActions and any of its parent Type resources (based on inheritance) does not have annotation 'OData.LongDescription' in its OData schema representation document: redfish-1.0.0/metadata/Zone_v1.xml",
+            "Description": "All properties shall include Description and LongDescription annotations.",
+            "Status": "FAIL"
+        },
+        "7.5.6": {
+            "Description": "Properties that are read-only are annotated with the Permissions annotation with a value of ODataPermissions/Read",
+            "Status": "PASS"
+        },
+        "7.5.7": {
+            "Comment": "~ Property: Name, Type: Edm.String and any of its parent Type resources (based on inheritance) does have annotation 'Redfish.Required' in its OData schema representation document which is a required property: redfish-1.0.0/metadata/SimpleStorage_v1.xml",
+            "Description": "Properties that are required to be implemented by all services are annotated with the required annotation.",
+            "Status": "PASS"
+        },
+        "7.5.8": {
+            "Comment": "~ ComplexType: MaintenanceWindow, BaseType: None and any of its parent BaseType resources (based on inheritance) does not have annotation 'OData.LongDescription' in its OData schema representation document: redfish-1.0.0/metadata/Settings_v1.xml",
+            "Description": "Structured types shall include Description and LongDescription annotations.",
+            "Status": "FAIL"
+        },
+        "7.5.9": {
+            "Comment": "~ EnumType: EncryptionTypes within Schema Namespace: Volume.v1_0_0 does not have annotation 'OData.LongDescription' in its OData schema representation document: redfish-1.0.0/metadata/Volume_v1.xml",
+            "Description": "Enumeration Types shall include Description and LongDescription annotations.",
+            "Status": "FAIL"
+        },
+        "7.6.1": {
+            "Description": "The Id property of a resource identifies the resource within a collection.  The value of Id shall be unique across a collection.",
+            "Status": "PASS"
+        },
+        "7.6.2": {
+            "Description": "The Name property is used to convey a human readable moniker for a resource.  The type of the Name property shall be string.  The value of Name is NOT required to be unique across resource instances within a collection.",
+            "Status": "PASS"
+        },
+        "7.6.3": {
+            "Description": "The Description property is used to convey a human readable description of the resource.  The type of the Description property shall be string.",
+            "Status": "PASS"
+        },
+        "7.6.5.1": {
+            "Description": " All associated reference properties defined for a resource shall be nested under the links property.  ",
+            "Status": "PASS"
+        },
+        "Summary": {
+            "Cached_URIs": "25",
+            "DNS_Name": "10.9.1.1",
+            "Description": "TTU Server",
+            "Run_Time": "5 Min & 27 Sec"
+        }
+    }
+}

@@ -5138,7 +5138,7 @@ def run(self, log):
     assertion_status = Assertion_6_1_7(self, log)
     # Create/update/delete an Account: these next 3 assertions need to be run in series
     # ...POST/create a new session for the account and it calls internally 6.1.8.1.1 and 6.1.8.1.2
-    assertion_status = Assertion_6_1_8_1(self, log)
+    #assertion_status = Assertion_6_1_8_1(self, log)
     # ...GET account collection
     assertion_status = Assertion_6_1_8_2(self, log)
     # ...PATCH/update the new account note: this assertion expects 6_1_8_1 to run prior to this
