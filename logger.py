@@ -56,7 +56,6 @@ class Log:
         self.WARN = 'WARN'
         self.FAIL = 'FAIL'
         self.INCOMPLETE = 'PASS (Incomplete). Check Log for details' # to remove
-        self.assertionJSN = [dict()]
 
         # Redfish latest spec url
         self.RedfishSpecHyperlinkPath = 'https://www.dmtf.org/sites/default/files/standards/documents/DSP0266_1.0.2.pdf'
@@ -328,7 +327,13 @@ class Log:
     ################################################################################################
     def assertion_log(self, log_control, log_string, SUT_prop = None, service_root = None) :
 
+        # Initialized a data dictionary that stores induvidual rules per tool
+        # run.
+
         data = {}
+
+        # Checks if log.json exists, which store temporary data while the tool
+        # is still running.
 
         if not os.path.isfile('log.json'):
             with open('log.json', mode='w') as fw:
@@ -338,6 +343,9 @@ class Log:
             data = json.load(fr)
 
         assertion_id = self.AssertionID
+
+        # Initalized a dictionary to store key: Rule and values: Comment,
+        # Description and Status
 
         singleRule = {}
 
@@ -468,6 +476,9 @@ class Log:
 
             assertionResult[dstr] = data
 
+            # Writes assertion data to a global AssertionLogs.json file that is
+            # processed by the HTML log viewer.
+
             with open('HTML_Log_Viewer/AssertionLogs.json', mode='w') as fw:
                 json.dump(assertionResult, fw, sort_keys=True, indent=4)
 
@@ -541,6 +552,7 @@ class Log:
 
             singleRule['Comment'] = log_string
 
+        # Temporary storage of a rule
         with open('log.json', 'w') as fw:
             json.dump(data, fw, sort_keys=True, indent=4)
 
