@@ -55,6 +55,7 @@ class Log:
         self.PASS = 'PASS'
         self.WARN = 'WARN'
         self.FAIL = 'FAIL'
+        self.INFO = 'INFO'
         self.INCOMPLETE = 'PASS (Incomplete). Check Log for details' # to remove
 
         # Redfish latest spec url
@@ -83,6 +84,7 @@ class Log:
 
         ## assertions xlxs spreadsheet support - color fills for pass/warn/fail status
         self.xl_PASS = PatternFill(fill_type='solid', start_color=colors.GREEN, end_color=colors.GREEN)
+        self.xl_INFO = PatternFill(fill_type='solid', start_color=colors.BLUE, end_color=colors.BLUE)
         self.xl_WARN = PatternFill(fill_type='solid', start_color=colors.YELLOW, end_color=colors.YELLOW)
         self.xl_FAIL = PatternFill(fill_type='solid', start_color=colors.RED, end_color=colors.RED)
         self.xl_INCOMPLETE = PatternFill(fill_type='solid', start_color=colors.GREEN, end_color=colors.GREEN) # to remove or fix
@@ -110,6 +112,7 @@ class Log:
             self.PASS : 0,\
             self.WARN : 0,\
             self.FAIL : 0,\
+            self.INFO : 0,\
             self.INCOMPLETE : 0
         }
 
@@ -272,11 +275,11 @@ class Log:
     # Name: assert_xl(assertion_id, pwf_stat)
     #   Takes an assertion id as a key (string), locate the row in the spreadsheet containing
     #   the assertion description text and return that text - mark pass fail warn status in the
-    #   spreadsheet depending upon setting of pwf_stat to 'PASS', 'FAIL', 'WARN' or None;
+    #   spreadsheet depending upon setting of pwf_stat to 'PASS', 'FAIL', 'WARN', 'INFO' or None;
     #       - if 'NONE' then just return the assertion description from the spreadsheet for the
     #         assertion ID match
-    #       - if 'PASS' 'FAIL' or 'WARN' then mark an assertion cell in the assertion xl file
-    #         green/yellow/red depending on pass/warn/fail
+    #       - if 'PASS' 'FAIL' 'INFO' or 'WARN' then mark an assertion cell in the assertion xl file
+    #         green/yellow/red/blue depending on pass/warn/fail/info
     # Returns:
     #   on assertion id match...  return the description of the assertion as read from
     #       the spreadsheet; else return ' '
@@ -301,6 +304,8 @@ class Log:
                 asx_handle.cell(row=zrow, column=self.Assertion_ID_column).fill = self.xl_FAIL
             elif (pwf_stat == self.INCOMPLETE):
                 asx_handle.cell(row=zrow, column=self.Assertion_ID_column).fill = self.xl_PASS
+            elif (pwf_stat == self.INFO):
+                asx_handle.cell(row=zrow, column=self.Assertion_ID_column).fill = self.xl_INFO
 
             self.save_assertions_xl()
 
@@ -431,6 +436,7 @@ class Log:
             self.Assertion_Counter[self.FAIL] = 0
             self.Assertion_Counter[self.WARN] = 0
             self.Assertion_Counter[self.INCOMPLETE] = 0
+            self.Assertion_Counter[self.INFO] = 0
 
             #
             ## End open/initialize log files
@@ -438,7 +444,7 @@ class Log:
         elif (log_control == 'CLOSE'):
             self.AssertionID = None
             # log the tally of pass/warn/fail stats and close the log files
-            completion_str = '\n Assertions Stats:\n Passed= %s Warn= %s Failed= %s \n Total Assertions Run= %s' % (str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE]), str(self.Assertion_Counter[self.WARN]), str(self.Assertion_Counter[self.FAIL]), str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE] + self.Assertion_Counter[self.WARN] + self.Assertion_Counter[self.FAIL]))
+            completion_str = '\n Assertions Stats:\n Passed= %s Warn= %s Failed= %s Info= %s \n Total Assertions Run= %s' % (str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE]), str(self.Assertion_Counter[self.WARN]), str(self.Assertion_Counter[self.FAIL]), str(self.Assertion_Counter[self.INFO]), str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE] + self.Assertion_Counter[self.WARN] + self.Assertion_Counter[self.FAIL] + self.Assertion_Counter[self.INFO])
 
             #self.assertion_log('line', completion_str)
             #self.assertion_log('XL_LOG_HEADER', completion_str)
@@ -506,7 +512,7 @@ class Log:
 
         # pass fail to the text log file and color code the assertion row in the assertion spreadsheet
         # and increment pass/warn/fail counters
-        elif (log_control == self.PASS) or (log_control == self.WARN) or (log_control == self.FAIL) or (log_control == self.INCOMPLETE):
+        elif (log_control == self.PASS) or (log_control == self.WARN) or (log_control == self.FAIL) or (log_control == self.INCOMPLETE) or (log_control == self.INFO):
             # mark/color the assertion id column of the spreadsheet and get the description text
             # for the assertion
             assertion_description = self.assert_xl(assertion_id, log_control)
@@ -602,14 +608,16 @@ class Log:
 
     ###############################################################################################
     # Name: status_fixup()
-    #   Takes 2 status strings and returns status giving precendence in the order FAIL, WARN, INCOMPLETE, PASS
+    #   Takes 2 status strings and returns status giving precendence in the order FAIL, WARN, INCOMPLETE, INFO,  PASS
     ###############################################################################################
     def status_fixup(self, assertion_status, assertion_status_):
-        if assertion_status == self.FAIL and (assertion_status_ == self.WARN or assertion_status_ == self.INCOMPLETE or assertion_status_ == self.PASS):
+        if assertion_status == self.FAIL and (assertion_status_ == self.WARN or assertion_status_ == self.INCOMPLETE or assertion_status_ == self.PASS or assertion_status_ == self.INFO):
             return assertion_status
-        if assertion_status == self.WARN and (assertion_status_ == self.INCOMPLETE or assertion_status_ == self.PASS):
+        if assertion_status == self.WARN and (assertion_status_ == self.INCOMPLETE or assertion_status_ == self.PASS or assertion_status_ == self.INFO):
             return assertion_status
-        if assertion_status == self.INCOMPLETE and (assertion_status_ == self.PASS):
+        if assertion_status == self.INCOMPLETE and (assertion_status_ == self.PASS or assertion_status_ == self.INFO):
+            return assertion_status
+        if assertion_status == self.INFO and (assertion_status_ == self.PASS):
             return assertion_status
 
         return assertion_status_
