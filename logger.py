@@ -444,7 +444,7 @@ class Log:
         elif (log_control == 'CLOSE'):
             self.AssertionID = None
             # log the tally of pass/warn/fail stats and close the log files
-            completion_str = '\n Assertions Stats:\n Passed= %s Warn= %s Failed= %s Info= %s \n Total Assertions Run= %s' % (str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE]), str(self.Assertion_Counter[self.WARN]), str(self.Assertion_Counter[self.FAIL]), str(self.Assertion_Counter[self.INFO]), str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE] + self.Assertion_Counter[self.WARN] + self.Assertion_Counter[self.FAIL] + self.Assertion_Counter[self.INFO])
+            completion_str = '\n Assertions Stats:\n Passed= %s Warn= %s Failed= %s Info= %s \n Total Assertions Run= %s' % (str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE]), str(self.Assertion_Counter[self.WARN]), str(self.Assertion_Counter[self.FAIL]), str(self.Assertion_Counter[self.INFO]), str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE] + self.Assertion_Counter[self.WARN] + self.Assertion_Counter[self.FAIL] + self.Assertion_Counter[self.INFO]))
 
             #self.assertion_log('line', completion_str)
             #self.assertion_log('XL_LOG_HEADER', completion_str)
