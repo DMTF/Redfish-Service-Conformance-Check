@@ -28,11 +28,13 @@ import shutil
 from datetime import datetime
 import sys
 import os
+import json
+import time
 
-## openpyxl is not a default install for python - you will need to install it using 'pip'... 
+## openpyxl is not a default install for python - you will need to install it using 'pip'...
 # -- to install it...
-# cd to where your python.exe is and into the /Scripts subdirectory to run pip.exe... and if 
-# you are behind a firewall you may need to specify a proxy server to get to the installation 
+# cd to where your python.exe is and into the /Scripts subdirectory to run pip.exe... and if
+# you are behind a firewall you may need to specify a proxy server to get to the installation
 # server..
 # dos_box>  pip --proxy <hostname>:<port> install openpyxl
 
@@ -41,17 +43,19 @@ from openpyxl.styles import Alignment, Side, Border, colors, PatternFill, Font
 
 ###################################################################################################
 # Class: Log
-#   This class contatins text and excel sheet logging related functions below are controls for 
+#   This class contatins text and excel sheet logging related functions below are controls for
 #   accessing the spreadsheet cells...
-###################################################################################################     
-class Log:         
+###################################################################################################
+class Log:
+
     def __init__(self):
-        # tracking tool release revision with a date stamp -  month:day:year   
+        # tracking tool release revision with a date stamp -  month:day:year
         self.RedfishServiceCheck_Revision = "07.11.16"
         # assertion status
         self.PASS = 'PASS'
         self.WARN = 'WARN'
         self.FAIL = 'FAIL'
+        self.INFO = 'INFO'
         self.INCOMPLETE = 'PASS (Incomplete). Check Log for details' # to remove
 
         # Redfish latest spec url
@@ -68,29 +72,30 @@ class Log:
 
     ###############################################################################################
     # Name: init_xl
-    #   initializes variables required for assertion excel sheet control functions and necc paths 
+    #   initializes variables required for assertion excel sheet control functions and necc paths
     #   for source and destination excel sheet
     ###############################################################################################
-    def init_xl(self):  
+    def init_xl(self):
         self.XlAssertionSheet = 0
         self.XlAssertionWb = 0
 
         self.RedfishHyperlinkRow = 4
         self.RedfishHyperlinkCol = 2
-        
+
         ## assertions xlxs spreadsheet support - color fills for pass/warn/fail status
         self.xl_PASS = PatternFill(fill_type='solid', start_color=colors.GREEN, end_color=colors.GREEN)
+        self.xl_INFO = PatternFill(fill_type='solid', start_color=colors.BLUE, end_color=colors.BLUE)
         self.xl_WARN = PatternFill(fill_type='solid', start_color=colors.YELLOW, end_color=colors.YELLOW)
         self.xl_FAIL = PatternFill(fill_type='solid', start_color=colors.RED, end_color=colors.RED)
         self.xl_INCOMPLETE = PatternFill(fill_type='solid', start_color=colors.GREEN, end_color=colors.GREEN) # to remove or fix
-        
+
         ## alignment and word wrap - used when writing the log header to the top of the spreadsheet
         self.xl_Alignment = Alignment(horizontal='center',\
 				    vertical='center',\
 				    text_rotation=0,\
 				    wrap_text=True,\
 				    shrink_to_fit=False,\
-				    indent=0)        
+				    indent=0)
 
         ## log header row/col location
         self.assertion_logHeaderRow = 1
@@ -107,19 +112,20 @@ class Log:
             self.PASS : 0,\
             self.WARN : 0,\
             self.FAIL : 0,\
+            self.INFO : 0,\
             self.INCOMPLETE : 0
         }
 
-        ## set to ID of Assertion currently being run - this becomes the 'key' into the spreadsheet 
+        ## set to ID of Assertion currently being run - this becomes the 'key' into the spreadsheet
         ## to locate the assertion text
         self.AssertionID = '0.0.0'
 
-        # Following are the expected folder/file names by the tool. If these folder/file names are 
+        # Following are the expected folder/file names by the tool. If these folder/file names are
         # changed outside the tool, Make sure to update the following..
         # Folder name where original assertion excel sheet reside
         self.AssertionSrcFolder = 'assertions'
         # Name of master assertions excel sheet
-        self.xl_RunFileName = 'rf-assertions-run.xlsx' 
+        self.xl_RunFileName = 'rf-assertions-run.xlsx'
         # Name of text log file
         self.TxtFileName = 'rf-assertions-log'
         # Following will get set based on the SUT DisplayName from the properties.json when the tool runs...
@@ -142,15 +148,15 @@ class Log:
 
         # Path of the copy of the assertion master excel sheet which gets marked during the test run
         self.XlRunPath = os.path.join(self.AssertionSrcPath, self.xl_RunFileName)
-          
-        # text log file for assertions logging 
+
+        # text log file for assertions logging
         self.TextLogPath = None
         self.TextLogHandle = 0
 
     ###############################################################################################
     # Name: init_logfile(log_name)
     #   Takes a file name and initialies a new Text log file. Optionally to take SUTs property
-    #   Returns: 
+    #   Returns:
     #       If successfully created, file handle to access file and final path of the log file.
     #       Else None
     ###############################################################################################
@@ -184,12 +190,12 @@ class Log:
                         log_Folder = self.LogDestinationPath
 
                 if log_folder:
-                    ## create a unique log file name 
-                    dstr = str(datetime.now().strftime("%Y%m%d-%H%M%S"))               
+                    ## create a unique log file name
+                    dstr = str(datetime.now().strftime("%Y%m%d-%H%M%S"))
                     log_file = dstr + '_' + log_name
                     log_path = os.path.join(log_Folder, log_file)
                     try:
-                        # create a new log file to start logging 
+                        # create a new log file to start logging
                         log_handle = open(log_path, 'a')
                     except:
                         print('Operational ERROR - Tool was unable to create a Log file with name: %s at destination: %s' % (log_name, log_Folder))
@@ -199,20 +205,20 @@ class Log:
                         return log_handle, log_path
 
         print('Operational ERROR - Tool was unable to create a Log file with name: %s' % (log_name, log_Folder))
-        return None, None                        
-                
+        return None, None
+
     ###############################################################################################
-    # Name: open_assertions_xl()                          
+    # Name: open_assertions_xl()
     #   open the xlxs file containing the redifish assertions at the specified pathname
     # Returns:
     #   If no error, a handle which can be used to access the assertions spreadsheet for reads/writes
     #   else 0
     ###############################################################################################
-    def open_assertions_xl(self) : 
+    def open_assertions_xl(self) :
         # load the assertion list xls file - python throws some cryptic warning here..
         #  so code in place to ignore  the warning...
         warnings.simplefilter("ignore")
-        try:   
+        try:
             self.XlAssertionWb = load_workbook(filename=self.SUT_XlDestPath)
 
         except:
@@ -238,12 +244,12 @@ class Log:
             return 0
 
     ###############################################################################################
-    # Name: assertion_id_row(assertion_id)                        
+    # Name: assertion_id_row(assertion_id)
     #   Takes an assertion id as a key (string), locate the row in the spreadsheet containing
     #   the assertion and return the row number
     # Returns:
-    #   on assertion id match...  return the row number of the assertion in the spreadsheet/xl file; 
-    #   else 0                
+    #   on assertion id match...  return the row number of the assertion in the spreadsheet/xl file;
+    #   else 0
     ###############################################################################################
     def assertion_id_row(self, assertion_id):
 
@@ -255,35 +261,35 @@ class Log:
             row_assertion_id = asx_handle.cell(row=row_cnt, column=self.Assertion_ID_column).value
             if row_assertion_id == assertion_id :
                 ## success
-                return row_cnt    
+                return row_cnt
             row_cnt += 1
 
-        ## failure        
+        ## failure
         print('Operational ERROR unable to find Assertion ID %s in the assertion xlxs file' % assertion_id)
 
-        return 0        
+        return 0
     #
     ## end assertion_id_row()
 
     ###############################################################################################
-    # Name: assert_xl(assertion_id, pwf_stat)                        
+    # Name: assert_xl(assertion_id, pwf_stat)
     #   Takes an assertion id as a key (string), locate the row in the spreadsheet containing
-    #   the assertion description text and return that text - mark pass fail warn status in the 
-    #   spreadsheet depending upon setting of pwf_stat to 'PASS', 'FAIL', 'WARN' or None;
-    #       - if 'NONE' then just return the assertion description from the spreadsheet for the 
-    #         assertion ID match  
-    #       - if 'PASS' 'FAIL' or 'WARN' then mark an assertion cell in the assertion xl file 
-    #         green/yellow/red depending on pass/warn/fail
+    #   the assertion description text and return that text - mark pass fail warn status in the
+    #   spreadsheet depending upon setting of pwf_stat to 'PASS', 'FAIL', 'WARN', 'INFO' or None;
+    #       - if 'NONE' then just return the assertion description from the spreadsheet for the
+    #         assertion ID match
+    #       - if 'PASS' 'FAIL' 'INFO' or 'WARN' then mark an assertion cell in the assertion xl file
+    #         green/yellow/red/blue depending on pass/warn/fail/info
     # Returns:
     #   on assertion id match...  return the description of the assertion as read from
-    #       the spreadsheet; else return ' '               
+    #       the spreadsheet; else return ' '
     ###############################################################################################
     def assert_xl(self, assertion_id, pwf_stat):
 
         asx_handle = self.XlAssertionSheet
 
         assert_descr = ' '
-        
+
         #find a particular assertion in the xls file...
         zrow = self.assertion_id_row(assertion_id)
         if (zrow > 0):
@@ -298,18 +304,20 @@ class Log:
                 asx_handle.cell(row=zrow, column=self.Assertion_ID_column).fill = self.xl_FAIL
             elif (pwf_stat == self.INCOMPLETE):
                 asx_handle.cell(row=zrow, column=self.Assertion_ID_column).fill = self.xl_PASS
+            elif (pwf_stat == self.INFO):
+                asx_handle.cell(row=zrow, column=self.Assertion_ID_column).fill = self.xl_INFO
 
             self.save_assertions_xl()
-     
-        return assert_descr        
+
+        return assert_descr
     #
     ## end assert_xl()
 
     ###############################################################################################
-    # Name: assertion_log(log_control, log_string, SUT_prop = None, service_root = None)                                            
+    # Name: assertion_log(log_control, log_string, SUT_prop = None, service_root = None)
     #   Takes Log control key (OPEN, CLOSE, XL_COMMENT, TX_COMMENT and line) and log message string
-    #   and based on the assertionid set thru assertion, it updates the log. It also updates the 
-    #   color for the ID cell in the excel sheet. Green for pass, Yellow for warninf and red for 
+    #   and based on the assertionid set thru assertion, it updates the log. It also updates the
+    #   color for the ID cell in the excel sheet. Green for pass, Yellow for warninf and red for
     #   fail
     #
     #   - OPEN: REQUIRED params: Properties of SUT and service root url.
@@ -318,17 +326,48 @@ class Log:
     #   - CLOSE: Makes appropriate updates of total assertions status in files and closes it
     #   - XL_COMMENT: Updates status and string in excel sheet against the given assertion id's row
     #   - TX_COMMENT: Appends status and string in text file w/assertion id, if provided
-    #   - line: Prints status and string on command line 
-    #               
+    #   - line: Prints status and string on command line
+    #
     # Return: 0 on failure; 1 on success
     ################################################################################################
-    def assertion_log(self, log_control, log_string, SUT_prop = None, service_root = None) :       
+    def assertion_log(self, log_control, log_string, SUT_prop = None, service_root = None) :
+
+        # Initialized a data dictionary that stores induvidual rules per tool
+        # run.
+
+        data = {}
+
+        # Checks if log.json exists, which store temporary data while the tool
+        # is still running.
+
+        if not os.path.isfile('log.json'):
+            with open('log.json', mode='w') as fw:
+                json.dump(data, fw)
+
+        with open('log.json', mode='r') as fr:
+            data = json.load(fr)
+
         assertion_id = self.AssertionID
+
+        # Initalized a dictionary to store key: Rule and values: Comment,
+        # Description and Status
+
+        singleRule = {}
+
+        if not assertion_id in data:
+            data[assertion_id] = singleRule
+        else:
+            singleRule = data[assertion_id]
+
         ##
         # handle open/close of the log files
         #
         if (log_control == 'OPEN' and SUT_prop and service_root):
+
             ## open the assertion log files and write a unique test header for this run
+            # Set start time for assertion
+            data['Start Time'] = time.time()
+
             self.SUT_log_Folder = os.path.join(self.LogDestinationPath, SUT_prop['DisplayName'])
             if not os.path.isdir(self.SUT_log_Folder):
                 try:
@@ -353,7 +392,7 @@ class Log:
 
             #datetime string
             dstr = str(datetime.now().strftime("%Y%m%d-%H%M%S"))
-           
+
             ## create a copy of the master assertion xlxs file for this SUT and open it
             #self.SUT_XlDestPath = os.path.join(self.SUT_log_Folder , self.xl_RunFileName)
             self.SUT_XlDestPath = os.path.join(self.SUT_log_Folder , dstr + '_' + self.xl_RunFileName)
@@ -371,7 +410,7 @@ class Log:
                 print('Operational ERROR - unable to open the assertions %s' % self.XlRunPath)
                 return(0)
 
-            ## create a unique log header 
+            ## create a unique log header
             log_header_src = ('Redfish Service Check Tool Revision: %s : ' % self.RedfishServiceCheck_Revision)\
                 + dstr + ' : '\
                 + SUT_prop['DisplayName'] \
@@ -388,7 +427,7 @@ class Log:
             self.XlAssertionSheet.cell(row=self.assertion_logHeaderRow, column=self.assertion_logHeaderCol).alignment = self.xl_Alignment
 
             # hyperlink to the Redfish spec
-            self.XlAssertionSheet.cell(row=self.RedfishHyperlinkRow, column=self.RedfishHyperlinkCol).hyperlink = self.RedfishSpecHyperlinkPath            
+            self.XlAssertionSheet.cell(row=self.RedfishHyperlinkRow, column=self.RedfishHyperlinkCol).hyperlink = self.RedfishSpecHyperlinkPath
 
             self.save_assertions_xl()
 
@@ -397,56 +436,100 @@ class Log:
             self.Assertion_Counter[self.FAIL] = 0
             self.Assertion_Counter[self.WARN] = 0
             self.Assertion_Counter[self.INCOMPLETE] = 0
+            self.Assertion_Counter[self.INFO] = 0
 
-            # 
+            #
             ## End open/initialize log files
 
         elif (log_control == 'CLOSE'):
             self.AssertionID = None
             # log the tally of pass/warn/fail stats and close the log files
-            completion_str = '\n Assertions Stats:\n Passed= %s Warn= %s Failed= %s \n Total Assertions Run= %s' % (str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE]), str(self.Assertion_Counter[self.WARN]), str(self.Assertion_Counter[self.FAIL]), str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE] + self.Assertion_Counter[self.WARN] + self.Assertion_Counter[self.FAIL]))
+            completion_str = '\n Assertions Stats:\n Passed= %s Warn= %s Failed= %s Info= %s \n Total Assertions Run= %s' % (str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE]), str(self.Assertion_Counter[self.WARN]), str(self.Assertion_Counter[self.FAIL]), str(self.Assertion_Counter[self.INFO]), str(self.Assertion_Counter[self.PASS] + self.Assertion_Counter[self.INCOMPLETE] + self.Assertion_Counter[self.WARN] + self.Assertion_Counter[self.FAIL] + self.Assertion_Counter[self.INFO]))
 
-            self.assertion_log('line', completion_str)
-            self.assertion_log('XL_LOG_HEADER', completion_str)
+            #self.assertion_log('line', completion_str)
+            #self.assertion_log('XL_LOG_HEADER', completion_str)
 
             self.TextLogHandle.close()
 
             print(' Assertions check successfully completed. Please see assertion spreadsheet: %s for checked assertions summary and log files: %s and %s for detailed log\n' % (self.XlRunPath, self.SUT_XlDestPath, self.TextLogPath))
+
+
+            # Adds the final results as the assertions come to a completion
+
+            assertionResult = {}
+
+            if not os.path.isfile('HTML_Log_Viewer/AssertionLogs.json'):
+                with open('HTML_Log_Viewer/AssertionLogs.json', mode='w') as fw:
+                    json.dump(assertionResult, fw)
+
+            with open('HTML_Log_Viewer/AssertionLogs.json', mode='r') as fr:
+                assertionResult = json.load(fr)
+
+            #datetime string and total run time calculation
+            dstr = str(datetime.now().strftime("%m/%d/%Y : %H%M%S"))
+            start = data['Start Time']
+            del data['Start Time']
+            end = time.time()
+            runTimeStr = ("%d Min & %d Sec" %((end - start)/60, (end - start)%60))
+
+            # Adding summary data
+            data['Summary'] = {
+            "Description":SUT_prop['DisplayName'],
+            "DNS_Name":SUT_prop['DnsName'],
+            "Cached_URIs":SUT_prop['NumUrisToCache'],
+            "Run_Time": runTimeStr
+            }
+
+            assertionResult[dstr] = data
+
+            # Writes assertion data to a global AssertionLogs.json file that is
+            # processed by the HTML log viewer.
+
+            with open('HTML_Log_Viewer/AssertionLogs.json', mode='w') as fw:
+                json.dump(assertionResult, fw, sort_keys=True, indent=4)
+
+            os.remove('log.json')
+
+            return (1)
+
         #
         # end of handling open/close of log files
         ##
 
         # log an assetion id tag at the start of an assertion
         elif (log_control == 'BEGIN_ASSERTION'):
-            assert_string = '\n---> Assertion: ' + assertion_id + '\n'
+            assert_string = '\n---> Assertion: ' + assertion_id + '\n' # Here we can the the Rule
             self.TextLogHandle.write(assert_string)
             print(assert_string)
 
-        # write a string to the header column of the assertion spreadsheet 
+        # write a string to the header column of the assertion spreadsheet
         elif (log_control == 'XL_LOG_HEADER'):
             # add a line to the header in the xls file
             log_string = self.XlAssertionSheet.cell(row=self.assertion_logHeaderRow, column=self.assertion_logHeaderCol).value + ' :: ' + log_string
             self.XlAssertionSheet.cell(row=self.assertion_logHeaderRow, column=self.assertion_logHeaderCol).value = log_string
 
             self.save_assertions_xl()
-        
+
         # pass fail to the text log file and color code the assertion row in the assertion spreadsheet
         # and increment pass/warn/fail counters
-        elif (log_control == self.PASS) or (log_control == self.WARN) or (log_control == self.FAIL) or (log_control == self.INCOMPLETE):
+        elif (log_control == self.PASS) or (log_control == self.WARN) or (log_control == self.FAIL) or (log_control == self.INCOMPLETE) or (log_control == self.INFO):
             # mark/color the assertion id column of the spreadsheet and get the description text
-            # for the assertion 
+            # for the assertion
             assertion_description = self.assert_xl(assertion_id, log_control)
 
-            # log pass/fail status to the text log 
+            singleRule['Status'] = log_control
+
+            # log pass/fail status to the text log
             if (log_control != self.PASS or log_control != self.INCOMPLETE):
                 # include the assertion description in the text log
-                log_string =  ('Assertion Description: %s\n<--- Assertion %s: %s\n' % (assertion_description.encode('utf-8'), self.AssertionID, log_control))
+                log_string =  ('Assertion Description: %s\n<--- Assertion %s: %s\n' % (assertion_description.encode('utf-8'), self.AssertionID, log_control)) # Assertion Descriptn and Status
+                singleRule['Description'] = assertion_description
             else:
                 log_string =  ('<--- Assertion %s: %s\n' % (self.AssertionID, log_control))
 
             self.TextLogHandle.write(log_string)
             print(log_string)
-                
+            print(log_string)
             # increment the pass/warn/fail counter
             self.Assertion_Counter[log_control] += 1
 
@@ -465,23 +548,29 @@ class Log:
         if ((log_control == 'line') or (log_control == 'TX_COMMENT')) :
             if log_string == None:
                 log_string = ""
-            
+
             #  output to the text log file
-            self.TextLogHandle.write(log_string + '\n')
+            self.TextLogHandle.write(log_string)
 
             # output to the console
             if (log_control != 'TX_COMMENT'):
                 print(log_string +'\n')
 
+            singleRule['Comment'] = log_string
+
+        # Temporary storage of a rule
+        with open('log.json', 'w') as fw:
+            json.dump(data, fw, sort_keys=True, indent=4)
+
         # success
-        return(1) 
+        return(1)
     #
     ## end _assertion_log
 
     ###############################################################################################
-    # Name: schema_log()         WIP                                   
-    #   WIP, based on a log file created thru init_logfile, we can access it 
-    #   with the handle it returns and use control options OPEN, CLOSE, COMMENT to update it with 
+    # Name: schema_log()         WIP
+    #   WIP, based on a log file created thru init_logfile, we can access it
+    #   with the handle it returns and use control options OPEN, CLOSE, COMMENT to update it with
     #   any logging info
     ###############################################################################################
     def schema_log(self, log_control, log_handle, log_path, sut_prop = None) :
@@ -489,12 +578,12 @@ class Log:
         # handle open/close of the log files
         #
         if (log_control == 'OPEN'):
-            ## create a unique log header 
+            ## create a unique log header
             dstr = str(datetime.now().strftime("%Y%m%d-%H%M%S"))
             log_header_src = ('Redfish Service Check Tool Revision: %s : ' % self.RedfishServiceCheck_Revision)\
                 + dstr + ' : '
             log_handle.write(log_header_src + '\n')
-            # 
+            #
             ## End open/initialize log files
             log_handle.close()
         #
@@ -504,7 +593,7 @@ class Log:
         if ((log_control == 'line') or (log_control == 'COMMENT')) :
             if log_string == None:
                 log_string = ""
-            
+
             #  output to the text log file
             log_handle.write(log_string + '\n')
 
@@ -513,20 +602,22 @@ class Log:
                 print(log_string +'\n')
 
         # success
-        return(1) 
+        return(1)
     #
     ## end schema_log
 
     ###############################################################################################
-    # Name: status_fixup()                                            
-    #   Takes 2 status strings and returns status giving precendence in the order FAIL, WARN, INCOMPLETE, PASS
+    # Name: status_fixup()
+    #   Takes 2 status strings and returns status giving precendence in the order FAIL, WARN, INCOMPLETE, INFO,  PASS
     ###############################################################################################
     def status_fixup(self, assertion_status, assertion_status_):
-        if assertion_status == self.FAIL and (assertion_status_ == self.WARN or assertion_status_ == self.INCOMPLETE or assertion_status_ == self.PASS):
+        if assertion_status == self.FAIL and (assertion_status_ == self.WARN or assertion_status_ == self.INCOMPLETE or assertion_status_ == self.PASS or assertion_status_ == self.INFO):
             return assertion_status
-        if assertion_status == self.WARN and (assertion_status_ == self.INCOMPLETE or assertion_status_ == self.PASS):
+        if assertion_status == self.WARN and (assertion_status_ == self.INCOMPLETE or assertion_status_ == self.PASS or assertion_status_ == self.INFO):
             return assertion_status
-        if assertion_status == self.INCOMPLETE and (assertion_status_ == self.PASS):
+        if assertion_status == self.INCOMPLETE and (assertion_status_ == self.PASS or assertion_status_ == self.INFO):
             return assertion_status
-        
+        if assertion_status == self.INFO and (assertion_status_ == self.PASS):
+            return assertion_status
+
         return assertion_status_
