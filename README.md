@@ -47,3 +47,10 @@ This program has been tested with Python 2.7.10 and 3.4.3.
 
 1. Work in progress items are either annotated with 'WIP' or 'todo'. They dont affect the completed portion of the tool which should successfully run.
 2. Current implementation for schemas found in local directory (or remotely retrieved) does not guarantee that SUT service is using the same version of the schema files. It is a WIP for this tool. Please make sure that schema file version found in $metadata for SUT is the same as the version of files in the directory to get correct results	
+
+## Release Process
+
+1. Update `CHANGELOG.md` with the list of changes since the last release
+2. TODO: Add version string in the tool somewhere
+3. Push changes to Github
+4. Create a new release in Github
