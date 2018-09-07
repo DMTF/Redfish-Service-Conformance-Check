@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.1.3] - 2018-09-07
+- Added new logging functionality to show the test results in a web browser
+
 ## [1.1.2] - 2018-08-03
 - Added checking for presence of an action before trying to test the action
 
