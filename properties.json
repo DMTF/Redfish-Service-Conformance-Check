@@ -25,12 +25,12 @@
   "RedfishServiceCheckTool_SUTConfiguration": {
     "SUTs": [
         {
-        "Password": "redfish",
-        "LoginName": "root",
+        "Password": "",
+        "LoginName": "",
         "AllowAction_LogServiceClearLog": "",
-        "DnsName": "10.9.1.1",
-        "DisplayName": "TTU Server",
-        "RedfishVersion": "V1",
+        "DnsName": "",
+        "DisplayName": "",
+        "RedfishVersion": "",
         "NumUrisToCache": "25"
       }
     ],
