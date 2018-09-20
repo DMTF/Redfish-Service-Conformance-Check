@@ -17,9 +17,9 @@ import logger
 import time
 from rfs_test import TEST_protocol_details
 from rfs_test import TEST_datamodel_schema
+from rfs_test import TEST_manager_account
 from rfs_test_in_progress import TEST_service_details
 from rfs_test_in_progress import TEST_security
-
 
 ###################################################################################################
 # Name: run(sut)
@@ -42,6 +42,7 @@ def run(sut):
     else:
         # Run all assertions
         TEST_protocol_details.run(sut, log)
+        TEST_manager_account.run(sut, log)
         #TEST_security.run(sut, log)
         #TEST_service_details.run(sut, log)
         TEST_datamodel_schema.run(sut, log)
