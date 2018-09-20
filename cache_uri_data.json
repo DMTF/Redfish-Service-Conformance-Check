@@ -1,0 +1,4103 @@
+{
+    "/redfish/v1/Chassis": {
+        "@odata.context": "/redfish/v1/$metadata#ChassisCollection.ChassisCollection",
+        "@odata.id": "/redfish/v1/Chassis/",
+        "@odata.type": "#ChassisCollection.ChassisCollection",
+        "Description": "Collection of Chassis",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+            }
+        ],
+        "Members@odata.count": 1,
+        "Name": "Chassis Collection"
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Power": {
+        "@odata.context": "/redfish/v1/$metadata#Power.Power",
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Power",
+        "@odata.type": "#Power.v1_1_0.Power",
+        "Description": "Power",
+        "Id": "Power",
+        "Name": "Power",
+        "PowerControl": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Power/PowerControl",
+                "MemberId": "PowerControl",
+                "Name": "System Power Control",
+                "PowerAllocatedWatts": 750,
+                "PowerAvailableWatts": 0,
+                "PowerCapacityWatts": 880,
+                "PowerConsumedWatts": 84,
+                "PowerLimit": {},
+                "PowerMetrics": {
+                    "AverageConsumedWatts": 85,
+                    "IntervalInMin": 1,
+                    "MaxConsumedWatts": 127,
+                    "MinConsumedWatts": 83
+                },
+                "PowerRequestedWatts": 441,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    },
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 2
+            }
+        ],
+        "PowerControl@odata.count": 1,
+        "PowerSupplies": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1",
+                "FirmwareVersion": "00.24.7A",
+                "InputRanges": [
+                    {
+                        "InputType": "AC",
+                        "MaximumFrequencyHz": 47,
+                        "MaximumVoltage": 90,
+                        "MinimumFrequencyHz": 63,
+                        "MinimumVoltage": 264,
+                        "OutputWattage": 750
+                    }
+                ],
+                "InputRanges@odata.count": 1,
+                "LastPowerOutputWatts": 750,
+                "LineInputVoltage": 212,
+                "LineInputVoltageType": "ACMidLine",
+                "Manufacturer": "Dell",
+                "MemberId": "PSU.Slot.1",
+                "Model": "PWR SPLY,750W,RDNT,DELTA      ",
+                "Name": "PS1 Status",
+                "PartNumber": "05RHVVA00",
+                "PowerCapacityWatts": 750,
+                "PowerSupplyType": "AC",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SerialNumber": "CN1797268M9JT0",
+                "SparePartNumber": "05RHVVA00",
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                }
+            }
+        ],
+        "PowerSupplies@odata.count": 1,
+        "Redundancy": [],
+        "Redundancy@odata.count": 0,
+        "Voltages": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardDIMMPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 49,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardDIMMPG",
+                "MinReadingRange": 46,
+                "Name": "System Board DIMM PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 7,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardNDCPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardNDCPG",
+                "MinReadingRange": 0,
+                "Name": "System Board NDC PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 8,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardPS1PGFAIL",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardPS1PGFAIL",
+                "MinReadingRange": 0,
+                "Name": "System Board PS1 PG FAIL",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 9,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardPS2PGFAIL",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 49,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardPS2PGFAIL",
+                "MinReadingRange": 46,
+                "Name": "System Board PS2 PG FAIL",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 10,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP0PG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardBP0PG",
+                "MinReadingRange": 0,
+                "Name": "System Board BP0 PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 11,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP1PG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardBP1PG",
+                "MinReadingRange": 0,
+                "Name": "System Board BP1 PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 12,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoard1.8VSWPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoard1.8VSWPG",
+                "MinReadingRange": 0,
+                "Name": "System Board 1.8V SW PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 14,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoard2.5VSWPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoard2.5VSWPG",
+                "MinReadingRange": 0,
+                "Name": "System Board 2.5V SW PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 15,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoard5VSWPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 49,
+                "MemberId": "iDRAC.Embedded.1#SystemBoard5VSWPG",
+                "MinReadingRange": 46,
+                "Name": "System Board 5V SW PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 16,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardPVNNSWPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardPVNNSWPG",
+                "MinReadingRange": 0,
+                "Name": "System Board PVNN SW PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 17,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardVSB11SWPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 49,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardVSB11SWPG",
+                "MinReadingRange": 46,
+                "Name": "System Board VSB11 SW PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 18,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardVSBMSWPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardVSBMSWPG",
+                "MinReadingRange": 0,
+                "Name": "System Board VSBM SW PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 19,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoard3.3VBPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoard3.3VBPG",
+                "MinReadingRange": 0,
+                "Name": "System Board 3.3V B PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 21,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1MEM012VDDQPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 49,
+                "MemberId": "iDRAC.Embedded.1#CPU1MEM012VDDQPG",
+                "MinReadingRange": 46,
+                "Name": "CPU1 MEM012 VDDQ PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 36,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1MEM012VPPPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#CPU1MEM012VPPPG",
+                "MinReadingRange": 0,
+                "Name": "CPU1 MEM012 VPP PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 37,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1MEM012VTTPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#CPU1MEM012VTTPG",
+                "MinReadingRange": 0,
+                "Name": "CPU1 MEM012 VTT PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 38,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1MEM345VDDQPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#CPU1MEM345VDDQPG",
+                "MinReadingRange": 0,
+                "Name": "CPU1 MEM345 VDDQ PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 39,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1MEM345VPPPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#CPU1MEM345VPPPG",
+                "MinReadingRange": 0,
+                "Name": "CPU1 MEM345 VPP PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 40,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1MEM345VTTPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 49,
+                "MemberId": "iDRAC.Embedded.1#CPU1MEM345VTTPG",
+                "MinReadingRange": 46,
+                "Name": "CPU1 MEM345 VTT PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 41,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1VCCIOPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#CPU1VCCIOPG",
+                "MinReadingRange": 0,
+                "Name": "CPU1 VCCIO PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 42,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1VCOREPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 49,
+                "MemberId": "iDRAC.Embedded.1#CPU1VCOREPG",
+                "MinReadingRange": 46,
+                "Name": "CPU1 VCORE PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 43,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1FIVRPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#CPU1FIVRPG",
+                "MinReadingRange": 0,
+                "Name": "CPU1 FIVR PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 44,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23PS1Voltage",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#PS1Voltage",
+                "MinReadingRange": 0,
+                "Name": "PS1 Voltage 1",
+                "PhysicalContext": "PowerSupply",
+                "ReadingVolts": 212.0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 109,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoard3.3VAPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 49,
+                "MemberId": "iDRAC.Embedded.1#SystemBoard3.3VAPG",
+                "MinReadingRange": 46,
+                "Name": "System Board 3.3V A PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 20,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23CPU1VSAPG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#CPU1VSAPG",
+                "MinReadingRange": 0,
+                "Name": "CPU1 VSA PG",
+                "PhysicalContext": "CPU",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 45,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP2PG",
+                "LowerThresholdCritical": null,
+                "LowerThresholdFatal": null,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRange": 0,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardBP2PG",
+                "MinReadingRange": 0,
+                "Name": "System Board BP2 PG",
+                "PhysicalContext": "SystemBoard",
+                "ReadingVolts": 1,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 13,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            }
+        ],
+        "Voltages@odata.count": 26
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Power_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "17792",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:21 GMT",
+        "link": "</redfish/v1/Schemas/Power.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Power_status": 200,
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Temperatures/iDRAC.Embedded.1%23SystemBoardInletTemp": {
+        "@odata.context": "/redfish/v1/$metadata#Thermal.Thermal",
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Temperatures/iDRAC.Embedded.1%23SystemBoardInletTemp",
+        "@odata.type": "#Thermal.v1_0_2.Temperature",
+        "LowerThresholdCritical": -7,
+        "LowerThresholdFatal": -7,
+        "LowerThresholdNonCritical": 3,
+        "MaxReadingRangeTemp": 19,
+        "MemberId": "iDRAC.Embedded.1#SystemBoardInletTemp",
+        "MinReadingRangeTemp": 13,
+        "Name": "System Board Inlet Temp",
+        "PhysicalContext": "Intake",
+        "ReadingCelsius": 25,
+        "RelatedItem": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+            }
+        ],
+        "RelatedItem@odata.count": 1,
+        "SensorNumber": 5,
+        "Status": {
+            "Health": "OK",
+            "State": "Enabled"
+        },
+        "UpperThresholdCritical": 47,
+        "UpperThresholdFatal": 47,
+        "UpperThresholdNonCritical": 43
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Temperatures/iDRAC.Embedded.1%23SystemBoardInletTemp_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "722",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:13 GMT",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Temperatures/iDRAC.Embedded.1%23SystemBoardInletTemp_status": 200,
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23PS1Voltage": {
+        "@odata.context": "/redfish/v1/$metadata#Power.Power",
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23PS1Voltage",
+        "@odata.type": "#Power.v1_1_0.Voltage",
+        "LowerThresholdCritical": null,
+        "LowerThresholdFatal": null,
+        "LowerThresholdNonCritical": null,
+        "MaxReadingRange": 0,
+        "MemberId": "iDRAC.Embedded.1#PS1Voltage",
+        "MinReadingRange": 0,
+        "Name": "PS1 Voltage 1",
+        "PhysicalContext": "PowerSupply",
+        "ReadingVolts": 212.0,
+        "RelatedItem": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Power/PowerSupplies/PSU.Slot.1"
+            }
+        ],
+        "RelatedItem@odata.count": 1,
+        "SensorNumber": 109,
+        "Status": {
+            "Health": "OK",
+            "State": "Enabled"
+        },
+        "UpperThresholdCritical": null,
+        "UpperThresholdFatal": null,
+        "UpperThresholdNonCritical": null
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23PS1Voltage_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "720",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:12 GMT",
+        "link": "</redfish/v1/Schemas/Power.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23PS1Voltage_status": 200,
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP0PG": {
+        "@odata.context": "/redfish/v1/$metadata#Power.Power",
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP0PG",
+        "@odata.type": "#Power.v1_1_0.Voltage",
+        "LowerThresholdCritical": null,
+        "LowerThresholdFatal": null,
+        "LowerThresholdNonCritical": null,
+        "MaxReadingRange": 197,
+        "MemberId": "iDRAC.Embedded.1#SystemBoardBP0PG",
+        "MinReadingRange": 139,
+        "Name": "System Board BP0 PG",
+        "PhysicalContext": "SystemBoard",
+        "ReadingVolts": 1,
+        "RelatedItem": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+            }
+        ],
+        "RelatedItem@odata.count": 1,
+        "SensorNumber": 11,
+        "Status": {
+            "Health": "OK",
+            "State": "Enabled"
+        },
+        "UpperThresholdCritical": null,
+        "UpperThresholdFatal": null,
+        "UpperThresholdNonCritical": null
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP0PG_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "706",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:09 GMT",
+        "link": "</redfish/v1/Schemas/Power.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP0PG_status": 200,
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP1PG": {
+        "@odata.context": "/redfish/v1/$metadata#Power.Power",
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP1PG",
+        "@odata.type": "#Power.v1_1_0.Voltage",
+        "LowerThresholdCritical": null,
+        "LowerThresholdFatal": null,
+        "LowerThresholdNonCritical": null,
+        "MaxReadingRange": 197,
+        "MemberId": "iDRAC.Embedded.1#SystemBoardBP1PG",
+        "MinReadingRange": 139,
+        "Name": "System Board BP1 PG",
+        "PhysicalContext": "SystemBoard",
+        "ReadingVolts": 1,
+        "RelatedItem": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+            }
+        ],
+        "RelatedItem@odata.count": 1,
+        "SensorNumber": 12,
+        "Status": {
+            "Health": "OK",
+            "State": "Enabled"
+        },
+        "UpperThresholdCritical": null,
+        "UpperThresholdFatal": null,
+        "UpperThresholdNonCritical": null
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP1PG_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "706",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:16 GMT",
+        "link": "</redfish/v1/Schemas/Power.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Sensors/Voltages/iDRAC.Embedded.1%23SystemBoardBP1PG_status": 200,
+    "/redfish/v1/Chassis/System.Embedded.1/Thermal": {
+        "@odata.context": "/redfish/v1/$metadata#Thermal.Thermal",
+        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Thermal",
+        "@odata.type": "#Thermal.v1_0_2.Thermal",
+        "Description": "Represents the properties for Temperature and Cooling",
+        "Fans": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1A",
+                "FanName": "System Board Fan1A",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.1A",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan1A",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 6240,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.1B",
+                "FanName": "System Board Fan1B",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.1B",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan1B",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 4680,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2A",
+                "FanName": "System Board Fan2A",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.2A",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan2A",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 6240,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.2B",
+                "FanName": "System Board Fan2B",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.2B",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan2B",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 4680,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3A",
+                "FanName": "System Board Fan3A",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.3A",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan3A",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 6240,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.3B",
+                "FanName": "System Board Fan3B",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.3B",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan3B",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 4680,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4A",
+                "FanName": "System Board Fan4A",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.4A",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan4A",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 6240,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.4B",
+                "FanName": "System Board Fan4B",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.4B",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan4B",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 4680,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5A",
+                "FanName": "System Board Fan5A",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.5A",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan5A",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 6000,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.5B",
+                "FanName": "System Board Fan5B",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.5B",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan5B",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 4560,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6A",
+                "FanName": "System Board Fan6A",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.6A",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan6A",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 6240,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.6B",
+                "FanName": "System Board Fan6B",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.6B",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan6B",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 4680,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7A",
+                "FanName": "System Board Fan7A",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.7A",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan7A",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 6240,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.7B",
+                "FanName": "System Board Fan7B",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.7B",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan7B",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 4680,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.8A",
+                "FanName": "System Board Fan8A",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.8A",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan8A",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 6240,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Fans/0x17||Fan.Embedded.8B",
+                "FanName": "System Board Fan8B",
+                "LowerThresholdCritical": 600,
+                "LowerThresholdFatal": 600,
+                "LowerThresholdNonCritical": 960,
+                "MaxReadingRange": 197,
+                "MemberId": "0x17||Fan.Embedded.8B",
+                "MinReadingRange": 139,
+                "Name": "System Board Fan8B",
+                "PhysicalContext": "SystemBoard",
+                "Reading": 4800,
+                "ReadingUnits": "RPM",
+                "Redundancy": [],
+                "Redundancy@odata.count": 0,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": null,
+                "UpperThresholdFatal": null,
+                "UpperThresholdNonCritical": null
+            }
+        ],
+        "Fans@odata.count": 16,
+        "Id": "Thermal",
+        "Name": "Thermal",
+        "Redundancy": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Thermal/Redundancy/iDRAC.Embedded.1%23SystemBoardFanRedundancy",
+                "MaxNumSupported": null,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardFanRedundancy",
+                "MinNumNeeded": null,
+                "Mode": [
+                    {
+                        "Member": "FailOver"
+                    }
+                ],
+                "Name": "System Board Fan Redundancy",
+                "RedundancySet": [],
+                "RedundancySet@odata.count": 0,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                }
+            }
+        ],
+        "Redundancy@odata.count": 1,
+        "Temperatures": [
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Temperatures/iDRAC.Embedded.1%23CPU1Temp",
+                "LowerThresholdCritical": 3,
+                "LowerThresholdFatal": 3,
+                "LowerThresholdNonCritical": null,
+                "MaxReadingRangeTemp": 19,
+                "MemberId": "iDRAC.Embedded.1#CPU1Temp",
+                "MinReadingRangeTemp": 13,
+                "Name": "CPU1 Temp",
+                "PhysicalContext": "CPU",
+                "ReadingCelsius": 33,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 1,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": 95,
+                "UpperThresholdFatal": 95,
+                "UpperThresholdNonCritical": null
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Temperatures/iDRAC.Embedded.1%23SystemBoardInletTemp",
+                "LowerThresholdCritical": -7,
+                "LowerThresholdFatal": -7,
+                "LowerThresholdNonCritical": 3,
+                "MaxReadingRangeTemp": 19,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardInletTemp",
+                "MinReadingRangeTemp": 13,
+                "Name": "System Board Inlet Temp",
+                "PhysicalContext": "Intake",
+                "ReadingCelsius": 25,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 5,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": 47,
+                "UpperThresholdFatal": 47,
+                "UpperThresholdNonCritical": 43
+            },
+            {
+                "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/Sensors/Temperatures/iDRAC.Embedded.1%23SystemBoardExhaustTemp",
+                "LowerThresholdCritical": 3,
+                "LowerThresholdFatal": 3,
+                "LowerThresholdNonCritical": 8,
+                "MaxReadingRangeTemp": 19,
+                "MemberId": "iDRAC.Embedded.1#SystemBoardExhaustTemp",
+                "MinReadingRangeTemp": 13,
+                "Name": "System Board Exhaust Temp",
+                "PhysicalContext": "Exhaust",
+                "ReadingCelsius": 35,
+                "RelatedItem": [
+                    {
+                        "@odata.id": "/redfish/v1/Chassis/System.Embedded.1"
+                    }
+                ],
+                "RelatedItem@odata.count": 1,
+                "SensorNumber": 6,
+                "Status": {
+                    "Health": "OK",
+                    "State": "Enabled"
+                },
+                "UpperThresholdCritical": 80,
+                "UpperThresholdFatal": 80,
+                "UpperThresholdNonCritical": 75
+            }
+        ],
+        "Temperatures@odata.count": 3
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Thermal_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "13105",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:17 GMT",
+        "link": "</redfish/v1/Schemas/Thermal.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Chassis/System.Embedded.1/Thermal_status": 200,
+    "/redfish/v1/Chassis_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "323",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:22 GMT",
+        "link": "</redfish/v1/Schemas/ChassisCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Chassis_status": 200,
+    "/redfish/v1/Managers": {
+        "@odata.context": "/redfish/v1/$metadata#ManagerCollection.ManagerCollection",
+        "@odata.id": "/redfish/v1/Managers",
+        "@odata.type": "#ManagerCollection.ManagerCollection",
+        "Description": "BMC",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+            }
+        ],
+        "Members@odata.count": 1,
+        "Name": "Manager"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/AccountService": {
+        "@odata.context": "/redfish/v1/$metadata#AccountService.AccountService",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/AccountService",
+        "@odata.type": "#AccountService.v1_0_2.AccountService",
+        "AccountLockoutCounterResetAfter": 0,
+        "AccountLockoutDuration": 0,
+        "AccountLockoutThreshold": 0,
+        "Accounts": {
+            "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Accounts"
+        },
+        "AuthFailureLoggingThreshold": 2,
+        "Description": "BMC User Accounts",
+        "Id": "AccountService",
+        "MaxPasswordLength": 64,
+        "MinPasswordLength": 1,
+        "Name": "Account Service",
+        "Roles": {
+            "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles"
+        },
+        "ServiceEnabled": true,
+        "Status": {
+            "Health": "OK",
+            "State": "Enabled"
+        }
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/AccountService_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "650",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:15 GMT",
+        "etag": "abcdefgh",
+        "link": "</redfish/v1/Schemas/AccountService.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/AccountService_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Accounts/4": {
+        "@odata.context": "/redfish/v1/$metadata#ManagerAccount.ManagerAccount",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Accounts/4",
+        "@odata.type": "#ManagerAccount.v1_0_2.ManagerAccount",
+        "Description": "User Account",
+        "Enabled": false,
+        "Id": "4",
+        "Links": {
+            "Role": {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/None"
+            }
+        },
+        "Locked": false,
+        "Name": "User Account",
+        "Password": null,
+        "RoleId": "None",
+        "UserName": ""
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Accounts/4_header": {
+        "access-control-allow-origin": "*",
+        "allow": "PATCH",
+        "cache-control": "no-cache",
+        "content-length": "409",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:17 GMT",
+        "etag": "460000",
+        "link": "</redfish/v1/Schemas/ManagerAccount.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Accounts/4_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/EthernetInterfaces": {
+        "@odata.context": "/redfish/v1/$metadata#EthernetInterfaceCollection.EthernetInterfaceCollection",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/EthernetInterfaces",
+        "@odata.type": "#EthernetInterfaceCollection.EthernetInterfaceCollection",
+        "Description": "Collection of EthernetInterfaces for this Manager",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/EthernetInterfaces/iDRAC.Embedded.1%23NIC.1"
+            }
+        ],
+        "Members@odata.count": 1,
+        "Name": "Ethernet Network Interface Collection"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/EthernetInterfaces_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "490",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:23 GMT",
+        "link": "</redfish/v1/Schemas/EthernetInterfaceCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/EthernetInterfaces_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Jobs/JID_994497425548": {
+        "@odata.context": "/redfish/v1/$metadata#DellJob.DellJob",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Jobs/JID_994497425548",
+        "@odata.type": "#DellJob.v1_0_0.DellJob",
+        "CompletionTime": "2017-07-07T12:49:12",
+        "Description": "Job Instance",
+        "EndTime": null,
+        "Id": "JID_994497425548",
+        "JobState": "Completed",
+        "JobType": "ExportConfiguration",
+        "Message": "Successfully exported Server Configuration Profile",
+        "MessageArgs": [],
+        "MessageId": "SYS043",
+        "Name": "Export Configuration",
+        "PercentComplete": 100,
+        "StartTime": "TIME_NOW",
+        "TargetSettingsURI": null
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Jobs/JID_994497425548_header": {
+        "access-control-allow-origin": "*",
+        "allow": "DELETE",
+        "cache-control": "no-cache",
+        "content-length": "536",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:11 GMT",
+        "link": "</redfish/v1/Schemas/DellJob.v1_0_0.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Jobs/JID_994497425548_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/LogServices": {
+        "@odata.context": "/redfish/v1/$metadata#LogServiceCollection.LogServiceCollection",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/LogServices",
+        "@odata.type": "#LogServiceCollection.LogServiceCollection",
+        "Description": "Collection of Log Services for this Manager",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/LogServices/Sel"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/LogServices/Lclog"
+            }
+        ],
+        "Members@odata.count": 2,
+        "Name": "Log Service Collection"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/LogServices_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "478",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:19 GMT",
+        "link": "</redfish/v1/Schemas/LogServiceCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/LogServices_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog": {
+        "@odata.context": "/redfish/v1/$metadata#LogEntryCollection.LogEntryCollection",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog",
+        "@odata.nextLink": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog?$skip=50",
+        "@odata.type": "#LogEntryCollection.LogEntryCollection",
+        "Description": "LC Logs for this manager",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2455006",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T19:05:55-05:00",
+                "Description": " Log Entry 2455006",
+                "EntryType": "Oem",
+                "Id": "2455006",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2455006",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2455005",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T19:05:50-05:00",
+                "Description": " Log Entry 2455005",
+                "EntryType": "Oem",
+                "Id": "2455005",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "The session for root from 10.9.1.50 using REDFISH is logged off.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0032",
+                "Name": " Log Entry 2455005",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2455004",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T19:05:50-05:00",
+                "Description": " Log Entry 2455004",
+                "EntryType": "Oem",
+                "Id": "2455004",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2455004",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2455003",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T19:05:49-05:00",
+                "Description": " Log Entry 2455003",
+                "EntryType": "Oem",
+                "Id": "2455003",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "The session for root from 10.9.1.50 using REDFISH is logged off.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0032",
+                "Name": " Log Entry 2455003",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2455002",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T19:05:49-05:00",
+                "Description": " Log Entry 2455002",
+                "EntryType": "Oem",
+                "Id": "2455002",
+                "Links": {},
+                "Message": "The previous log entry was repeated 21 times.",
+                "MessageArgs": [
+                    "21"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2455002",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2455001",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T19:03:36-05:00",
+                "Description": " Log Entry 2455001",
+                "EntryType": "Oem",
+                "Id": "2455001",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2455001",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2455000",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T19:03:34-05:00",
+                "Description": " Log Entry 2455000",
+                "EntryType": "Oem",
+                "Id": "2455000",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "The session for root from 10.9.1.50 using REDFISH is logged off.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0032",
+                "Name": " Log Entry 2455000",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454999",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T19:03:34-05:00",
+                "Description": " Log Entry 2454999",
+                "EntryType": "Oem",
+                "Id": "2454999",
+                "Links": {},
+                "Message": "The previous log entry was repeated 186 times.",
+                "MessageArgs": [
+                    "186"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454999",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454998",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:44:55-05:00",
+                "Description": " Log Entry 2454998",
+                "EntryType": "Oem",
+                "Id": "2454998",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454998",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454997",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:44:55-05:00",
+                "Description": " Log Entry 2454997",
+                "EntryType": "Oem",
+                "Id": "2454997",
+                "Links": {},
+                "Message": "The previous log entry was repeated 1 times.",
+                "MessageArgs": [
+                    "1"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454997",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454996",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:44:51-05:00",
+                "Description": " Log Entry 2454996",
+                "EntryType": "Oem",
+                "Id": "2454996",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "The session for root from 10.9.1.50 using REDFISH is logged off.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0032",
+                "Name": " Log Entry 2454996",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454995",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:44:51-05:00",
+                "Description": " Log Entry 2454995",
+                "EntryType": "Oem",
+                "Id": "2454995",
+                "Links": {},
+                "Message": "The previous log entry was repeated 2 times.",
+                "MessageArgs": [
+                    "2"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454995",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454994",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:44:37-05:00",
+                "Description": " Log Entry 2454994",
+                "EntryType": "Oem",
+                "Id": "2454994",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454994",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454993",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:44:32-05:00",
+                "Description": " Log Entry 2454993",
+                "EntryType": "Oem",
+                "Id": "2454993",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "The session for root from 10.9.1.50 using REDFISH is logged off.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0032",
+                "Name": " Log Entry 2454993",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454992",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:44:32-05:00",
+                "Description": " Log Entry 2454992",
+                "EntryType": "Oem",
+                "Id": "2454992",
+                "Links": {},
+                "Message": "The previous log entry was repeated 185 times.",
+                "MessageArgs": [
+                    "185"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454992",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454991",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:35:51-05:00",
+                "Description": " Log Entry 2454991",
+                "EntryType": "Oem",
+                "Id": "2454991",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454991",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454990",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:35:51-05:00",
+                "Description": " Log Entry 2454990",
+                "EntryType": "Oem",
+                "Id": "2454990",
+                "Links": {},
+                "Message": "The previous log entry was repeated 1 times.",
+                "MessageArgs": [
+                    "1"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454990",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454989",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:35:50-05:00",
+                "Description": " Log Entry 2454989",
+                "EntryType": "Oem",
+                "Id": "2454989",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454989",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454988",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:35:50-05:00",
+                "Description": " Log Entry 2454988",
+                "EntryType": "Oem",
+                "Id": "2454988",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454988",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454987",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:35:50-05:00",
+                "Description": " Log Entry 2454987",
+                "EntryType": "Oem",
+                "Id": "2454987",
+                "Links": {},
+                "Message": "The previous log entry was repeated 1 times.",
+                "MessageArgs": [
+                    "1"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454987",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454986",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:35:49-05:00",
+                "Description": " Log Entry 2454986",
+                "EntryType": "Oem",
+                "Id": "2454986",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454986",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454985",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:35:49-05:00",
+                "Description": " Log Entry 2454985",
+                "EntryType": "Oem",
+                "Id": "2454985",
+                "Links": {},
+                "Message": "The previous log entry was repeated 267 times.",
+                "MessageArgs": [
+                    "267"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454985",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454984",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:33:36-05:00",
+                "Description": " Log Entry 2454984",
+                "EntryType": "Oem",
+                "Id": "2454984",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454984",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454983",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:33:36-05:00",
+                "Description": " Log Entry 2454983",
+                "EntryType": "Oem",
+                "Id": "2454983",
+                "Links": {},
+                "Message": "The previous log entry was repeated 1 times.",
+                "MessageArgs": [
+                    "1"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454983",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454982",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:33:33-05:00",
+                "Description": " Log Entry 2454982",
+                "EntryType": "Oem",
+                "Id": "2454982",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454982",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454981",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:33:33-05:00",
+                "Description": " Log Entry 2454981",
+                "EntryType": "Oem",
+                "Id": "2454981",
+                "Links": {},
+                "Message": "The previous log entry was repeated 28 times.",
+                "MessageArgs": [
+                    "28"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454981",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454980",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:33:08-05:00",
+                "Description": " Log Entry 2454980",
+                "EntryType": "Oem",
+                "Id": "2454980",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454980",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454979",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:33:07-05:00",
+                "Description": " Log Entry 2454979",
+                "EntryType": "Oem",
+                "Id": "2454979",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454979",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454978",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:33:07-05:00",
+                "Description": " Log Entry 2454978",
+                "EntryType": "Oem",
+                "Id": "2454978",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454978",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454977",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:33:07-05:00",
+                "Description": " Log Entry 2454977",
+                "EntryType": "Oem",
+                "Id": "2454977",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454977",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454976",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:33:07-05:00",
+                "Description": " Log Entry 2454976",
+                "EntryType": "Oem",
+                "Id": "2454976",
+                "Links": {},
+                "Message": "The previous log entry was repeated 617 times.",
+                "MessageArgs": [
+                    "617"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454976",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454975",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:53-05:00",
+                "Description": " Log Entry 2454975",
+                "EntryType": "Oem",
+                "Id": "2454975",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454975",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454974",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:53-05:00",
+                "Description": " Log Entry 2454974",
+                "EntryType": "Oem",
+                "Id": "2454974",
+                "Links": {},
+                "Message": "The previous log entry was repeated 1 times.",
+                "MessageArgs": [
+                    "1"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454974",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454973",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:52-05:00",
+                "Description": " Log Entry 2454973",
+                "EntryType": "Oem",
+                "Id": "2454973",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454973",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454972",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:52-05:00",
+                "Description": " Log Entry 2454972",
+                "EntryType": "Oem",
+                "Id": "2454972",
+                "Links": {},
+                "Message": "The previous log entry was repeated 2 times.",
+                "MessageArgs": [
+                    "2"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454972",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454971",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:51-05:00",
+                "Description": " Log Entry 2454971",
+                "EntryType": "Oem",
+                "Id": "2454971",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454971",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454970",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:51-05:00",
+                "Description": " Log Entry 2454970",
+                "EntryType": "Oem",
+                "Id": "2454970",
+                "Links": {},
+                "Message": "The previous log entry was repeated 1 times.",
+                "MessageArgs": [
+                    "1"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454970",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454969",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:51-05:00",
+                "Description": " Log Entry 2454969",
+                "EntryType": "Oem",
+                "Id": "2454969",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454969",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454968",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:51-05:00",
+                "Description": " Log Entry 2454968",
+                "EntryType": "Oem",
+                "Id": "2454968",
+                "Links": {},
+                "Message": "The previous log entry was repeated 26 times.",
+                "MessageArgs": [
+                    "26"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454968",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454967",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:34-05:00",
+                "Description": " Log Entry 2454967",
+                "EntryType": "Oem",
+                "Id": "2454967",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454967",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454966",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:34-05:00",
+                "Description": " Log Entry 2454966",
+                "EntryType": "Oem",
+                "Id": "2454966",
+                "Links": {},
+                "Message": "The previous log entry was repeated 1 times.",
+                "MessageArgs": [
+                    "1"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454966",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454965",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:32-05:00",
+                "Description": " Log Entry 2454965",
+                "EntryType": "Oem",
+                "Id": "2454965",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454965",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454964",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:32-05:00",
+                "Description": " Log Entry 2454964",
+                "EntryType": "Oem",
+                "Id": "2454964",
+                "Links": {},
+                "Message": "The previous log entry was repeated 7 times.",
+                "MessageArgs": [
+                    "7"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454964",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454963",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:24-05:00",
+                "Description": " Log Entry 2454963",
+                "EntryType": "Oem",
+                "Id": "2454963",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454963",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454962",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:24-05:00",
+                "Description": " Log Entry 2454962",
+                "EntryType": "Oem",
+                "Id": "2454962",
+                "Links": {},
+                "Message": "The previous log entry was repeated 1 times.",
+                "MessageArgs": [
+                    "1"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454962",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454961",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:23-05:00",
+                "Description": " Log Entry 2454961",
+                "EntryType": "Oem",
+                "Id": "2454961",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454961",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454960",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:14:23-05:00",
+                "Description": " Log Entry 2454960",
+                "EntryType": "Oem",
+                "Id": "2454960",
+                "Links": {},
+                "Message": "The previous log entry was repeated 61 times.",
+                "MessageArgs": [
+                    "61"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454960",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454959",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:11:23-05:00",
+                "Description": " Log Entry 2454959",
+                "EntryType": "Oem",
+                "Id": "2454959",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "redfish"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454959",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454958",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:11:23-05:00",
+                "Description": " Log Entry 2454958",
+                "EntryType": "Oem",
+                "Id": "2454958",
+                "Links": {},
+                "Message": "The previous log entry was repeated 1 times.",
+                "MessageArgs": [
+                    "1"
+                ],
+                "MessageArgs@odata.count": 1,
+                "MessageID": "LOG007",
+                "Name": " Log Entry 2454958",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454957",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T18:11:22-05:00",
+                "Description": " Log Entry 2454957",
+                "EntryType": "Oem",
+                "Id": "2454957",
+                "Links": {
+                    "OriginOfCondition": {
+                        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+                    }
+                },
+                "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+                "MessageArgs": [
+                    "root",
+                    "10.9.1.50",
+                    "REDFISH"
+                ],
+                "MessageArgs@odata.count": 3,
+                "MessageID": "USR0030",
+                "Name": " Log Entry 2454957",
+                "OemRecordFormat": "Dell",
+                "Severity": "Ok"
+            }
+        ],
+        "Members@odata.count": 1634,
+        "Name": "Log Entry Collection"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454935": {
+        "@odata.context": "/redfish/v1/$metadata#LogEntry.LogEntry",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454935",
+        "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+        "Created": "2018-08-30T03:11:08-05:00",
+        "Description": " Log Entry 2454935",
+        "EntryType": "Oem",
+        "Id": "2454935",
+        "Links": {
+            "OriginOfCondition": {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+            }
+        },
+        "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+        "MessageArgs": [
+            "root",
+            "10.9.1.50",
+            "redfish"
+        ],
+        "MessageArgs@odata.count": 3,
+        "MessageID": "USR0030",
+        "Name": " Log Entry 2454935",
+        "OemRecordFormat": "Dell",
+        "Severity": "Ok"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454935_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "603",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:06 GMT",
+        "link": "</redfish/v1/Schemas/LogEntry.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454935_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454939": {
+        "@odata.context": "/redfish/v1/$metadata#LogEntry.LogEntry",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454939",
+        "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+        "Created": "2018-08-30T06:31:26-05:00",
+        "Description": " Log Entry 2454939",
+        "EntryType": "Oem",
+        "Id": "2454939",
+        "Links": {
+            "OriginOfCondition": {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+            }
+        },
+        "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+        "MessageArgs": [
+            "root",
+            "10.9.1.50",
+            "redfish"
+        ],
+        "MessageArgs@odata.count": 3,
+        "MessageID": "USR0030",
+        "Name": " Log Entry 2454939",
+        "OemRecordFormat": "Dell",
+        "Severity": "Ok"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454939_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "603",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:15 GMT",
+        "link": "</redfish/v1/Schemas/LogEntry.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454939_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454955": {
+        "@odata.context": "/redfish/v1/$metadata#LogEntry.LogEntry",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454955",
+        "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+        "Created": "2018-08-30T18:09:26-05:00",
+        "Description": " Log Entry 2454955",
+        "EntryType": "Oem",
+        "Id": "2454955",
+        "Links": {
+            "OriginOfCondition": {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+            }
+        },
+        "Message": "Successfully logged in using root, from 10.9.1.50 and redfish.",
+        "MessageArgs": [
+            "root",
+            "10.9.1.50",
+            "redfish"
+        ],
+        "MessageArgs@odata.count": 3,
+        "MessageID": "USR0030",
+        "Name": " Log Entry 2454955",
+        "OemRecordFormat": "Dell",
+        "Severity": "Ok"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454955_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "603",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:17 GMT",
+        "link": "</redfish/v1/Schemas/LogEntry.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454955_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454956": {
+        "@odata.context": "/redfish/v1/$metadata#LogEntry.LogEntry",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454956",
+        "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+        "Created": "2018-08-30T18:11:22-05:00",
+        "Description": " Log Entry 2454956",
+        "EntryType": "Oem",
+        "Id": "2454956",
+        "Links": {},
+        "Message": "The previous log entry was repeated 52 times.",
+        "MessageArgs": [
+            "52"
+        ],
+        "MessageArgs@odata.count": 1,
+        "MessageID": "LOG007",
+        "Name": " Log Entry 2454956",
+        "OemRecordFormat": "Dell",
+        "Severity": "Ok"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454956_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "488",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:08 GMT",
+        "link": "</redfish/v1/Schemas/LogEntry.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454956_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454957": {
+        "@odata.context": "/redfish/v1/$metadata#LogEntry.LogEntry",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454957",
+        "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+        "Created": "2018-08-30T18:11:22-05:00",
+        "Description": " Log Entry 2454957",
+        "EntryType": "Oem",
+        "Id": "2454957",
+        "Links": {
+            "OriginOfCondition": {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+            }
+        },
+        "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+        "MessageArgs": [
+            "root",
+            "10.9.1.50",
+            "REDFISH"
+        ],
+        "MessageArgs@odata.count": 3,
+        "MessageID": "USR0030",
+        "Name": " Log Entry 2454957",
+        "OemRecordFormat": "Dell",
+        "Severity": "Ok"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454957_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "603",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:10 GMT",
+        "link": "</redfish/v1/Schemas/LogEntry.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454957_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454961": {
+        "@odata.context": "/redfish/v1/$metadata#LogEntry.LogEntry",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454961",
+        "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+        "Created": "2018-08-30T18:14:23-05:00",
+        "Description": " Log Entry 2454961",
+        "EntryType": "Oem",
+        "Id": "2454961",
+        "Links": {
+            "OriginOfCondition": {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1"
+            }
+        },
+        "Message": "Successfully logged in using root, from 10.9.1.50 and REDFISH.",
+        "MessageArgs": [
+            "root",
+            "10.9.1.50",
+            "REDFISH"
+        ],
+        "MessageArgs@odata.count": 3,
+        "MessageID": "USR0030",
+        "Name": " Log Entry 2454961",
+        "OemRecordFormat": "Dell",
+        "Severity": "Ok"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454961_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "603",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:07 GMT",
+        "link": "</redfish/v1/Schemas/LogEntry.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog/2454961_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "25281",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:28 GMT",
+        "link": "</redfish/v1/Schemas/LogEntryCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Lclog_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Sel": {
+        "@odata.context": "/redfish/v1/$metadata#LogEntryCollection.LogEntryCollection",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Sel",
+        "@odata.type": "#LogEntryCollection.LogEntryCollection",
+        "Description": "System Event Logs for this manager",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Sel/1",
+                "@odata.type": "#LogEntry.v1_0_2.LogEntry",
+                "Created": "2018-08-30T01:00:59-05:00",
+                "Description": " Log Entry 1",
+                "EntryCode": [
+                    {
+                        "Member": "Assert"
+                    }
+                ],
+                "EntryType": "SEL",
+                "Id": "1",
+                "Links": {},
+                "Message": "Log cleared.",
+                "MessageArgs": [],
+                "MessageArgs@odata.count": 0,
+                "MessageID": "2ffff",
+                "Name": " Log Entry 1",
+                "SensorNumber": 114,
+                "SensorType": [
+                    {
+                        "Member": "Event Logging Disabled"
+                    }
+                ],
+                "Severity": "Ok"
+            }
+        ],
+        "Members@odata.count": 1,
+        "Name": "Log Entry Collection"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Sel_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "758",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:18 GMT",
+        "link": "</redfish/v1/Schemas/LogEntryCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Logs/Sel_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/NetworkProtocol": {
+        "@odata.context": "/redfish/v1/$metadata#ManagerNetworkProtocol.ManagerNetworkProtocol",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/NetworkProtocol",
+        "@odata.type": "#ManagerNetworkProtocol.v1_0_2.ManagerNetworkProtocol",
+        "Description": "Manager Network Service Status",
+        "FQDN": "r640idrac1.brecca.local",
+        "HTTP": {
+            "Port": 80,
+            "ProtocolEnabled": true
+        },
+        "HTTPS": {
+            "Port": 443,
+            "ProtocolEnabled": true
+        },
+        "HostName": "r640idrac1",
+        "IPMI": {
+            "ProtocolEnabled": true
+        },
+        "Id": "NetworkProtocol",
+        "Name": "Manager Network Protocol",
+        "SNMP": {
+            "Port": 161,
+            "ProtocolEnabled": true
+        },
+        "SSH": {
+            "Port": 22,
+            "ProtocolEnabled": true
+        },
+        "Status": {
+            "Health": "OK",
+            "HealthRollup": "OK",
+            "State": "Enabled"
+        },
+        "Telnet": {
+            "Port": 23,
+            "ProtocolEnabled": false
+        }
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/NetworkProtocol_header": {
+        "access-control-allow-origin": "*",
+        "allow": "PATCH",
+        "cache-control": "no-cache",
+        "content-length": "698",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:23 GMT",
+        "link": "</redfish/v1/Schemas/ManagerNetworkProtocol.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/NetworkProtocol_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles": {
+        "@odata.context": "/redfish/v1/$metadata#RoleCollection.RoleCollection",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles",
+        "@odata.type": "#RoleCollection.RoleCollection",
+        "Description": "Roles Collection",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/Administrator"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/Operator"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/ReadOnly"
+            },
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/None"
+            }
+        ],
+        "Members@odata.count": 4,
+        "Name": "Roles Collection"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/Administrator": {
+        "@odata.context": "/redfish/v1/$metadata#Role.Role",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/Administrator",
+        "@odata.type": "#Role.v1_0_2.Role",
+        "AssignedPrivileges": [
+            "Login",
+            "ConfigureManager",
+            "ConfigureUser",
+            "ConfigureComponent",
+            "ConfigureSelf"
+        ],
+        "AssignedPrivileges@odata.count": 5,
+        "Description": "Administrator User Role",
+        "Id": "Administrator",
+        "IsPredefined": true,
+        "Name": "User Role"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/Administrator_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "397",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:26 GMT",
+        "link": "</redfish/v1/Schemas/Role.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/Administrator_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/None": {
+        "@odata.context": "/redfish/v1/$metadata#Role.Role",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/None",
+        "@odata.type": "#Role.v1_0_2.Role",
+        "AssignedPrivileges": [],
+        "AssignedPrivileges@odata.count": 0,
+        "Description": "User Role None",
+        "Id": "None",
+        "IsPredefined": true,
+        "Name": "User Role"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/None_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "291",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:25 GMT",
+        "link": "</redfish/v1/Schemas/Role.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/None_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/ReadOnly": {
+        "@odata.context": "/redfish/v1/$metadata#Role.Role",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/ReadOnly",
+        "@odata.type": "#Role.v1_0_2.Role",
+        "AssignedPrivileges": [
+            "Login"
+        ],
+        "AssignedPrivileges@odata.count": 1,
+        "Description": "ReadOnly User Role",
+        "Id": "ReadOnly",
+        "IsPredefined": true,
+        "Name": "User Role"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/ReadOnly_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "310",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:07 GMT",
+        "link": "</redfish/v1/Schemas/Role.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles/ReadOnly_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "550",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:27 GMT",
+        "link": "</redfish/v1/Schemas/RoleCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/Roles_status": 200,
+    "/redfish/v1/Managers/iDRAC.Embedded.1/SerialInterfaces": {
+        "@odata.context": "/redfish/v1/$metadata#SerialInterfaceCollection.SerialInterfaceCollection",
+        "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/SerialInterfaces",
+        "@odata.type": "#SerialInterfaceCollection.SerialInterfaceCollection",
+        "Description": "Collection of Serial Interfaces for this System",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/SerialInterfaces/iDRAC.Embedded.1%23Serial.1"
+            }
+        ],
+        "Members@odata.count": 1,
+        "Name": "Serial Interface Collection"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/SerialInterfaces_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "469",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:20 GMT",
+        "link": "</redfish/v1/Schemas/SerialInterfaceCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers/iDRAC.Embedded.1/SerialInterfaces_status": 200,
+    "/redfish/v1/Managers_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "294",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:28 GMT",
+        "link": "</redfish/v1/Schemas/ManagerCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Managers_status": 200,
+    "/redfish/v1/Registries": {
+        "@odata.context": "/redfish/v1/$metadata#MessageRegistryFileCollection.MessageRegistryFileCollection",
+        "@odata.id": "/redfish/v1/Registries",
+        "@odata.type": "#MessageRegistryFileCollection.MessageRegistryFileCollection",
+        "Description": "Registry Repository",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Registries/Messages"
+            },
+            {
+                "@odata.id": "/redfish/v1/Registries/BaseMessages"
+            },
+            {
+                "@odata.id": "/redfish/v1/Registries/ManagerAttributeRegistry"
+            },
+            {
+                "@odata.id": "/redfish/v1/Registries/BiosAttributeRegistry.v1_0_0"
+            },
+            {
+                "@odata.id": "/redfish/v1/Registries/BootSourcesRegistry.v1_0_0"
+            }
+        ],
+        "Members@odata.count": 5,
+        "Name": "Registry File Collection"
+    },
+    "/redfish/v1/Registries/ManagerAttributeRegistry": {
+        "@odata.context": "/redfish/v1/$metadata#MessageRegistryFile.MessageRegistryFile",
+        "@odata.id": "/redfish/v1/Registries/ManagerAttributeRegistry",
+        "@odata.type": "#MessageRegistryFile.v1_0_2.MessageRegistryFile",
+        "Description": "Manager Attribute Registry File Locations",
+        "Id": "ManagerAttributeRegistry",
+        "Languages": [
+            "En"
+        ],
+        "Languages@odata.count": 1,
+        "Location": [
+            {
+                "Language": "En",
+                "Uri": "/redfish/v1/Registries/ManagerAttributeRegistry/ManagerAttributeRegistry.v1_0_0.json"
+            }
+        ],
+        "Location@odata.count": 1,
+        "Name": "Manager Attribute Registry File",
+        "Registry": "ManagerAttributeRegistry.1.0"
+    },
+    "/redfish/v1/Registries/ManagerAttributeRegistry_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "576",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:15 GMT",
+        "link": "</redfish/v1/Schemas/MessageRegistryFile.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Registries/ManagerAttributeRegistry_status": 200,
+    "/redfish/v1/Registries_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "621",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:19 GMT",
+        "link": "</redfish/v1/Schemas/MessageRegistryFileCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Registries_status": 200,
+    "/redfish/v1/Sessions": {
+        "@odata.context": "/redfish/v1/$metadata#SessionCollection.SessionCollection",
+        "@odata.id": "/redfish/v1/Sessions",
+        "@odata.type": "#SessionCollection.SessionCollection",
+        "Description": "Session Collection",
+        "Members": [],
+        "Members@odata.count": 0,
+        "Name": "Session Collection"
+    },
+    "/redfish/v1/Sessions_header": {
+        "access-control-allow-origin": "*",
+        "allow": "POST",
+        "cache-control": "no-cache",
+        "content-length": "267",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:24 GMT",
+        "link": "</redfish/v1/Schemas/SessionCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Sessions_status": 200,
+    "/redfish/v1/Systems": {
+        "@odata.context": "/redfish/v1/$metadata#ComputerSystemCollection.ComputerSystemCollection",
+        "@odata.id": "/redfish/v1/Systems",
+        "@odata.type": "#ComputerSystemCollection.ComputerSystemCollection",
+        "Description": "Collection of Computer Systems",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1"
+            }
+        ],
+        "Members@odata.count": 1,
+        "Name": "Computer System Collection"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Bios": {
+        "@Redfish.Settings": {
+            "@odata.context": "/redfish/v1/$metadata#Settings.Settings",
+            "@odata.type": "#Settings.v1_0_2.Settings",
+            "SettingsObject": {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Bios/Settings"
+            }
+        },
+        "@odata.context": "/redfish/v1/$metadata#Bios.Bios",
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Bios",
+        "@odata.type": "#Bios.v1_0_0.Bios",
+        "Actions": {
+            "#Bios.ChangePassword": {
+                "target": "/redfish/v1/Systems/System.Embedded.1/Bios/Actions/Bios.ChangePassword"
+            },
+            "#Bios.ResetBios": {
+                "target": "/redfish/v1/Systems/System.Embedded.1/Bios/Actions/Bios.ResetBios"
+            }
+        },
+        "AttributeRegistry": "BiosAttributeRegistry.v1_0_0",
+        "Attributes": {
+            "AcPwrRcvry": "Last",
+            "AcPwrRcvryDelay": "Immediate",
+            "AcPwrRcvryUserDelay": 60,
+            "AesNi": "Enabled",
+            "AuthorizeDeviceFirmware": "Disabled",
+            "BootMode": "Uefi",
+            "BootSeqRetry": "Enabled",
+            "ConTermType": "Vt100Vt220",
+            "ControlledTurbo": "Disabled",
+            "CorrEccSmi": "Enabled",
+            "CpuInterconnectBusLinkPower": "Enabled",
+            "CurrentEmbVideoState": "Enabled",
+            "CurrentMemOpModeState": "Optimizer Mode",
+            "DcuIpPrefetcher": "Enabled",
+            "DcuStreamerPrefetcher": "Enabled",
+            "DellAutoDiscovery": "PlatformDefault",
+            "DellWyseP25BIOSAccess": "Enabled",
+            "DynamicCoreAllocation": "Disabled",
+            "EmbSata": "AhciMode",
+            "EmbVideo": "Enabled",
+            "EnergyPerformanceBias": "BalancedPerformance",
+            "ErrPrompt": "Enabled",
+            "ExtSerialConnector": "Serial1",
+            "FailSafeBaud": "115200",
+            "ForceInt10": "Disabled",
+            "HddFailover": "Disabled",
+            "HttpDev1EnDis": "Disabled",
+            "HttpDev1Interface": "NIC.Integrated.1-1-1",
+            "HttpDev1Protocol": "IPv4",
+            "HttpDev1VlanEnDis": "Disabled",
+            "HttpDev1VlanId": 1,
+            "HttpDev1VlanPriority": 0,
+            "HttpDev2EnDis": "Disabled",
+            "HttpDev2Interface": "NIC.Integrated.1-1-1",
+            "HttpDev2Protocol": "IPv4",
+            "HttpDev2VlanEnDis": "Disabled",
+            "HttpDev2VlanId": 1,
+            "HttpDev2VlanPriority": 0,
+            "HttpDev3EnDis": "Disabled",
+            "HttpDev3Interface": "NIC.Integrated.1-1-1",
+            "HttpDev3Protocol": "IPv4",
+            "HttpDev3VlanEnDis": "Disabled",
+            "HttpDev3VlanId": 1,
+            "HttpDev3VlanPriority": 0,
+            "HttpDev4EnDis": "Disabled",
+            "HttpDev4Interface": "NIC.Integrated.1-1-1",
+            "HttpDev4Protocol": "IPv4",
+            "HttpDev4VlanEnDis": "Disabled",
+            "HttpDev4VlanId": 1,
+            "HttpDev4VlanPriority": 0,
+            "InBandManageabilityInterface": "Enabled",
+            "IntegratedNetwork1": "Enabled",
+            "IntegratedRaid": "Enabled",
+            "IntelTxt": "Off",
+            "InternalUsb": "On",
+            "IoatEngine": "Disabled",
+            "IscsiDev1Con1Auth": "None",
+            "IscsiDev1Con1ChapType": "OneWay",
+            "IscsiDev1Con1DhcpEnDis": "Disabled",
+            "IscsiDev1Con1EnDis": "Disabled",
+            "IscsiDev1Con1Interface": "NIC.Integrated.1-1-1",
+            "IscsiDev1Con1Lun": "0",
+            "IscsiDev1Con1Port": 3260,
+            "IscsiDev1Con1Protocol": "IPv4",
+            "IscsiDev1Con1Retry": 3,
+            "IscsiDev1Con1TgtDhcpEnDis": "Disabled",
+            "IscsiDev1Con1Timeout": 10000,
+            "IscsiDev1Con1VlanEnDis": "Disabled",
+            "IscsiDev1Con1VlanId": 1,
+            "IscsiDev1Con1VlanPriority": 0,
+            "IscsiDev1Con2Auth": "None",
+            "IscsiDev1Con2ChapType": "OneWay",
+            "IscsiDev1Con2DhcpEnDis": "Disabled",
+            "IscsiDev1Con2EnDis": "Disabled",
+            "IscsiDev1Con2Interface": "NIC.Integrated.1-1-1",
+            "IscsiDev1Con2Lun": "0",
+            "IscsiDev1Con2Port": 3260,
+            "IscsiDev1Con2Protocol": "IPv4",
+            "IscsiDev1Con2Retry": 3,
+            "IscsiDev1Con2TgtDhcpEnDis": "Disabled",
+            "IscsiDev1Con2Timeout": 10000,
+            "IscsiDev1Con2VlanEnDis": "Disabled",
+            "IscsiDev1Con2VlanId": 1,
+            "IscsiDev1Con2VlanPriority": 0,
+            "IscsiDev1ConOrder": "Con1Con2",
+            "IscsiDev1EnDis": "Disabled",
+            "LogicalProc": "Enabled",
+            "MemFrequency": "MaxPerf",
+            "MemOpMode": "OptimizerMode",
+            "MemPatrolScrub": "Standard",
+            "MemRefreshRate": "1x",
+            "MemTest": "Disabled",
+            "MemoryMappedIOH": "56TB",
+            "MmioAbove4Gb": "Enabled",
+            "MonitorMwait": "Enabled",
+            "NodeInterleave": "Disabled",
+            "NumLock": "On",
+            "NvmeMode": "NonRaid",
+            "OneTimeBootMode": "Disabled",
+            "OneTimeUefiBootSeqDev": "Unknown.Unknown.1-1",
+            "OppSrefEn": "Disabled",
+            "OsWatchdogTimer": "Disabled",
+            "PasswordStatus": "Unlocked",
+            "PcieAspmL1": "Enabled",
+            "PowerCycleRequest": "None",
+            "Proc1Brand": "Intel(R) Xeon(R) Gold 6130 CPU @ 2.10GHz",
+            "Proc1Id": "6-55-4",
+            "Proc1L2Cache": "16x1 MB",
+            "Proc1L3Cache": "22 MB",
+            "Proc1NumCores": 16,
+            "Proc1TurboCoreNum": "All",
+            "ProcAdjCacheLine": "Enabled",
+            "ProcC1E": "Enabled",
+            "ProcCStates": "Enabled",
+            "ProcCoreSpeed": "2.10 GHz",
+            "ProcCores": "All",
+            "ProcHwPrefetcher": "Enabled",
+            "ProcPwrPerf": "SysDbpm",
+            "ProcTurboMode": "Enabled",
+            "ProcVirtualization": "Enabled",
+            "ProcX2Apic": "Disabled",
+            "PwrButton": "Enabled",
+            "PxeDev1EnDis": "Enabled",
+            "PxeDev1Interface": "NIC.Integrated.1-1-1",
+            "PxeDev1Protocol": "IPv4",
+            "PxeDev1VlanEnDis": "Disabled",
+            "PxeDev1VlanId": 1,
+            "PxeDev1VlanPriority": 0,
+            "PxeDev2EnDis": "Enabled",
+            "PxeDev2Interface": "NIC.Integrated.1-1-1",
+            "PxeDev2Protocol": "IPv4",
+            "PxeDev2VlanEnDis": "Disabled",
+            "PxeDev2VlanId": 1,
+            "PxeDev2VlanPriority": 0,
+            "PxeDev3EnDis": "Disabled",
+            "PxeDev3Interface": "NIC.Integrated.1-1-1",
+            "PxeDev3Protocol": "IPv4",
+            "PxeDev3VlanEnDis": "Disabled",
+            "PxeDev3VlanId": 1,
+            "PxeDev3VlanPriority": 0,
+            "PxeDev4EnDis": "Disabled",
+            "PxeDev4Interface": "NIC.Integrated.1-1-1",
+            "PxeDev4Protocol": "IPv4",
+            "PxeDev4VlanEnDis": "Disabled",
+            "PxeDev4VlanId": 1,
+            "PxeDev4VlanPriority": 0,
+            "RedirAfterBoot": "Enabled",
+            "RedundantOsLocation": "None",
+            "SataPortA": "Auto",
+            "SataPortACapacity": "N/A",
+            "SataPortADriveType": "Unknown Device",
+            "SataPortAModel": "Unknown",
+            "SataPortB": "Auto",
+            "SataPortBCapacity": "N/A",
+            "SataPortBDriveType": "Unknown Device",
+            "SataPortBModel": "Unknown",
+            "SataPortC": "Auto",
+            "SataPortCCapacity": "N/A",
+            "SataPortCDriveType": "Unknown Device",
+            "SataPortCModel": "Unknown",
+            "SataPortD": "Auto",
+            "SataPortDCapacity": "N/A",
+            "SataPortDDriveType": "Unknown Device",
+            "SataPortDModel": "Unknown",
+            "SataPortE": "Auto",
+            "SataPortECapacity": "N/A",
+            "SataPortEDriveType": "Unknown Device",
+            "SataPortEModel": "Unknown",
+            "SataPortF": "Auto",
+            "SataPortFCapacity": "N/A",
+            "SataPortFDriveType": "Unknown Device",
+            "SataPortFModel": "Unknown",
+            "SataPortG": "Auto",
+            "SataPortGCapacity": "N/A",
+            "SataPortGDriveType": "Unknown Device",
+            "SataPortGModel": "Unknown",
+            "SataPortH": "Auto",
+            "SataPortHCapacity": "N/A",
+            "SataPortHDriveType": "Unknown Device",
+            "SataPortHModel": "Unknown",
+            "SataPortI": "Auto",
+            "SataPortICapacity": "N/A",
+            "SataPortIDriveType": "Unknown Device",
+            "SataPortIModel": "Unknown",
+            "SataPortJ": "Auto",
+            "SataPortJCapacity": "N/A",
+            "SataPortJDriveType": "Unknown Device",
+            "SataPortJModel": "Unknown",
+            "SataPortK": "Auto",
+            "SataPortKCapacity": "N/A",
+            "SataPortKDriveType": "Unknown Device",
+            "SataPortKModel": "Unknown",
+            "SataPortL": "Auto",
+            "SataPortLCapacity": "N/A",
+            "SataPortLDriveType": "Unknown Device",
+            "SataPortLModel": "Unknown",
+            "SataPortM": "Auto",
+            "SataPortMCapacity": "N/A",
+            "SataPortMDriveType": "Unknown Device",
+            "SataPortMModel": "Unknown",
+            "SataPortN": "Auto",
+            "SataPortNCapacity": "N/A",
+            "SataPortNDriveType": "Unknown Device",
+            "SataPortNModel": "Unknown",
+            "SecureBoot": "Disabled",
+            "SecureBootMode": "UserMode",
+            "SecureBootPolicy": "Standard",
+            "SecurityFreezeLock": "Enabled",
+            "SerialComm": "OnConRedirCom2",
+            "SerialPortAddress": "Serial1Com2Serial2Com1",
+            "Slot1": "Enabled",
+            "Slot1Bif": "x16",
+            "SriovGlobalEnable": "Disabled",
+            "SubNumaCluster": "Disabled",
+            "SysMemSize": "8 GB",
+            "SysMemSpeed": "2666 Mhz",
+            "SysMemType": "ECC DDR4",
+            "SysMemVolt": "1.20 V",
+            "SysMfrContactInfo": "www.dell.com",
+            "SysProfile": "PerfPerWattOptimizedDapc",
+            "SystemBiosVersion": "1.3.7",
+            "SystemCpldVersion": "1.0.1",
+            "SystemManufacturer": "Dell Inc.",
+            "SystemMeVersion": "4.0.4.320",
+            "SystemModelName": "PowerEdge R640",
+            "SystemServiceTag": "NNPNST1",
+            "TpmInfo": "No TPM present",
+            "TpmPpiBypassClear": "Disabled",
+            "TpmPpiBypassProvision": "Disabled",
+            "UefiComplianceVersion": "2.5",
+            "UefiVariableAccess": "Standard",
+            "UncoreFrequency": "DynamicUFS",
+            "UpiPrefetch": "Enabled",
+            "UsbManagedPort": "On",
+            "UsbPorts": "AllOn",
+            "VideoMem": "16 MB",
+            "WorkloadProfile": "NotAvailable",
+            "WriteCache": "Disabled",
+            "WriteDataCrc": "Disabled"
+        },
+        "Description": "BIOS Configuration Current Settings",
+        "Id": "Bios",
+        "Name": "BIOS Configuration Current Settings"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Bios/Settings": {
+        "@odata.context": "/redfish/v1/$metadata#Bios.Bios",
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Bios/Settings",
+        "@odata.type": "#Bios.v1_0_0.Bios",
+        "Actions": {
+            "Oem": {
+                "DellManager.v1_0_0#DellManager.ClearPending": {
+                    "target": "/redfish/v1/Systems/System.Embedded.1/Bios/Settings/Actions/Oem/DellManager.ClearPending"
+                }
+            }
+        },
+        "AttributeRegistry": "BiosAttributeRegistry.v1_0_0",
+        "Attributes": {},
+        "Description": "BIOS Configuration Pending Settings. These settings will be applied on next system reboot.",
+        "Id": "Settings",
+        "Name": "BIOS Configuration Pending Settings",
+        "Oem": {
+            "Dell": {
+                "@odata.type": "#DellManager.v1_0_0.DellManager",
+                "Jobs": {
+                    "@odata.id": "/redfish/v1/Managers/iDRAC.Embedded.1/Jobs"
+                }
+            }
+        }
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Bios/Settings_header": {
+        "access-control-allow-origin": "*",
+        "allow": "GET,HEAD,PATCH,POST",
+        "cache-control": "no-cache",
+        "content-length": "687",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:25 GMT",
+        "link": "</redfish/v1/Schemas/Bios.v1_0_0.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Bios/Settings_status": 200,
+    "/redfish/v1/Systems/System.Embedded.1/Bios_header": {
+        "access-control-allow-origin": "*",
+        "allow": "GET,HEAD,POST",
+        "cache-control": "no-cache",
+        "content-length": "7438",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:20 GMT",
+        "link": "</redfish/v1/Schemas/Bios.v1_0_0.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Bios_status": 200,
+    "/redfish/v1/Systems/System.Embedded.1/BootSources": {
+        "@Redfish.Settings": {
+            "@odata.context": "/redfish/v1/$metadata#Settings.Settings",
+            "@odata.type": "#Settings.v1_0_2.Settings",
+            "SettingsObject": {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/BootSources/Settings"
+            }
+        },
+        "@odata.context": "/redfish/v1/$metadata#DellBootSources.DellBootSources",
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/BootSources",
+        "@odata.type": "#DellBootSources.v1_0_0.DellBootSources",
+        "AttributeRegistry": "DellBootSourcesRegistry.v1_0_0",
+        "Attributes": {
+            "UefiBootSeq": [
+                {
+                    "Enabled": true,
+                    "Id": "BIOS.Setup.1-1#UefiBootSeq#Unknown.Unknown.1-1#6a5b6f7087238ab1275889252ad0dffe",
+                    "Index": 0,
+                    "Name": "Unknown.Unknown.1-1"
+                },
+                {
+                    "Enabled": true,
+                    "Id": "BIOS.Setup.1-1#UefiBootSeq#NIC.PxeDevice.1-1#81e55d13a36bc065ca3bf9bf8d699391",
+                    "Index": 1,
+                    "Name": "NIC.PxeDevice.1-1"
+                },
+                {
+                    "Enabled": false,
+                    "Id": "BIOS.Setup.1-1#UefiBootSeq#Unknown.Unknown.3-1#c7e65d0c7c87ed3490bb31a0ca15ae8d",
+                    "Index": 2,
+                    "Name": "Unknown.Unknown.3-1"
+                },
+                {
+                    "Enabled": true,
+                    "Id": "BIOS.Setup.1-1#UefiBootSeq#Unknown.Unknown.4-1#1bf3271ff7089d67a1c7e9700e270249",
+                    "Index": 3,
+                    "Name": "Unknown.Unknown.4-1"
+                },
+                {
+                    "Enabled": true,
+                    "Id": "BIOS.Setup.1-1#UefiBootSeq#NIC.PxeDevice.2-1#e158d778680bb5e05f7e79c4a8a46dd9",
+                    "Index": 4,
+                    "Name": "NIC.PxeDevice.2-1"
+                }
+            ]
+        },
+        "Description": "Boot Sources Current Settings",
+        "Id": "BootSources",
+        "Name": "Boot Sources Configuration Current Settings"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/BootSources_header": {
+        "access-control-allow-origin": "*",
+        "allow": "GET,HEAD",
+        "cache-control": "no-cache",
+        "content-length": "1320",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:22 GMT",
+        "link": "</redfish/v1/Schemas/DellBootSources.v1_0_0.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/BootSources_status": 200,
+    "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces": {
+        "@odata.context": "/redfish/v1/$metadata#EthernetInterfaceCollection.EthernetInterfaceCollection",
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces",
+        "@odata.type": "#EthernetInterfaceCollection.EthernetInterfaceCollection",
+        "Description": "Collection of Ethernet Interfaces for this System",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-4-1"
+            },
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-1-1"
+            },
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-3-1"
+            },
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces/NIC.Integrated.1-2-1"
+            }
+        ],
+        "Members@odata.count": 4,
+        "Name": "System Ethernet Interface Collection"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "767",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:24 GMT",
+        "link": "</redfish/v1/Schemas/EthernetInterfaceCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/EthernetInterfaces_status": 200,
+    "/redfish/v1/Systems/System.Embedded.1/Processors": {
+        "@odata.context": "/redfish/v1/$metadata#ProcessorCollection.ProcessorCollection",
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors",
+        "@odata.type": "#ProcessorCollection.ProcessorCollection",
+        "Description": "Collection of Processors for this System",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Processors/CPU.Socket.1"
+            }
+        ],
+        "Members@odata.count": 1,
+        "Name": "ProcessorsCollection"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Processors_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "404",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:23 GMT",
+        "link": "</redfish/v1/Schemas/ProcessorCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Processors_status": 200,
+    "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers": {
+        "@odata.context": "/redfish/v1/$metadata#SimpleStorageCollection.SimpleStorageCollection",
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers",
+        "@odata.type": "#SimpleStorageCollection.SimpleStorageCollection",
+        "Description": "Collection of Controllers for this system",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers/RAID.Integrated.1-1"
+            },
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers/AHCI.Embedded.2-1"
+            },
+            {
+                "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers/AHCI.Embedded.1-1"
+            }
+        ],
+        "Members@odata.count": 3,
+        "Name": "Simple Storage Collection"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers/RAID.Integrated.1-1": {
+        "@odata.context": "/redfish/v1/$metadata#SimpleStorage.SimpleStorage",
+        "@odata.id": "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers/RAID.Integrated.1-1",
+        "@odata.type": "#SimpleStorage.v1_0_2.SimpleStorage",
+        "Description": "Simple Storage Controller",
+        "Devices": [
+            {
+                "CapacityBytes": 599550590976,
+                "Manufacturer": "SEAGATE",
+                "Model": "ST600MM0088",
+                "Name": "Physical Disk 0:1:0",
+                "Status": {
+                    "Health": "OK",
+                    "HealthRollup": "OK",
+                    "State": "Enabled"
+                }
+            },
+            {
+                "CapacityBytes": null,
+                "Manufacturer": "DELL",
+                "Model": "BP14G+EXP 0:1",
+                "Name": "Backplane 1 on Connector 0 of Integrated RAID Controller 1",
+                "Status": {
+                    "Health": "OK",
+                    "HealthRollup": "OK",
+                    "State": "Enabled"
+                }
+            }
+        ],
+        "Devices@odata.count": 2,
+        "Id": "RAID.Integrated.1-1",
+        "Name": "PERC H730P Mini",
+        "Status": {
+            "Health": "OK",
+            "HealthRollup": "OK",
+            "State": "Enabled"
+        },
+        "UefiDevicePath": "PciRoot(0x1)/Pci(0x0,0x0)/Pci(0x0,0x0)/Ctrl(0x1)"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers/RAID.Integrated.1-1_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "846",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:10 GMT",
+        "link": "</redfish/v1/Schemas/SimpleStorage.v1_0_2.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers/RAID.Integrated.1-1_status": 200,
+    "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "635",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:29 GMT",
+        "link": "</redfish/v1/Schemas/SimpleStorageCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Systems/System.Embedded.1/Storage/Controllers_status": 200,
+    "/redfish/v1/Systems_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "367",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:24 GMT",
+        "link": "</redfish/v1/Schemas/ComputerSystemCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/Systems_status": 200,
+    "/redfish/v1/TaskService/Tasks": {
+        "@odata.context": "/redfish/v1/$metadata#TaskCollection.TaskCollection",
+        "@odata.id": "/redfish/v1/TaskService/Tasks",
+        "@odata.type": "#TaskCollection.TaskCollection",
+        "Description": "Collection of Tasks",
+        "Members": [],
+        "Members@odata.count": 0,
+        "Name": "Task Collection"
+    },
+    "/redfish/v1/TaskService/Tasks_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "262",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:16 GMT",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/TaskService/Tasks_status": 200,
+    "/redfish/v1/UpdateService": {
+        "@odata.context": "/redfish/v1/$metadata#UpdateService.UpdateService",
+        "@odata.id": "/redfish/v1/UpdateService",
+        "@odata.type": "#UpdateService.v1_0_0.UpdateService",
+        "Actions": {
+            "Oem": {
+                "DellUpdateService.v1_0_0#DellUpdateService.Install": {
+                    "InstallUpon@Redfish.AllowableValues": [
+                        "Now",
+                        "NowAndReboot",
+                        "NextReboot"
+                    ],
+                    "target": "/redfish/v1/UpdateService/Actions/Oem/DellUpdateService.Install"
+                }
+            }
+        },
+        "Description": "Represents the properties for the Update Service",
+        "FirmwareInventory": {
+            "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory"
+        },
+        "Id": "UpdateService",
+        "Name": "Update Service",
+        "ServiceEnabled": true,
+        "Status": {
+            "Health": "OK",
+            "State": "Enabled"
+        }
+    },
+    "/redfish/v1/UpdateService/FirmwareInventory": {
+        "@odata.context": "/redfish/v1/$metadata#SoftwareInventoryCollection.SoftwareInventoryCollection",
+        "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory",
+        "@odata.type": "#SoftwareInventoryCollection.SoftwareInventoryCollection",
+        "Description": "Collection of Firmware Inventory",
+        "Members": [
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Current-159-1.3.7"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-101095-00.24.7A"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-101560-25.5.2.0001"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-101734-0"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-103538-TT31"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-103999-3.49"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-104102-2.12"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-104684-0"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-159-1.3.7"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-18981-0"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-25227-3.15.15.15"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-25806-0"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-27481-20.6.16"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-27763-1.0.1"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-28897-3.15.15.15"
+            },
+            {
+                "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Previous-25227-3.15.15.15"
+            }
+        ],
+        "Members@odata.count": 16,
+        "Name": "Firmware Inventory Collection"
+    },
+    "/redfish/v1/UpdateService/FirmwareInventory/Installed-101734-0": {
+        "@odata.context": "/redfish/v1/$metadata#SoftwareInventory.SoftwareInventory",
+        "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-101734-0",
+        "@odata.type": "#SoftwareInventory.v1_0_0.SoftwareInventory",
+        "Description": "Represents Firmware Inventory",
+        "Id": "Installed-101734-0",
+        "Name": "OS Collector",
+        "Status": {
+            "Health": "OK",
+            "State": "Enabled"
+        },
+        "Updateable": true,
+        "Version": "0"
+    },
+    "/redfish/v1/UpdateService/FirmwareInventory/Installed-101734-0_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "385",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:08 GMT",
+        "etag": "cb8d5472d5073d45d49b8b979a9fc64d",
+        "link": "</redfish/v1/Schemas/SoftwareInventory.v1_0_0.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/UpdateService/FirmwareInventory/Installed-101734-0_status": 200,
+    "/redfish/v1/UpdateService/FirmwareInventory/Installed-25806-0": {
+        "@odata.context": "/redfish/v1/$metadata#SoftwareInventory.SoftwareInventory",
+        "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory/Installed-25806-0",
+        "@odata.type": "#SoftwareInventory.v1_0_0.SoftwareInventory",
+        "Description": "Represents Firmware Inventory",
+        "Id": "Installed-25806-0",
+        "Name": "Diagnostics",
+        "Status": {
+            "Health": "OK",
+            "State": "Enabled"
+        },
+        "Updateable": true,
+        "Version": "0"
+    },
+    "/redfish/v1/UpdateService/FirmwareInventory/Installed-25806-0_header": {
+        "access-control-allow-origin": "*",
+        "cache-control": "no-cache",
+        "content-length": "382",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:14 GMT",
+        "etag": "e2d245e25462f6481d6e3dfec3bed191",
+        "link": "</redfish/v1/Schemas/SoftwareInventory.v1_0_0.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/UpdateService/FirmwareInventory/Installed-25806-0_status": 200,
+    "/redfish/v1/UpdateService/FirmwareInventory_header": {
+        "access-control-allow-origin": "*",
+        "allow": "POST",
+        "cache-control": "no-cache",
+        "content-length": "1674",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:27 GMT",
+        "etag": "dddc9acf38f2c61cbc7f5d15fe92445a",
+        "link": "</redfish/v1/Schemas/SoftwareInventoryCollection.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/UpdateService/FirmwareInventory_status": 200,
+    "/redfish/v1/UpdateService_header": {
+        "access-control-allow-origin": "*",
+        "allow": "POST",
+        "cache-control": "no-cache",
+        "content-length": "642",
+        "content-type": "application/json;odata.metadata=minimal;charset=utf-8",
+        "date": "Fri, 31 Aug 2018 00:17:26 GMT",
+        "link": "</redfish/v1/Schemas/UpdateService.v1_0_0.json>;rel=describedby",
+        "odata-version": "4.0",
+        "server": "Apache/2.4",
+        "x-frame-options": "DENY"
+    },
+    "/redfish/v1/UpdateService_status": 200
+}

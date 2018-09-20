@@ -57,6 +57,29 @@ import time
 
 REDFISH_SPEC_VERSION = "Version 1.0.5"
 
+def createDummyAccount(self):
+    authorization = 'on'
+    rq_headers = self.request_headers()
+    relative_uris = self.relative_uris
+    rq_body = {
+        'UserName': 'test_in',
+        'Password': 'test_ps',
+        'RoleId': 'Administrator'
+    }
+
+    uri =  relative_uris['Root Service_AccountService_Accounts']
+
+    json_payload, headers, status = self.http_POST(uri, rq_headers, rq_body, authorization)
+
+    print(json_payload)
+    print(headers)
+
+    if status == 201 or status == 204:
+
+        testAccountId = headers['location']
+
+    return status
+
 #####################################################################################################
 # Name: Assertion_EVEN110(self, log)
 # Description: The value of this property shall be the number of retrys attempted for any given event 
@@ -73,24 +96,35 @@ def Assertion_EVEN110(self, log) : # self here is service's instance..
     relative_uris = self.relative_uris
     authorization = 'on'
     rq_headers = self.request_headers()
-    json_payload_get, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+    
+    json_payload_get, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization) 
 
-    ## Assertion verification logic goes here...
+    json_payload_get, headers, status = self.http_GET(json_payload_get['Accounts']['@odata.id'], rq_headers, authorization) 
 
-    #sample intermediate log string going to the text logfile and the xlxs file
-    #log.assertion_log('line', "~ GET %s" % self.Redfish_URIs['Protocol_Version'])
-    #sample intermediate log string to text logfile
-    #log.assertion_log('tx_comment', "~ GET %s" % self.Redfish_URIs['Protocol_Version'])
+    json_payload_get, headers, status = self.http_GET(json_payload_get['Members'][0]['@odata.id'], rq_headers, authorization) 
+    
+    print(json_payload_get['Password'] == None)
+    print(json.dumps(json_payload_get['Password'], indent=4, sort_keys=True))
 
-    #Note: any assertion which FAILs or WARNs should place an explanation in the the reporting spreadsheet
-    #be careful with volume of text here ~ needs to fit in a spreadsheet cell..
-    #if (assertion_status != log.PASS):
-        # this text will go only into the comment section of the xlxs assertion run spreadsheet
-        log.assertion_log('XL_COMMENT', ('~ GET %s : %s %s' % (self.Redfish_URIs['Protocol_Version'], assertion_status, "a meaningful failure note")) )
+    '''
+    rq_body = {'EventId': 'TEST01', 'EventType': 'ResourceAdded'}
 
-    ## log completion status
-    #log.assertion_log(assertion_status, None)
-    return (assertion_status)
+    json_payload_post, header, status = self.http_POST(json_payload_get['Actions']['#EventService.SubmitTestEvent']['target'], rq_headers, rq_body, authorization)
+
+    print(json_payload_post)
+    print(status)
+    print(header)
+    
+    try:
+        print(json_payload_get['DeliveryRetryAttempts'])
+    
+    except:
+        assertion_status = log.WARN        
+        log.assertion_log('line', "DeliveryRetryAttempts property is absent.")
+        return (assertion_status)
+    '''
+
+    return assertion_status
 
 #
 ## end Assertion EVEN110 
