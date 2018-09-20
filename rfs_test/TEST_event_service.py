@@ -103,8 +103,8 @@ def Assertion_EVEN110(self, log) : # self here is service's instance..
 
     json_payload_get, headers, status = self.http_GET(json_payload_get['Members'][0]['@odata.id'], rq_headers, authorization) 
     
-    print(json_payload_get['Password'] == None)
-    print(json.dumps(json_payload_get['Password'], indent=4, sort_keys=True))
+    #print(json_payload_get['Password'] == None)
+    print(json.dumps(json_payload_get, indent=4, sort_keys=True))
 
     '''
     rq_body = {'EventId': 'TEST01', 'EventType': 'ResourceAdded'}

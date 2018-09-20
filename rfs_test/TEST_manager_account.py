@@ -1,9 +1,5 @@
-opyright Notice:
-# Copyright 2016-2018 DMTF. All rights reserved.
-# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-C
-
 ##################################################################################################
-# File: TEST_event_service.py 
+# File: TEST_manager_account.py 
 # Description: Redfish service conformance check tool. This module contains assertions for 
 # EventService
 #
@@ -103,6 +99,8 @@ def Assertion_MANA101(self, log):
         log.assertion_log('line', "AccountService property is absent.")
         return (assertion_status)
 
-
-
-
+# run(self, log):
+# Takes sut obj and logger obj
+###################################################################################################
+def run(self, log):
+    assertion_status = Assertion_MANA101(self,log)
