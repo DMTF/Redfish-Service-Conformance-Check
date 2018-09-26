@@ -18,6 +18,10 @@ import time
 from rfs_test import TEST_protocol_details
 from rfs_test import TEST_datamodel_schema
 from rfs_test import TEST_manager_account
+from rfs_test import TEST_computersystem_schema
+from rfs_test import TEST_accountservice_schema
+from rfs_test import TEST_assembly_schema
+from rfs_test import TEST_actioninfo_schema
 from rfs_test_in_progress import TEST_service_details
 from rfs_test_in_progress import TEST_security
 
