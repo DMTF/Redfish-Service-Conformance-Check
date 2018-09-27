@@ -7,3 +7,4 @@ redfish-1.0.0/
 cache_uri_data.json
 data_rel.json
 data_rel_no_mem.json
+.DS_Store

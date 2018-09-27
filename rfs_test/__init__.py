@@ -17,9 +17,13 @@ import logger
 import time
 from rfs_test import TEST_protocol_details
 from rfs_test import TEST_datamodel_schema
+from rfs_test import TEST_manager_account
+from rfs_test import TEST_computersystem_schema
+from rfs_test import TEST_accountservice_schema
+from rfs_test import TEST_assembly_schema
+from rfs_test import TEST_actioninfo_schema
 from rfs_test_in_progress import TEST_service_details
 from rfs_test_in_progress import TEST_security
-
 
 ###################################################################################################
 # Name: run(sut)
@@ -45,6 +49,13 @@ def run(sut):
         #TEST_security.run(sut, log)
         #TEST_service_details.run(sut, log)
         TEST_datamodel_schema.run(sut, log)
+
+        TEST_manager_account.run(sut, log)
+        TEST_computersystem_schema.run(sut, log)
+        TEST_accountservice_schema.run(sut, log)
+        TEST_assembly_schema.run(sut, log)
+        TEST_actioninfo_schema.run(sut, log)
+
     ## close log files
     log.assertion_log('CLOSE', None, sut.SUT_prop)
 # end run
