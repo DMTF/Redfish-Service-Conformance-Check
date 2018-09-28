@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.1.4] - 2018-09-28
+- Added new tests ManagerAccount, ComputerSystem, AccountService, Assembly, and ActionInfo based on the long descriptions in their respective schema files
+
 ## [1.1.3] - 2018-09-07
 - Added new logging functionality to show the test results in a web browser
 
