@@ -319,12 +319,12 @@ def Assertion_ACCO105(self, log):
     assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
 
-    relative_uris = self.relative_uris
     authorization = 'on'
     rq_headers = self.request_headers()
     
     json_payload, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
 
+    threshold = 0
     try:
         threshold = json_payload['AccountLockoutThreshold']
     
@@ -333,12 +333,12 @@ def Assertion_ACCO105(self, log):
         log.assertion_log('line', "~ \'AccountsLockoutThreshold Property\' is not supported %s" % (
             '/redfish/v1/AccountService'))
          
-    if  threshold == 0:
+    if threshold == 0:
         assertion_status = log.PASS
         log.assertion_log('line', "~  AccountLockoutThreshold is set to zero")
         return assertion_status 
 
-    for i in range(0, AccountLockoutThreshold):
+    for i in range(0, threshold):
         if not failAuthorization(self): 
             assertion_status = log.WARN
             log.assertion_log('line', "~  Could not fail the authorization")
@@ -346,11 +346,9 @@ def Assertion_ACCO105(self, log):
 
     if isLocked(self): 
         log.assertion_log('line', "~  Assertion Passed")
-        return assertion_status
     else: 
         assertion_status = log.FAIL
         log.assertion_log('line', "~  Assertion Failed")
-        return assertion_status
 
     return assertion_status
 
