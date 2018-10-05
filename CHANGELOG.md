@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.1.5] - 2018-10-04
+- Added version output from the tool
+- Fixed unresolved variable ref in Assertion_ACCO105
+
 ## [1.1.4] - 2018-09-28
 - Added new tests ManagerAccount, ComputerSystem, AccountService, Assembly, and ActionInfo based on the long descriptions in their respective schema files
 
