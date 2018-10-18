@@ -99,8 +99,81 @@ def Assertion_MANA101(self, log):
         log.assertion_log('line', "AccountService property is absent.")
         return (assertion_status)
 
+
+##################################################################################################
+# Description: The value of this property shall be the password for this account.  
+# The value of this property shall be the user name for this account.
+# The value of this property shall be the ID of the Role resource that configured for this 
+# account.  The service shall reject POST, PATCH, or PUT operations that provide a RoleId that 
+# does not exist by returning HTTP 400 (Bad Request).
+# Name: Assertion_MANA103(self, log)
+##################################################################################################
+def Assertion_MANA103(self, log):
+    log.AssertionID = 'MANA103'
+    assertion_status =  log.PASS
+    log.assertion_log('BEGIN_ASSERTION', None)
+
+    relative_uris = self.relative_uris
+    authorization = 'on'
+    rq_headers = self.request_headers()
+    # print(json.dumps(json_payload_get, sort_keys=True, indent=4)
+
+    try:
+        json_payload_get, headers, status = self.http_GET(self.sut_toplevel_uris['AccountService']['url'], rq_headers, authorization)
+        
+        try:
+            json_payload_get_P, headers, status = self.http_GET(json_payload_get['Accounts']['@odata.id'], rq_headers, authorization)
+
+            try:
+                json_payload_get, headers, status = self.http_GET(json_payload_get_P['Members'][0]['@odata.id'], rq_headers, authorization)
+                managerRoleId =  json_payload_get['RoleId']
+                print(json.dumps(json_payload_get, sort_keys=True, indent=4))
+                
+                # Testing if the service shall reject PATCH operation that provide a RoleId that does not exist by returning HTTP 400 (Bad Request).
+
+                rq_body = {'RoleId': False}
+                json_payload_get_P, headers, status = self.http_PATCH(json_payload_get_P['Members'][0]['@odata.id'], rq_headers, rq_body, authorization)
+
+                if status != 400:
+                    assertion_status = log.FAIL        
+                    log.assertion_log('line', "The service did not reject the PATCH operation that provided a RoleId that does not exist by returning HTTP 400 (Bad Request)" )
+                    return (assertion_status)
+
+                try:
+                    json_payload_get, headers, status = self.http_GET(json_payload_get['Links']['Role']['@odata.id'], rq_headers, authorization)
+
+                    if managerRoleId == json_payload_get['Id']:
+                        assertion_status = log.PASS        
+                        return (assertion_status)
+                    else:
+                        assertion_status = log.FAIL        
+                        log.assertion_log('line', "The value of this property does not match the Id property of the role referenced in the Role resource referenced from Links")
+                        return (assertion_status)
+
+                except:
+                    assertion_status = log.WARN        
+                    log.assertion_log('line', "No accounts are present.")
+                    return (assertion_status)
+
+            except:
+                assertion_status = log.WARN        
+                log.assertion_log('line', "No accounts are present.")
+                return (assertion_status)
+
+        except:
+            assertion_status = log.WARN        
+            log.assertion_log('line', "Accounts property is absent.")
+            return (assertion_status)
+
+    except:
+        assertion_status = log.WARN        
+        log.assertion_log('line', "AccountService property is absent.")
+        return (assertion_status)
+
+
 # run(self, log):
 # Takes sut obj and logger obj
 ###################################################################################################
 def run(self, log):
     assertion_status = Assertion_MANA101(self,log)
+    assertion_status = Assertion_MANA103(self,log)

@@ -43,7 +43,13 @@ def createDummyAccount(self):
         'RoleId': 'Administrator'
     }
     
-    uri =  relative_uris['Root Service_AccountService_Accounts'] 
+    uri = None
+
+    try:
+        uri =  relative_uris['Root Service_AccountService_Accounts'] 
+
+    except:
+        print('Root Service_AccountService_Accounts not in relative_uris')
     
     json_payload, headers, status = self.http_POST(uri, rq_headers, rq_body, authorization)
   
