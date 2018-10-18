@@ -18,7 +18,6 @@ import time
 from rfs_test import TEST_protocol_details
 from rfs_test import TEST_datamodel_schema
 from rfs_test import TEST_manager_account
-from rfs_test import TEST_manager
 from rfs_test import TEST_computersystem_schema
 from rfs_test import TEST_accountservice_schema
 from rfs_test import TEST_assembly_schema
@@ -52,7 +51,6 @@ def run(sut):
         TEST_datamodel_schema.run(sut, log)
 
         TEST_manager_account.run(sut, log)
-        TEST_manager.run(sut, log)
         TEST_computersystem_schema.run(sut, log)
         TEST_accountservice_schema.run(sut, log)
         TEST_assembly_schema.run(sut, log)
