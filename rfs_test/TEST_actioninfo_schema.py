@@ -50,7 +50,7 @@ def Assertion_ACTI104(self,log) :
     except:
 
         assertion_status = log.WARN
-        log.assertion_log('line', "Resource %s, is not found." % (relative_uris['Root Service_Systems']))
+        log.assertion_log('line', "Resource, is not found or Root Service_Systems is not found in relative_uris")
         return assertion_status
 
     try:
