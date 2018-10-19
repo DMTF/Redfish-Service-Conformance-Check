@@ -38,10 +38,10 @@ This program has been tested with Python 2.7.10 and 3.4.3.
         - For example, if properties.json has SUTs['DisplayName'] "Contoso_server1" then "log/ContosoServer1/ will be created and \<timestamp\>_rf-assertions-run.xlxs" will be created each time you run rf_client.py with "ContosoServer1" configured in properties.json.
     - Red/Yellow/Green = Fail/Warn/Pass.
     - The Assertions which are not covered by the check are not color marked in the xlxs.
-   - In order to view the assertion log in an HTML format. Excecute the following command:
+    - In order to view the assertion log in an HTML format. Excecute the following command:
      
      `bash viewLog.sh`
-    	- If a web browser is unavailable due to an SSH/CLI connection with the server, the file HTML_Log_Viewer/AssertionLogs.json can be copied and pasted to a local computer with Redfish Conformance Checker.
+        - If a web browser is unavailable due to an SSH/CLI connection with the server, the file HTML_Log_Viewer/AssertionLogs.json can be copied and pasted to a local computer with Redfish Conformance Checker.
 
 ## Work in progress items/limitations:
 
@@ -51,6 +51,6 @@ This program has been tested with Python 2.7.10 and 3.4.3.
 ## Release Process
 
 1. Update `CHANGELOG.md` with the list of changes since the last release
-2. TODO: Add version string in the tool somewhere
+2. Update the `Version` property in `HTML_Log_Viewer/Version.json` to reflect the new tool version
 3. Push changes to Github
 4. Create a new release in Github

@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.1.6] - 2018-10-19
+- Added new tests for Manager Accounts
+
 ## [1.1.5] - 2018-10-04
 - Added version output from the tool
 - Fixed unresolved variable ref in Assertion_ACCO105
