@@ -3,6 +3,7 @@ __pycache__/
 /*/__pycache__/
 *.pyc
 redfish-1.0.0/
+HTML_Log_Viewer/
 .project
 cache_uri_data.json
 data_rel.json
