@@ -2656,10 +2656,9 @@ def Assertion_6_5_3(self, log) :
                     log.assertion_log('line', rf_utility.json_string(headers))
 
         json_payload, headers, status = self.http_HEAD(uri, rq_headers, authorization)
-        assertion_status_ = self.response_status_check(uri, status, log, request_type='HEAD')
-        # manage assertion status
-        assertion_status = log.status_fixup(assertion_status,assertion_status_)
+        assertion_status_ = self.response_status_check(uri, status, log, request_type='HEAD', warn_only=True)
         if assertion_status_ != log.PASS:
+            # services not required to support HEAD; continue if not supported
             continue
         else:
             key = 'link'
