@@ -38,7 +38,7 @@
   },
   "RedfishServiceCheckTool_SchemaFiles": {
     "DMTF_SPMFSchemas": {
-      "SchemaZipFileName": "DSP8010_2018.2.zip",
+      "SchemaZipFileName": "DSP8010_2018.3.zip",
       "SchemaRepository": "http://redfish.dmtf.org/schemas/",
       "ClientProxy": {
         "http_proxy": "none",
