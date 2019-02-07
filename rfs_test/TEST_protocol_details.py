@@ -2216,7 +2216,7 @@ def Assertion_6_4_2_3(self, log) :
         #supported version
         version = '4.0'
         rq_headers[header] = version
-        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
         # manage assertion status
         assertion_status = log.status_fixup(assertion_status,assertion_status_)
@@ -2232,7 +2232,7 @@ def Assertion_6_4_2_3(self, log) :
         #unsupported version
         version = '3.0'
         rq_headers[header] = version
-        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
+        json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         if not status:
             assertion_status_ = log.WARN
         elif (status == rf_utility.HTTP_OK) :
