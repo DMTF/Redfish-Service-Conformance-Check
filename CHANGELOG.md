@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.1.7] - 2019-02-08
+- Updated schema bundle to 2018.3
+- Disabled cached responses in assertion 6.4.2.3
+- Do not fail assertion 6.5.3 if HEAD not supported
+
 ## [1.1.6] - 2018-10-19
 - Added new tests for Manager Accounts
 
