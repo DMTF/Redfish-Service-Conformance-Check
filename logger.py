@@ -221,7 +221,10 @@ class Log:
         try:
             self.XlAssertionWb = load_workbook(filename=self.SUT_XlDestPath)
 
-        except:
+        except Exception as e:
+            print('Operational ERROR - Tool was unable to open XL file %s' %
+                  self.SUT_XlDestPath)
+            print('Exception: {}'.format(e))
             return 0
 
         # get a 'handle to the assertions sheet
@@ -239,8 +242,11 @@ class Log:
             self.XlAssertionWb.save(self.SUT_XlDestPath)
             ## success
             return 1
-        except:
+        except Exception as e:
             # unable to update the spreadsheet -- user probably has it open
+            print('Operational ERROR - Tool was unable to save XL file %s' %
+                  self.SUT_XlDestPath)
+            print('Exception: {}'.format(e))
             return 0
 
     ###############################################################################################
@@ -257,7 +263,7 @@ class Log:
 
         #find the assertion id in the xls file...
         row_cnt=1
-        for row in asx_handle.iter_rows(row_offset=1):
+        for row in asx_handle.iter_rows(min_row=1):
             row_assertion_id = asx_handle.cell(row=row_cnt, column=self.Assertion_ID_column).value
             if row_assertion_id == assertion_id :
                 ## success
