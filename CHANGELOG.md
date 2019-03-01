@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.1.8] - 2019-03-01
+- Updated usage of iter_rows to conform with updated openpyxl
+
 ## [1.1.7] - 2019-02-08
 - Updated schema bundle to 2018.3
 - Disabled cached responses in assertion 6.4.2.3
