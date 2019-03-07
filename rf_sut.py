@@ -548,27 +548,10 @@ class SUT():
     #   the service root to retrieve all the @odata.ids from the json_payload of each resource
     ###############################################################################################
     def collect_relative_uris(self, service_root):
-        if os.path.isfile('data_rel_no_mem.json') and os.path.isfile('data_rel.json'):   
+        self.relative_uris['Root Service'] = service_root
+        self.relative_uris_no_members['Root Service'] = service_root
 
-            with open('data_rel_no_mem.json', 'r') as rel_no:
-                self.relative_uris_no_members = json.load(rel_no)
-            
-            with open('data_rel.json', 'r') as rel:
-                self.relative_uris = json.load(rel)
-
-        else:
-            #start with rest/v1/
-            self.relative_uris['Root Service'] = service_root
-            self.relative_uris_no_members['Root Service'] = service_root
-
-            self.process_uri(service_root, 'Root Service')
-
-           
-            with open('data_rel_no_mem.json', 'w') as fp:
-                json.dump(self.relative_uris_no_members, fp, sort_keys=True, indent=4)
-            
-            with open('data_rel.json', 'w') as fp:
-                json.dump(self.relative_uris, fp, sort_keys=True, indent=4)
+        self.process_uri(service_root, 'Root Service')
 
     ###############################################################################################
     # Name: process_uri(url, nested_key = None)
