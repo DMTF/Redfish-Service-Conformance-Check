@@ -452,10 +452,10 @@ def http__req_common(sut_prop, http_req, resource_uri, rq_headers, rq_body, auth
 ###############################################################################################
 # Name: http__modify_resource()                                              
 # Description: issue a request to the server connection/URI which
-#   modifies a resource (POST, PATCH, PUT)
+#   modifies a resource (POST, PATCH, PUT, DELETE)
 #  
 # Arguments:
-#   rq_type:  POST, PATCH or PUT
+#   rq_type:  POST, PATCH, PUT or DELETE
 #   resource_uri: the uri of the redfish resource
 #   rq_headers: the request headers. If Content-Type is not specified
 #       then this routine will set it to json before making the request.  
@@ -477,7 +477,8 @@ def http__modify_resource(sut_prop, rq_type, resource_uri, rq_headers, rq_body, 
          
     # this routine can take a python dictionary as a request body... or json
     # make sure the request is json format..
-    rq_body = json.dumps(rq_body)        
+    if rq_body:
+        rq_body = json.dumps(rq_body)
 
     # issue the request
     return(http__req_common(sut_prop, rq_type, resource_uri, rq_headers, rq_body, auth_on_off ))
