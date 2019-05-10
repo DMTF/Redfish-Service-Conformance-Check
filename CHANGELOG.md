@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.1.9] - 2019-05-10
+- Removed persistent caching of URIs
+- Fixed handling of DELETE requests to not require a body
+
 ## [1.1.8] - 2019-03-01
 - Updated usage of iter_rows to conform with updated openpyxl
 
