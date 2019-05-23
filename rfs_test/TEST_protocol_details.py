@@ -3315,8 +3315,8 @@ def Assertion_6_5_13(self, log) :
 def verify_collection_urlcxt(json_payload, assertion_status, self, log):
     key = '@odata.context'
     if key not in json_payload:
-        assertion_status = log.FAIL
-        log.assertion_log('line', "Expected property %s for resource %s " % (key, json_payload['@odata.id']) )
+        # @odata.context not required
+        pass
     else:
         #verify collection context url format
         metadata_url = "/redfish/v1/$metadata#"
@@ -3348,12 +3348,8 @@ def verify_collection_urlcxt(json_payload, assertion_status, self, log):
 def verify_singleton_urlcxt(json_payload, assertion_status, self, log):
     key = '@odata.context'
     if key not in json_payload:
-        assertion_status = log.FAIL
-        if '@odata.id' in json_payload:
-            res = json_payload['@odata.id']
-        else:
-            res = ''
-        log.assertion_log('line', "Expected property %s for resource %s" % (key, res))
+        # @odata.context not required
+        pass
     else:
         #verify singleton context url format
         metadata_url = "/redfish/v1/$metadata#"
@@ -3414,7 +3410,7 @@ def verify_singleton_urlcxt_new(json_payload, assertion_status, self, log):
 # Name: Assertion_6_5_14(self, log)
 # Description:
 #   Context-Property
-# The JSON object shall contain a context property named "@odata.context".
+# The JSON object may contain a context property named "@odata.context".
 # The value of the context property shall be the context URL that describes
 # the resource according to OData-Protocol
 # The context URL for a resource singleton/collection is of the form:
@@ -3512,7 +3508,7 @@ def Assertion_6_5_15(self, log):
 #       incorrect -todo change to regex
 # Description:
 #   Context-Property
-# The JSON object shall contain a context property named "@odata.context".
+# The JSON object may contain a context property named "@odata.context".
 # The value of the context property shall be the context URL that describes
 # the resource according to OData-Protocol
 # The context URL for a resource singleton/collection is of the form:
@@ -4445,8 +4441,8 @@ def Assertion_6_5_30(self, log) :
 ###################################################################################################
 # Name: Assertion_6_5_31(self, log)
 # Description:    Resource Collections
-# Resource collections are returned as a JSON object. The JSON object shall include a context,
-# resource count, and array of values, and may include a next link for partial results.
+# Resource collections are returned as a JSON object. The JSON object shall include a Name property,
+# Resource Identifier property, Type property, array of Members, and resource count.
 ###################################################################################################
 def Assertion_6_5_31(self, log) :
 
@@ -4454,10 +4450,7 @@ def Assertion_6_5_31(self, log) :
     assertion_status =  log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
     authorization = 'on'
-    key1= '@odata.context'
-    key2= 'Members@odata.count'
-    key3= 'Members'
-    key4= 'Members@odata.nextlink'
+    required_properties = ['Name', '@odata.id', '@odata.type', 'Members', 'Members@odata.count']
 
     relative_uris = self.relative_uris_no_members
     rq_headers = self.request_headers()
@@ -4477,20 +4470,22 @@ def Assertion_6_5_31(self, log) :
         else:
             if '@odata.type' in json_payload:
                 if 'Collection' in json_payload['@odata.type']:
-                    if key1 not in json_payload:
-                        assertion_status = log.FAIL
-                        log.assertion_log('line','Required Property: %s expected but not found in json response for collection %s' %(key1, relative_uris[relative_uri]))
-
-                    elif key2 not in json_payload:
-                        assertion_status = log.FAIL
-                        log.assertion_log('line','Required Property: %s expected but not found in json response for collection %s' %(key3, relative_uris[relative_uri]))
-
-                    elif key4 not in json_payload:
-                        log.assertion_log('TX_COMMENT','Conditional Property: %s not found in json response for collection %s' %(key4, relative_uris[relative_uri]))
-
-                    elif key3 not in json_payload:
-                        assertion_status = log.FAIL
-                        log.assertion_log('line','Required Property: %s expected but not found in json response for collection %s' %(key2, relative_uris[relative_uri]))
+                    for key in required_properties:
+                        if key not in json_payload:
+                            assertion_status_ = log.FAIL
+                            assertion_status = log.status_fixup(
+                                assertion_status, assertion_status_)
+                            log.assertion_log('line',
+                                              'Required property %s expected but not found in json response for collection %s' % (
+                                              key,
+                                              relative_uris[relative_uri]))
+            else:
+                assertion_status_ = log.FAIL
+                assertion_status = log.status_fixup(
+                    assertion_status, assertion_status_)
+                log.assertion_log('line',
+                                  '@odata.type property missing from json response for %s; cannot determine if resource is a collection' % (
+                                      relative_uris[relative_uri]))
 
     log.assertion_log(assertion_status, None)
 
@@ -4662,78 +4657,40 @@ def Assertion_6_5_8(self, log):
 def Assertion_6_5_9(self, log) :
 
     log.AssertionID = '6.5.9'
-    assertion_status =  log.PASS
+    assertion_status = log.PASS
     log.assertion_log('BEGIN_ASSERTION', None)
-    authorization = 'on'
-
-    relative_uris = self.relative_uris
     rq_headers = self.request_headers()
-    direc = os.getcwd()+'/redfish-1.0.0/metadata/'
+    resource = self.Redfish_URIs['Service_Metadata_Doc']
 
+    rq_headers['Accept'] = rf_utility.accept_type['xml']
+    response, headers, status = self.http_cached_GET(resource, rq_headers, None)
 
-    for relative_uri in cached_uri:
-        rq_headers['Accept'] = rf_utility.accept_type['json']
-        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
-        assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
-        # manage assertion status
-        assertion_status = log.status_fixup(assertion_status,assertion_status_)
-        if assertion_status_ != log.PASS:
-            continue
-        elif not json_payload:
-            assertion_status_ = log.WARN
-             # manage assertion status
-            assertion_status = log.status_fixup(assertion_status,assertion_status_)
-            log.assertion_log('line', 'No response body returned for resource %s. This assertion for the resource could not be completed' % (relative_uris[relative_uri]))
-        else:
-            if '@odata.context' in json_payload:
-                if not isinstance(json_payload, dict):
-                    assertion_status_ = log.WARN
-                    assertion_status = log.status_fixup(assertion_status, assertion_status_)
-                    log.assertion_log('line',
-                                      'Response body for resource {} was not parsed into a JSON object. Check the Content-Type response header. Response headers: {}'
-                                      .format(relative_uris[relative_uri], headers))
-                    continue
-                resource = json_payload['@odata.context']
-                if 'ServiceRoot' in resource :
-                        #r = requests.get(resource)
-                        #print('The response is %s' %r)
-                        rq_headers['Accept'] = rf_utility.accept_type['xml']
-                        response,headers,status = self.http_cached_GET(resource,rq_headers,None)
-                        if status != 200:
-                            print('Unexpected status {} returned from resource {}'.format(status, resource))
-                            continue
-                        response = response.decode('utf-8').strip('\x00')
-                        try:
-                            doc = minidom.parseString(response)
-                        except Exception as e:
-                            print('The response is %s' % response)
-                            print('Exception received when parsing response from resource {}; exception is "{}"'
-                                  .format(resource, e))
-                            continue
-                        dataServices = doc.getElementsByTagName('edmx:DataServices')
-                        entity = ET.Element('Schema')
-                        element = ET.SubElement(entity, 'EntityContainer')
-
-                        print('The element is %s' %element)
-                        '''for v in entity :
-                                name = v.getAattribute('Name')
-                                extends = v.getAattribute('Extends')
-                                print('The name and extends value is %s %s' %(name,extends))'''
-                        if element is not None:
-                            print('EntityContainer is present in %s' %relative_uri)
-                        else:
-                            print('EntityContainer is not present in %s' %relative_uri)
-                            assertion_status = log.FAIL
-                            continue
-                else :
-                    continue
-                '''for ref in dataServices:
-                    namespace = ref.getElementsByTagName('edmx:Include')[0].getAttribute('Namespace')
-                    if namespace not in list1:
-                        list1.append(namespace)'''
-            else :
+    if status == 200:
+        response = response.decode('utf-8').strip('\x00')
+        try:
+            doc = minidom.parseString(response)
+        except Exception as e:
+            print('The response is %s' % response)
+            print('Exception received when parsing response from resource {}; exception is "{}"'
+                  .format(resource, e))
+            assertion_status = log.WARN
+        if assertion_status == log.PASS:
+            element = None
+            try:
+                element = doc.getElementsByTagName('EntityContainer')[0]
+            except Exception as e:
+                print(
+                    'Exception received when retrieving EntityContainer from resource {}; exception is "{}"'
+                    .format(resource, e))
+            if element is not None:
+                print('EntityContainer is present in %s' % resource)
+            else:
+                print('EntityContainer is not present in %s' % resource)
                 assertion_status = log.FAIL
-                log.assertion_log('line', 'No ~(@odata.context)found in payload for %s' %relative_uri)
+    else:
+        print('Unexpected status {} returned from resource {}'.format(status,
+                                                                      resource))
+        assertion_status = log.FAIL
 
     log.assertion_log(assertion_status, None)
     return (assertion_status)
