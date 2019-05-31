@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.0] - 2019-05-31
+- Updated schema bundle to 2019.1
+- Updated assertions to make @odata.context optional
+
 ## [1.1.9] - 2019-05-10
 - Removed persistent caching of URIs
 - Fixed handling of DELETE requests to not require a body
