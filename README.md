@@ -2,7 +2,7 @@ Copyright 2016-2019 DMTF. All rights reserved.
 
 # Redfish Service Conformance Check Tool
 
-This tool checks an operational Redfish Service to see that it conforms to the normative statements from the Redfish specification (see assertions in redfish-assertions.xlxs).   Assertion coverage is growing (development in process) and future revisions of the tool will increase coverage of the Assertions. To see which Assertions are covered by a revision - run the tool and look at the markup to the SUTs copy of the xlxs file after the check is run.
+This tool checks an operational Redfish Service to see that it conforms to the normative statements from the Redfish specification (see assertions in redfish-assertions.xlxs). Assertion coverage is growing (development in process) and future revisions of the tool will increase coverage of the Assertions. To see which Assertions are covered by a revision - run the tool and look at the markup to the SUTs copy of the xlxs file after the check is run. The assertion numbers shown in the reports are based on the Redfish specification version 1.0.5.
 
 This program has been tested with Python 2.7.10 and 3.4.3.
 
@@ -34,6 +34,7 @@ This program has been tested with Python 2.7.10 and 3.4.3.
     `python rf_client.py`
 6. Check results:
     - rf_client.py will log results to rf-assertions-log.txt (append) and creates \<timestamp\>_rf-assertions-run.xlxs under script_dir/logs/\<DisplayName\>/ folder.
+    - The assertion names in the text log and xlsx spreadsheet (e.g. assertion 6.1.0) are based on the section numbers of the [Redfish specification version 1.0.5](https://www.dmtf.org/sites/default/files/standards/documents/DSP0266_1.0.5.pdf). Subsequent versions of the spec have revised the section numbers so it is helpful to keep a copy of the 1.0.5 spec for reference.
     - The text log is an appended log for all test runs for SUT \<DisplayName\> but the xlxs files are created each time assertions are run for \<DisplayName\>.
         - For example, if properties.json has SUTs['DisplayName'] "Contoso_server1" then "log/ContosoServer1/ will be created and \<timestamp\>_rf-assertions-run.xlxs" will be created each time you run rf_client.py with "ContosoServer1" configured in properties.json.
     - Red/Yellow/Green = Fail/Warn/Pass.
