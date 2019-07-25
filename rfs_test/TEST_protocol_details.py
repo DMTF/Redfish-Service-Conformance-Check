@@ -2746,12 +2746,12 @@ def Assertion_6_5_6_5(self, log) :
     rq_headers = self.request_headers()
     relative_uris = self.relative_uris
     for relative_uri in cached_uri:
-        json_payload, headers, status = self.http_cached_GET(relative_uri, rq_headers, authorization)
+        json_payload, headers, status = self.http_cached_GET(relative_uris[relative_uri], rq_headers, authorization)
         if status == 204:
-            print('The request for te resource %s has succeeded, but no content is being returned in the body of the response' %relative_uri)
+            print('The request for the resource %s has succeeded, but no content is being returned in the body of the response' %relative_uris[relative_uri])
             continue
 
-        else :
+        else:
             continue
 
     log.assertion_log(assertion_status, None)
