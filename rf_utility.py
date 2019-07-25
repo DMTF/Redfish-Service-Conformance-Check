@@ -123,7 +123,7 @@ def Connect_Server_NoSSL(sut_prop, host_ip_addr) :
 
     elif (Python3 == True) :
         #if 3.4.2
-        if (sys.version_info.major == 3 and sys.version_info.minor == 4 and sys.version_info.micro <= 3) :
+        if (sys.version_info.major == 3 and sys.version_info.minor == 4 and sys.version_info.micro < 3) :
             cont=ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
             cont.verify_mode = ssl.CERT_NONE
             try:
