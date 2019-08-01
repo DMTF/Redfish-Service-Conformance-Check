@@ -104,26 +104,30 @@ default_odata_version = '4.0'
 #	        
 ###############################################################################################
 def Connect_Server_NoSSL(sut_prop, host_ip_addr) :
-    if (sys.version_info.major == 2 and sys.version_info.minor == 7 and sys.version_info.micro >= 9) :
-        # python 2.7.9 enables SSL by default but it was not enabled prior 2.7.9...  - disable it for the test connection...
-        cont=ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-        cont.verify_mode = ssl.CERT_NONE
-        try:
-            svr_conn = HTTPSConnection(host=sut_prop['DnsName'], strict=True, context=cont)
-        except:
-            exc_str = sys.exc_info()[0]
-            svr_conn = 0 # failure
+    if not Python3:
+        # Python 2
+        if sys.version_info[0:3] >= (2, 7, 9):
+            # Python 2.7.9 enables cert checks by default; disable it
+            cont=ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+            cont.verify_mode = ssl.CERT_NONE
+            try:
+                svr_conn = HTTPSConnection(host=host_ip_addr, strict=True, context=cont)
+            except:
+                exc_str = sys.exc_info()[0]
+                svr_conn = 0 # failure
 
-    elif (Python3 == False) : # Python 2 but prior to 2.7.9
-        try:
-            conn = HTTPSConnection(host=host_ip_addr, strict=True)
-        except:
-            exc_str = sys.exc_info()[0]
-            svr_conn = 0 # failure
+        else:
+            # Python 2 but prior to 2.7.9
+            try:
+                svr_conn = HTTPSConnection(host=host_ip_addr, strict=True)
+            except:
+                exc_str = sys.exc_info()[0]
+                svr_conn = 0 # failure
 
-    elif (Python3 == True) :
-        #if 3.4.2
-        if (sys.version_info.major == 3 and sys.version_info.minor == 4 and sys.version_info.micro <= 3) :
+    else:
+        # Python 3
+        if sys.version_info[0:3] < (3, 4, 3):
+            # Python 3 but prior to 3.4.3
             cont=ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
             cont.verify_mode = ssl.CERT_NONE
             try:
@@ -132,14 +136,15 @@ def Connect_Server_NoSSL(sut_prop, host_ip_addr) :
                 exc_str = sys.exc_info()[0]
                 svr_conn = 0 # failure
         else:
+            # Python 3.4.3 or later
             try:
                 cntxt = ssl._create_unverified_context()
             except:
                 exc_str = sys.exc_info()[0]
-                svr_conn = 0 # failure
+                cntxt = None  # failure
 
             try:
-                svr_conn = HTTPSConnection(sut_prop['DnsName'], context=cntxt)
+                svr_conn = HTTPSConnection(host_ip_addr, context=cntxt)
             except:
                 exc_str = sys.exc_info()[0]
                 svr_conn = 0 # failure
@@ -163,35 +168,11 @@ def Connect_Server_NoSSL(sut_prop, host_ip_addr) :
 ###############################################################################################
 def Connect_Server_NoSSL_NoHTTPS(sut_prop, host_ip_addr) :
 
-    if (sys.version_info.major == 2 and sys.version_info.minor == 7 and sys.version_info.micro >= 9) :
-        # python 2.7.9 enables SSL by default but it was not enabled prior 2.7.9...  - disable it for the test connection...
-        cont=ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-        cont.verify_mode = ssl.CERT_NONE
-        try:
-            svr_conn = HTTPConnection(host=sut_prop['DnsName'])
-        except:
-            exc_str = sys.exc_info()[0]
-            svr_conn = 0 # failure
-
-    elif (Python3 == False) : # Python 2 but prior to 2.7.9
-        try:
-            conn = HTTPConnection(host=host_ip_addr)
-        except:
-            exc_str = sys.exc_info()[0]
-            svr_conn = 0 # failure
-
-    elif (Python3 == True) :
-        try:
-            cntxt = ssl._create_unverified_context()
-        except:
-            exc_str = sys.exc_info()[0]
-            svr_conn = 0 # failure
-
-        try:
-            svr_conn = HTTPConnection(sut_prop['DnsName'])
-        except:
-            exc_str = sys.exc_info()[0]
-            svr_conn = 0 # failure
+    try:
+        svr_conn = HTTPConnection(host=host_ip_addr)
+    except:
+        exc_str = sys.exc_info()[0]
+        svr_conn = 0  # failure
 
     if (svr_conn == 0) :
         print("OPERATIONAL ERROR (%s) - Unable to  connect to the Server %s -- exiting test..." % (exc_str, sut_prop['DnsName']))
