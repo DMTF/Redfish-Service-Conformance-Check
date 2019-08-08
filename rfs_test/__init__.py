@@ -46,9 +46,13 @@ def run(sut):
     else:
         # Run all assertions
         TEST_protocol_details.run(sut, log)
-        #TEST_security.run(sut, log)
-        #TEST_service_details.run(sut, log)
-        TEST_datamodel_schema.run(sut, log)
+
+        # These assertions are incomplete or WIP
+        # TEST_security.run(sut, log)
+        # TEST_service_details.run(sut, log)
+
+        # These assertions are covered by other tools
+        # TEST_datamodel_schema.run(sut, log)
 
         TEST_manager_account.run(sut, log)
         TEST_computersystem_schema.run(sut, log)
