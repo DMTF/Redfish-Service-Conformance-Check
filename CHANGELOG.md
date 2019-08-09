@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.2.1] - 2019-08-09
+- Fixed relative URI reference in Assertion 6.5.6.5
+- Fixed Python version checking for Python3 being less than 3.4.3 for SSL calls
+- Disabled schema tests
+
 ## [1.2.0] - 2019-05-31
 - Updated schema bundle to 2019.1
 - Updated assertions to make @odata.context optional
