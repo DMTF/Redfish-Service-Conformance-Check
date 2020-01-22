@@ -3398,12 +3398,10 @@ def verify_singleton_urlcxt_new(json_payload, assertion_status, self, log):
                         #still need to implement. get the annotation term-Required on create and save the name and typr in the dictionary
                         for annotations in property.Annotations :
                             if annotations.Term == 'Redfish.Required' :
-                                if property.Name not in json_payload[property.Name] :
+                                if property.Name not in json_payload:
                                     assertion_status= log.FAIL
-                                elif isinstance(json_payload[property.Name],dict) :
-                                    assertion_status= log.FAIL
-                                    log.assertion_log('line', "The property %s is a complex type" % property.Name)
-
+                                    log.assertion_log('line', "Required property %s is missing from resource %s" % (
+                                        property.Name, json_payload.get('@odata.id', '')))
     return assertion_status
 
 ###################################################################################################
