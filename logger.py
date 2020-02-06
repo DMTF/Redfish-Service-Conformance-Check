@@ -228,7 +228,7 @@ class Log:
             return 0
 
         # get a 'handle to the assertions sheet
-        self.XlAssertionSheet = self.XlAssertionWb.get_active_sheet()
+        self.XlAssertionSheet = self.XlAssertionWb.active
 
         return 1
     #

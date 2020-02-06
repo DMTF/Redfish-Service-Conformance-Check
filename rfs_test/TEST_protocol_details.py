@@ -2424,7 +2424,7 @@ def Assertion_6_5_1(self, log) :
 #   header is not foundAdvisory WARN if any header not in the response header table in spec is found
 ###################################################################################################
 def response_header_check(headers, url, log):
-    required_headers = ['odata-version', 'content-type', 'server', 'link', 'cache-control']
+    required_headers = ['odata-version', 'content-type', 'link', 'cache-control']
     conditional_headers = ['etag', 'location']
     additional_headers = ['content-encoding', 'content-length', 'via', 'max-forwards', 'retry-after']
     # what we think is required in context
