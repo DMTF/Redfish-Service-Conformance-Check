@@ -1683,6 +1683,10 @@ def Assertion_6_4_25(self, log) :
     rq_headers = self.request_headers()
 
     for relative_uri in cached_uri:
+        uri = relative_uris[relative_uri]
+        if '/Sensors' in uri or '/Thermal' in uri or '/Power' in uri:
+            # skip URIs whose etag values could change over time
+            continue
         rq_headers = self.request_headers()
         json_payload, headers, status = self.http_GET(relative_uris[relative_uri], rq_headers, authorization)
         assertion_status_ = self.response_status_check(relative_uris[relative_uri], status, log)
@@ -1692,7 +1696,8 @@ def Assertion_6_4_25(self, log) :
             continue
         else:
             if 'etag' not in headers:
-                assertion_status = log.WARN
+                assertion_status_ = log.WARN
+                assertion_status = log.status_fixup(assertion_status, assertion_status_)
                 log.assertion_log('TX_COMMENT', "~ note: Etag exepcted in headers of %s:%s ~ not found" %(relative_uris[relative_uri], rf_utility.json_string(headers)))
                 log.assertion_log('TX_COMMENT', "~ note: Modifications to resource using If-None-Match header without Etag cannot be tested")
             else:
