@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.2.2] - 2020-07-06
+- Added logic to skip ETag validation for resources that can change frequently, such as Thermal
+
 ## [1.2.1] - 2019-08-09
 - Fixed relative URI reference in Assertion 6.5.6.5
 - Fixed Python version checking for Python3 being less than 3.4.3 for SSL calls
