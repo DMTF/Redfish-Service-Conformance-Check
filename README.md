@@ -4,7 +4,7 @@ Copyright 2016-2019 DMTF. All rights reserved.
 
 ## Deprecated
 
-This tool has been deprecated in favor of a newer, more comprehensive protocol validation tool. Please use the new [Redfish-Protocol-Validator](https://github.com/DMTF/Redfish-Protocol-Validator) tool instead.
+This tool is deprecated in favor of a newer, faster, and more comprehensive protocol validation tool. Please use the new [Redfish-Protocol-Validator](https://github.com/DMTF/Redfish-Protocol-Validator) tool instead.
 
 ## Description
 
