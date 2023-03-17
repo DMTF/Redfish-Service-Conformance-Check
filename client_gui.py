@@ -1,6 +1,6 @@
 # Copyright Notice:
 # Copyright 2016-2019 DMTF. All rights reserved.
-# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/blob/master/LICENSE.md
+# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/blob/main/LICENSE.md
 
 from tkinter import *
 from PIL import ImageTk, Image
@@ -13,8 +13,8 @@ import json
 
 
 class LoginFrame(Frame):
-    def __init__(self, master):
-        super().__init__(master)
+    def __init__(self, root):
+        super().__init__(root)
         
         self.label_1 = Label(self, text="Display Name")
         self.label_2 = Label(self, text="DnsName")

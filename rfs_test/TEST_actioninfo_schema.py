@@ -1,6 +1,6 @@
 # Copyright Notice:
 # Copyright 2016-2019 Distributed Management Task Force, Inc. All rights reserved.
-# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/blob/master/LICENSE.md
+# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/blob/main/LICENSE.md
 
 #####################################################################################################
 # File: TEST_actioninfo_schema.py

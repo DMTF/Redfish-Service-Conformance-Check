@@ -1,6 +1,6 @@
 # Copyright Notice:
 # Copyright 2016-2019 DMTF. All rights reserved.
-# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/blob/master/LICENSE.md
+# License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Conformance-Check/blob/main/LICENSE.md
 
 ###################################################################################################
 # Name: logger
@@ -124,7 +124,7 @@ class Log:
         # changed outside the tool, Make sure to update the following..
         # Folder name where original assertion excel sheet reside
         self.AssertionSrcFolder = 'assertions'
-        # Name of master assertions excel sheet
+        # Name of main assertions excel sheet
         self.xl_RunFileName = 'rf-assertions-run.xlsx'
         # Name of text log file
         self.TxtFileName = 'rf-assertions-log'
@@ -146,7 +146,7 @@ class Log:
                     print (inst.args)
                     exit(0)
 
-        # Path of the copy of the assertion master excel sheet which gets marked during the test run
+        # Path of the copy of the assertion main excel sheet which gets marked during the test run
         self.XlRunPath = os.path.join(self.AssertionSrcPath, self.xl_RunFileName)
 
         # text log file for assertions logging
@@ -399,7 +399,7 @@ class Log:
             #datetime string
             dstr = str(datetime.now().strftime("%Y%m%d-%H%M%S"))
 
-            ## create a copy of the master assertion xlxs file for this SUT and open it
+            ## create a copy of the main assertion xlxs file for this SUT and open it
             #self.SUT_XlDestPath = os.path.join(self.SUT_log_Folder , self.xl_RunFileName)
             self.SUT_XlDestPath = os.path.join(self.SUT_log_Folder , dstr + '_' + self.xl_RunFileName)
             try:
